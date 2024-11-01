@@ -6,7 +6,7 @@ package library.MODEL.DTO;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class EventTypeDTO {
     private int id;

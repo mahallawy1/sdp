@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class PaymentDTO {
     private int id;

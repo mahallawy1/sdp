@@ -6,7 +6,7 @@ package library.MODEL.DTO;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class CategoryIdDTO {
     private int id;

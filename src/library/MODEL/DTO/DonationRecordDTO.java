@@ -8,40 +8,62 @@ import java.util.Date;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class DonationRecordDTO {
-   private int id;
+    private int id;
     private int userId;
     private Date donateDate;
-    private int donateTypeId;
-    private int amount;
+    private int cumulativeAmount;
     private boolean status;
 
-    public DonationRecordDTO(int id, int userId, Date donateDate, int donateTypeId, int amount, boolean status) {
+    public DonationRecordDTO() {}
+
+    public DonationRecordDTO(int id, int userId, Date donateDate, int cumulativeAmount, boolean status) {
         this.id = id;
         this.userId = userId;
         this.donateDate = donateDate;
-        this.donateTypeId = donateTypeId;
-        this.amount = amount;
+        this.cumulativeAmount = cumulativeAmount;
         this.status = status;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public Date getDonateDate() { return donateDate; }
-    public void setDonateDate(Date donateDate) { this.donateDate = donateDate; }
+    public int getUserId() {
+        return userId;
+    }
 
-    public int getDonateTypeId() { return donateTypeId; }
-    public void setDonateTypeId(int donateTypeId) { this.donateTypeId = donateTypeId; }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
-    public int getAmount() { return amount; }
-    public void setAmount(int amount) { this.amount = amount; }
+    public Date getDonateDate() {
+        return donateDate;
+    }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; } 
+    public void setDonateDate(Date donateDate) {
+        this.donateDate = donateDate;
+    }
+
+    public int getCumulativeAmount() {
+        return cumulativeAmount;
+    }
+
+    public void setCumulativeAmount(int cumulativeAmount) {
+        this.cumulativeAmount = cumulativeAmount;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
 }

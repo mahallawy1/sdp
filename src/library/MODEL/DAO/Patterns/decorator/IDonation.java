@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package library.MODEL.DAO.Patterns;
+package library.MODEL.DAO.Patterns.decorator;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public interface IDonation {
     double getAmount();

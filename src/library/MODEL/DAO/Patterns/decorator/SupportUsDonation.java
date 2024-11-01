@@ -2,26 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package library.MODEL.DAO.Patterns;
+package library.MODEL.DAO.Patterns.decorator;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
-public abstract class DonationAddon implements IDonation {
-    protected IDonation donation;
+public class SupportUsDonation implements IDonation {
+    private double amount;
 
-    public DonationAddon(IDonation donation) {
-        this.donation = donation;
+    public SupportUsDonation(double amount) {
+        this.amount = amount;
     }
 
     @Override
     public double getAmount() {
-        return donation.getAmount();
+        return amount;
     }
 
     @Override
     public String getDescription() {
-        return donation.getDescription();
+        return "Support Us Donation";
     }
 }

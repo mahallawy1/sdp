@@ -6,7 +6,7 @@ package library.MODEL.DTO;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class SkillDTO {
     private int id;

@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class EventDTO {
     private int id;

@@ -6,12 +6,14 @@ package library.MODEL.DTO;
 
 /**
  *
- * @author ISLAMSOFT
+ * @author mahallawy
  */
 public class DonationRecordPaymentDTO {
     private int id;
     private int donationId;
     private int paymentId;
+
+    public DonationRecordPaymentDTO() {}
 
     public DonationRecordPaymentDTO(int id, int donationId, int paymentId) {
         this.id = id;
@@ -19,12 +21,27 @@ public class DonationRecordPaymentDTO {
         this.paymentId = paymentId;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getDonationId() { return donationId; }
-    public void setDonationId(int donationId) { this.donationId = donationId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public int getPaymentId() { return paymentId; }
-    public void setPaymentId(int paymentId) { this.paymentId = paymentId; }
+    public int getDonationId() {
+        return donationId;
+    }
+
+    public void setDonationId(int donationId) {
+        this.donationId = donationId;
+    }
+
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
+    }
 }
