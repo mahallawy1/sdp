@@ -26,7 +26,7 @@ public class Library {
             }
             DBUtil.close(conn, null);
 
- /*           // Loop to continuously prompt the user for operations
+           // Loop to continuously prompt the user for operations
             while (true) {
                 System.out.println("\nChoose an operation:");
                 System.out.println("1. Add User");
@@ -149,12 +149,6 @@ public class Library {
                 }
             }
 
-        */
-        
-        
-        
-        
-        
         
         
         
