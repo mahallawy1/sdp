@@ -33,7 +33,7 @@ public class Library {
             if (conn != null) {
                 System.out.println("Connection established successfully.");
             }
-            DBUtil.close(conn, null);
+            //DBUtil.close(conn, null);
 
            // Loop to continuously prompt the user for operations
             while (true) {
@@ -44,7 +44,7 @@ public class Library {
                 System.out.println("4. Retrieve All Users");
                 System.out.println("5. Delete User by ID");
               System.out.println("6. Add Donation");
-                System.out.println("6. Exit");
+                System.out.println("7. Exit");
 
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
@@ -139,18 +139,65 @@ public class Library {
                             System.out.println();
                         }
                         break;
+case 6:
+                        // Add Donation
+                        System.out.print("Enter user ID: ");
+                         userId = scanner.nextInt();
 
-                    case 5:
-                        // Delete User by ID
-                        System.out.print("Enter user ID to delete: ");
-                        int deleteUserId = scanner.nextInt();
-                        boolean isDeleted = UserDAO.deleteUser(deleteUserId);
-                        System.out.println("User deleted: " + isDeleted);
+                        // Start with the base donation
+                        IDonation donation = new SupportUsDonation(50.0); // Base donation amount (e.g., Support Us)
+                        List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
+                        donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
+
+                        // Additional donation options
+                        System.out.print("Add Charity Donation? (y/n): ");
+                        if (scanner.next().equalsIgnoreCase("y")) {
+                            System.out.print("Enter amount for Charity Donation: ");
+                            double charityAmount = scanner.nextDouble();
+                            donation = new CharityDonation(donation, charityAmount);
+                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
+                        }
+
+                        System.out.print("Add Gaza Donation? (y/n): ");
+                        if (scanner.next().equalsIgnoreCase("y")) {
+                            System.out.print("Enter amount for Gaza Donation: ");
+                            double gazaAmount = scanner.nextDouble();
+                            donation = new GazaDonation(donation, gazaAmount);
+                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
+                        }
+
+                        System.out.print("Add Sudan Donation? (y/n): ");
+                        if (scanner.next().equalsIgnoreCase("y")) {
+                            System.out.print("Enter amount for Sudan Donation: ");
+                            double sudanAmount = scanner.nextDouble();
+                            donation = new SudanDonation(donation, sudanAmount);
+                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
+                        }
+
+                        // Get the cumulative amount from the decorated donation object
+                        double cumulativeAmount = donation.getAmount();
+
+                        // Create DonationRecordDTO
+                        DonationRecordDTO donationRecord = new DonationRecordDTO();
+                        donationRecord.setUserId(userId);
+                        donationRecord.setDonateDate(new Date());
+                        donationRecord.setCumulativeAmount((int) cumulativeAmount);
+                        donationRecord.setStatus(true);
+
+                        // Save to database
+                        DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn); // Use the existing connection
+                        try {
+                            donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
+                            System.out.println("Donation successfully added with cumulative amount: " + cumulativeAmount);
+                        } catch (SQLException e) {
+                            System.out.println("Error saving donation: " + e.getMessage());
+                        }
                         break;
 
-                    case 6:
-                        // Exit
+
+                    case 7:
                         System.out.println("Exiting...");
+                        DBUtil.close(conn, null);
                         scanner.close();
                         return;
 
