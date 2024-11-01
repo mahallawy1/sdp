@@ -1,13 +1,22 @@
 package library.Controller;
 
+
+//////////////////
 import library.MODEL.DAO.AddressDAO;
+import library.MODEL.DAO.DonationRecordDAO;
+import library.MODEL.DAO.Patterns.decorator.*;
 import library.MODEL.DAO.RoleDAO;
 import library.MODEL.DAO.UserDAO;
 import library.MODEL.DBUtil.DBUtil;
 import library.MODEL.DTO.AddressDTO;
 import library.MODEL.DTO.RoleDTO;
 import library.MODEL.DTO.UserDTO;
+import library.MODEL.DTO.DonationRecordDTO;
+import library.MODEL.DTO.DonationRecordTypeDTO;
 
+import java.sql.SQLException;
+import java.util.Date;
+/////////////////
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +43,7 @@ public class Library {
                 System.out.println("3. Update User");
                 System.out.println("4. Retrieve All Users");
                 System.out.println("5. Delete User by ID");
+              System.out.println("6. Add Donation");
                 System.out.println("6. Exit");
 
                 int choice = scanner.nextInt();
