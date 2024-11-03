@@ -23,7 +23,7 @@ public class AdminEventFactory {
         if("admin".equals(admin.getName())){
           
                 Scanner scanner = new Scanner(System.in);
-                EventDTO event = new EventDTO(); // Create a new EventDTO object
+                EventDTO event = new EventDTO() {}; // Create a new EventDTO object
 
                 // Set ID
                 System.out.print("Enter event ID: ");
