@@ -11,7 +11,7 @@ import java.time.LocalTime;
  *
  * @author mahallawy
  */
-public class EventDTO {
+public abstract class EventDTO {
     private int id;
     private String name;
     private Integer eventTypeId;
