@@ -1,25 +1,22 @@
 package Controller;
 
-
 //////////////////
 import MODEL.DAO.AddressDAO;
 import MODEL.DAO.DonationRecordDAO;
-import MODEL.DAO.Patterns.decorator.*;
-import MODEL.DAO.Patterns.singleton.DbConnectionSingleton;
+import MODEL.Patterns.decorator.*;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
 import MODEL.DAO.UserDAO;
-import MODEL.DBUtil.DBUtil;
-import MODEL.DTO.AddressDTO;
+import MODEL.DTO.Author.AddressDTO;
 import MODEL.DTO.RoleDTO;
 import MODEL.DTO.UserDTO;
 import MODEL.DTO.DonationRecordDTO;
 import MODEL.DTO.DonationRecordTypeDTO;
 
-import java.sql.SQLException;
-import java.util.Date;
-/////////////////
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,15 +24,15 @@ public class Library {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Connection conn = null;
         try {
-            // Test connection
-            Connection conn = DBUtil.getConnection();
+            // Obtain singleton connection instance
+            conn = DbConnectionSingleton.getInstance().getConnection();
             if (conn != null) {
                 System.out.println("Connection established successfully.");
             }
-            //DBUtil.close(conn, null);
 
-           // Loop to continuously prompt the user for operations
+            // Loop to continuously prompt the user for operations
             while (true) {
                 System.out.println("\nChoose an operation:");
                 System.out.println("1. Add User");
@@ -43,11 +40,11 @@ public class Library {
                 System.out.println("3. Update User");
                 System.out.println("4. Retrieve All Users");
                 System.out.println("5. Delete User by ID");
-              System.out.println("6. Add Donation");
+                System.out.println("6. Add Donation");
                 System.out.println("7. Exit");
-
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
+
 
                 switch (choice) {
                     case 1:
@@ -139,39 +136,46 @@ public class Library {
                             System.out.println();
                         }
                         break;
-case 6:
+
+                    case 6:
                         // Add Donation
                         System.out.print("Enter user ID: ");
-                         userId = scanner.nextInt();
+                        userId = scanner.nextInt();
 
                         // Start with the base donation
                         IDonation donation = new SupportUsDonation(50.0); // Base donation amount (e.g., Support Us)
                         List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
                         donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
 
-                        // Additional donation options
-                        System.out.print("Add Charity Donation? (y/n): ");
+                        // Prompt user for additional donations
+                        System.out.print("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ");
                         if (scanner.next().equalsIgnoreCase("y")) {
-                            System.out.print("Enter amount for Charity Donation: ");
-                            double charityAmount = scanner.nextDouble();
-                            donation = new CharityDonation(donation, charityAmount);
-                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
-                        }
+                            // Additional donation options
+                            System.out.print("Add Charity Donation? (y/n): ");
+                            if (scanner.next().equalsIgnoreCase("y")) {
+                                System.out.print("Enter amount for Charity Donation: ");
+                                double charityAmount = scanner.nextDouble();
+                                donation = new CharityDonation(donation, charityAmount);
+                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
+                            }
 
-                        System.out.print("Add Gaza Donation? (y/n): ");
-                        if (scanner.next().equalsIgnoreCase("y")) {
-                            System.out.print("Enter amount for Gaza Donation: ");
-                            double gazaAmount = scanner.nextDouble();
-                            donation = new GazaDonation(donation, gazaAmount);
-                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
-                        }
+                            System.out.print("Add Gaza Donation? (y/n): ");
+                            if (scanner.next().equalsIgnoreCase("y")) {
+                                System.out.print("Enter amount for Gaza Donation: ");
+                                double gazaAmount = scanner.nextDouble();
+                                donation = new GazaDonation(donation, gazaAmount);
+                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
+                            }
 
-                        System.out.print("Add Sudan Donation? (y/n): ");
-                        if (scanner.next().equalsIgnoreCase("y")) {
-                            System.out.print("Enter amount for Sudan Donation: ");
-                            double sudanAmount = scanner.nextDouble();
-                            donation = new SudanDonation(donation, sudanAmount);
-                            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
+                            System.out.print("Add Sudan Donation? (y/n): ");
+                            if (scanner.next().equalsIgnoreCase("y")) {
+                                System.out.print("Enter amount for Sudan Donation: ");
+                                double sudanAmount = scanner.nextDouble();
+                                donation = new SudanDonation(donation, sudanAmount);
+                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
+                            }
+                        } else {
+                            System.out.println("No additional donations added. Processing default 50 Dollar donation...");
                         }
 
                         // Get the cumulative amount from the decorated donation object
@@ -197,7 +201,7 @@ case 6:
 
                     case 7:
                         System.out.println("Exiting...");
-                        DBUtil.close(conn, null);
+                        DbConnectionSingleton.getInstance().close(conn, null);
                         scanner.close();
                         return;
 
@@ -205,12 +209,11 @@ case 6:
                         System.out.println("Invalid choice. Please try again.");
                 }
             }
-
-        
-        
-        
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            // Ensure the connection is closed when the application ends
+            DbConnectionSingleton.getInstance().close(conn, null);
         }
     }
 }
