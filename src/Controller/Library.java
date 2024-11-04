@@ -27,17 +27,6 @@ public class Library {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-
-        DbConnectionSingleton dbSingleton = DbConnectionSingleton.getInstance();
-        System.out.println(dbSingleton);
-
-        DbConnectionSingleton dbSingleton2 = DbConnectionSingleton.getInstance();
-        System.out.println(dbSingleton2);
-
-
-
-
         try {
             // Test connection
             Connection conn = DBUtil.getConnection();
