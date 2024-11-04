@@ -63,6 +63,11 @@ The database design for this project is maintained and visualized on **DB Schema
 - Do not use automatically generated SQL exports from dbdiagram.io; always refer to the SQL file on the main branch to avoid inconsistencies.
 - Ensure that any modifications to the database structure are saved and updated on the main branch.
 
+## Class Diagram
+
+The class diagram provides an overview of the project's structure, showcasing relationships between key classes and their interactions. It visualizes the organization of main components like the Controller, MODEL, DTO, and View, as well as pattern implementations including the decorator, factory, and singleton patterns.
+
+For an in-depth look at the class relationships and design patterns, refer to the [Class Diagram](https://drive.google.com/file/d/1SmaayLcL1YryKVxJIyVVX8IXUhoKoSBU/view?usp=sharing)   created on draw.io.
 ## Setting Up
 
 1. Clone the repository.
