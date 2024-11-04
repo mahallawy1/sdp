@@ -1,15 +1,11 @@
 package MODEL.DAO;
 
-import MODEL.DBUtil.DBUtil;
 import MODEL.DTO.RoleDTO;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class RoleDAO {
 
@@ -18,13 +14,13 @@ public class RoleDAO {
         PreparedStatement pstmt = null;
 
         try {
-            conn = DBUtil.getConnection();
-            pstmt = conn.prepareStatement("INSERT INTO Role (type) VALUES (?)");
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            pstmt = conn.prepareStatement("INSERT INTO role (type) VALUES (?)");
             pstmt.setString(1, role.getName());
 
             return pstmt.executeUpdate() == 1;
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt);
         }
     }
 
@@ -34,8 +30,8 @@ public class RoleDAO {
         ResultSet rset = null;
 
         try {
-            conn = DBUtil.getConnection();
-            pstmt = conn.prepareStatement("SELECT * FROM Role WHERE id = ?");
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            pstmt = conn.prepareStatement("SELECT * FROM role WHERE id = ?");
             pstmt.setInt(1, id);
             rset = pstmt.executeQuery();
 
@@ -43,7 +39,7 @@ public class RoleDAO {
                 return new RoleDTO(rset.getInt("id"), rset.getString("type"));
             }
         } finally {
-            DBUtil.close(conn, pstmt, rset);
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
         }
         return null;
     }
@@ -55,15 +51,15 @@ public class RoleDAO {
         ResultSet rset = null;
 
         try {
-            conn = DBUtil.getConnection();
+            conn = DbConnectionSingleton.getInstance().getConnection();
             stmt = conn.createStatement();
-            rset = stmt.executeQuery("SELECT * FROM Role");
+            rset = stmt.executeQuery("SELECT * FROM role");
 
             while (rset.next()) {
                 roles.add(new RoleDTO(rset.getInt("id"), rset.getString("type")));
             }
         } finally {
-            DBUtil.close(conn, (PreparedStatement) stmt, rset);
+            DbConnectionSingleton.getInstance().close(conn, (PreparedStatement) stmt, rset);
         }
         return roles;
     }
@@ -73,14 +69,14 @@ public class RoleDAO {
         PreparedStatement pstmt = null;
 
         try {
-            conn = DBUtil.getConnection();
-            pstmt = conn.prepareStatement("UPDATE Role SET type = ? WHERE id = ?");
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            pstmt = conn.prepareStatement("UPDATE role SET type = ? WHERE id = ?");
             pstmt.setString(1, role.getName());
             pstmt.setInt(2, role.getId());
 
             return pstmt.executeUpdate() == 1;
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt);
         }
     }
 
@@ -89,13 +85,13 @@ public class RoleDAO {
         PreparedStatement pstmt = null;
 
         try {
-            conn = DBUtil.getConnection();
-            pstmt = conn.prepareStatement("DELETE FROM Role WHERE id = ?");
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            pstmt = conn.prepareStatement("DELETE FROM role WHERE id = ?");
             pstmt.setInt(1, id);
 
             return pstmt.executeUpdate() == 1;
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt);
         }
     }
 }

@@ -1,7 +1,8 @@
 package MODEL.DAO;
 
-import MODEL.DBUtil.DBUtil;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DTO.UserDTO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,10 +15,12 @@ public class UserDAO {
     public static boolean addUser(UserDTO user) throws SQLException {
         Connection conn = null;
         PreparedStatement pstmt = null;
+        ResultSet generatedKeys = null;
         try {
-            conn = DBUtil.getConnection();
-            String sql = "INSERT INTO users (password, email, firstname, address_id, mobile_phone, role_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            pstmt = conn.prepareStatement(sql);
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            String sql = "INSERT INTO user (password, email, firstname, address_id, mobile_phone, role_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
             pstmt.setString(1, user.getPassword());
             pstmt.setString(2, user.getEmail());
             pstmt.setString(3, user.getFirstname());
@@ -25,11 +28,21 @@ public class UserDAO {
             pstmt.setString(5, user.getMobilePhone());
             pstmt.setInt(6, user.getRoleId());
             pstmt.setInt(7, user.getStatus());
-            
+
             int result = pstmt.executeUpdate();
-            return result == 1;
+
+            if (result == 1) {
+                // Retrieve the generated id
+                generatedKeys = pstmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));  // Set the generated ID to the user object
+                }
+                return true;
+            } else {
+                return false;
+            }
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt, generatedKeys);
         }
     }
 
@@ -38,7 +51,7 @@ public class UserDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
-            conn = DBUtil.getConnection();
+            conn = DbConnectionSingleton.getInstance().getConnection();
             String sql = "UPDATE user SET password = ?, email = ?, firstname = ?, address_id = ?, mobile_phone = ?, role_id = ?, status = ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, user.getPassword());
@@ -53,7 +66,7 @@ public class UserDAO {
             int result = pstmt.executeUpdate();
             return result == 1;
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt);
         }
     }
 
@@ -62,7 +75,7 @@ public class UserDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
-            conn = DBUtil.getConnection();
+            conn = DbConnectionSingleton.getInstance().getConnection();
             String sql = "DELETE FROM user WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
@@ -70,7 +83,7 @@ public class UserDAO {
             int result = pstmt.executeUpdate();
             return result == 1;
         } finally {
-            DBUtil.close(conn, pstmt);
+            DbConnectionSingleton.getInstance().close(conn, pstmt);
         }
     }
 
@@ -81,7 +94,7 @@ public class UserDAO {
         ResultSet rset = null;
         UserDTO user = null;
         try {
-            conn = DBUtil.getConnection();
+            conn = DbConnectionSingleton.getInstance().getConnection();
             String sql = "SELECT * FROM user WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
@@ -99,7 +112,7 @@ public class UserDAO {
                 user.setStatus(rset.getInt("status"));
             }
         } finally {
-            DBUtil.close(conn, pstmt, rset);
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
         }
         return user;
     }
@@ -111,7 +124,7 @@ public class UserDAO {
         ResultSet rset = null;
         ArrayList<UserDTO> userList = new ArrayList<>();
         try {
-            conn = DBUtil.getConnection();
+            conn = DbConnectionSingleton.getInstance().getConnection();
             String sql = "SELECT * FROM user";
             pstmt = conn.prepareStatement(sql);
             rset = pstmt.executeQuery();
@@ -129,8 +142,9 @@ public class UserDAO {
                 userList.add(user);
             }
         } finally {
-            DBUtil.close(conn, pstmt, rset);
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
         }
         return userList;
     }
 }
+
