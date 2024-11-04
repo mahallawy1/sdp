@@ -7,11 +7,11 @@ import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
 import MODEL.DAO.UserDAO;
-import MODEL.DTO.Author.AddressDTO;
-import MODEL.DTO.RoleDTO;
-import MODEL.DTO.UserDTO;
-import MODEL.DTO.DonationRecordDTO;
-import MODEL.DTO.DonationRecordTypeDTO;
+import MODEL.DTO.User.AddressDTO;
+import MODEL.DTO.User.RoleDTO;
+import MODEL.DTO.User.UserDTO;
+import MODEL.DTO.Donation.DonationRecordDTO;
+import MODEL.DTO.Donation.DonationRecordTypeDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,8 +1,8 @@
 package MODEL.DAO;
 
 import MODEL.Patterns.singleton.DbConnectionSingleton;
-import MODEL.DTO.EventDTO;
-import MODEL.DTO.SkillDTO;
+import MODEL.DTO.Event.EventDTO;
+import MODEL.DTO.Donation.SkillDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

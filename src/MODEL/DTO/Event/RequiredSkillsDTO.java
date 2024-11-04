@@ -2,22 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package MODEL.DTO;
+package MODEL.DTO.Event;
 
 /**
  *
  * @author mahallawy
  */
-public class VolunteeringDTO {
+public class RequiredSkillsDTO {
     private int id;
     private Integer eventId;
-    private Integer userId;
+    private Integer skillId;
 
-    public VolunteeringDTO(int id, Integer eventId, Integer userId) {
-        this.id = id;
-        this.eventId = eventId;
-        this.userId = userId;
-    }
+    public RequiredSkillsDTO() {}
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -25,6 +21,6 @@ public class VolunteeringDTO {
     public Integer getEventId() { return eventId; }
     public void setEventId(Integer eventId) { this.eventId = eventId; }
 
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
+    public Integer getSkillId() { return skillId; }
+    public void setSkillId(Integer skillId) { this.skillId = skillId; }
 }

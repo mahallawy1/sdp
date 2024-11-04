@@ -4,8 +4,8 @@
  */
 package MODEL.Patterns.factory;
 
-import MODEL.DTO.EventDTO;
-import MODEL.DTO.RoleDTO;
+import MODEL.DTO.Event.EventDTO;
+import MODEL.DTO.User.RoleDTO;
 
 /**
  *

@@ -1,6 +1,6 @@
 package MODEL.DAO;
 
-import MODEL.DTO.RoleDTO;
+import MODEL.DTO.User.RoleDTO;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 
 import java.sql.*;

@@ -2,24 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package MODEL.DTO;
+package MODEL.DTO.Book;
 
 /**
  *
  * @author mahallawy
  */
-public class BorrowDetailsDTO {
-    
+public class CategoryIdDTO {
     private int id;
     private int bookId;
-    private int borrowId;
-    private boolean returned;
+    private int categoryId;
 
-    public BorrowDetailsDTO(int id, int bookId, int borrowId, boolean returned) {
+    public CategoryIdDTO(int id, int bookId, int categoryId) {
         this.id = id;
         this.bookId = bookId;
-        this.borrowId = borrowId;
-        this.returned = returned;
+        this.categoryId = categoryId;
     }
 
     public int getId() { return id; }
@@ -28,10 +25,6 @@ public class BorrowDetailsDTO {
     public int getBookId() { return bookId; }
     public void setBookId(int bookId) { this.bookId = bookId; }
 
-    public int getBorrowId() { return borrowId; }
-    public void setBorrowId(int borrowId) { this.borrowId = borrowId; }
-
-    public boolean isReturned() { return returned; }
-    public void setReturned(boolean returned) { this.returned = returned; }
-    
+    public int getCategoryId() { return categoryId; }
+    public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
 }

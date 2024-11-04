@@ -1,7 +1,7 @@
 package MODEL.DAO;
 
-import MODEL.DTO.DonationRecordDTO;
-import MODEL.DTO.DonationRecordTypeDTO;
+import MODEL.DTO.Donation.DonationRecordDTO;
+import MODEL.DTO.Donation.DonationRecordTypeDTO;
 
 import java.sql.Connection;
 import java.sql.Date;

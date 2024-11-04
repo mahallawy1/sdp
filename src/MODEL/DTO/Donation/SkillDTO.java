@@ -2,17 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package MODEL.DTO.Author;
+package MODEL.DTO.Donation;
 
 /**
  *
  * @author mahallawy
  */
-public class AuthorDTO {
-     private int id;
+public class SkillDTO {
+    private int id;
     private String name;
 
-    public AuthorDTO() {}
+    public SkillDTO(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

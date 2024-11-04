@@ -1,6 +1,6 @@
 package MODEL.DAO;
 
-import MODEL.DTO.Author.AddressDTO;
+import MODEL.DTO.User.AddressDTO;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 
 import java.sql.Connection;

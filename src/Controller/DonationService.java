@@ -3,8 +3,8 @@ package Controller;
 import MODEL.DAO.DonationRecordDAO;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
-import MODEL.DTO.DonationRecordDTO;
-import MODEL.DTO.DonationRecordTypeDTO;
+import MODEL.DTO.Donation.DonationRecordDTO;
+import MODEL.DTO.Donation.DonationRecordTypeDTO;
 
 import java.sql.Connection;
 import java.sql.SQLException;

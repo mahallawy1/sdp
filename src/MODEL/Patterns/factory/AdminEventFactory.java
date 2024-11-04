@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
 import MODEL.DAO.EventDAO;
-import MODEL.DTO.EventDTO;
-import MODEL.DTO.RoleDTO;
+import MODEL.DTO.Event.EventDTO;
+import MODEL.DTO.User.RoleDTO;
 import java.sql.SQLException;
 
 /**

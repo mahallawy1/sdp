@@ -1,7 +1,7 @@
 package MODEL.DAO;
 
 import MODEL.Patterns.singleton.DbConnectionSingleton;
-import MODEL.DTO.UserDTO;
+import MODEL.DTO.User.UserDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
