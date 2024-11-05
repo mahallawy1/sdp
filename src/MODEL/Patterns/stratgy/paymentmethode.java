@@ -48,13 +48,13 @@ public class paymentmethode {
         ref.paymentmethode("payment");
     }
     
-    public static void main(String[] args) {
+   // public static void main(String[] args) {
         
-        paymentmethode pay = new paymentmethode();
-        pay.choosepayment(new FawryPayment());
-        pay.pay();
+      //  paymentmethode pay = new paymentmethode();
+      //  pay.choosepayment(new FawryPayment());
+      //  pay.pay();
     
-    }
+   // }
         
     
 }
