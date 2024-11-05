@@ -20,7 +20,7 @@ import java.sql.SQLException;
  * @author hussien
  */
 public class AdminEventFactory {
-    private static int counter = 0;
+    
     
     public static EventDTO createEvent(UserDTO admin, String eventName,
             int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,
@@ -30,7 +30,7 @@ public class AdminEventFactory {
                 
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
                 // Set ID                
-                event.setId(counter++);
+                
                 // Set Name
                 event.setName(eventName);
                 // Set Event Type ID               
@@ -46,40 +46,38 @@ public class AdminEventFactory {
                 // Set Capacity               
                 event.setCapacity(capacity);
                 // Output the event details
-                RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
-                requiredSkill.setEventId(counter);
-                requiredSkill.setId(counter);
+                
                 // skills with id 0 is required for seminar 
-                if(eventTypeId == 0){
-                requiredSkill.setSkillId(0);
-                }else{requiredSkill.setSkillId(1); }// skill with id 1 which is required for workshop
-                try{
-                    boolean isAdded  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
-                    if (isAdded == true) {
-                         System.out.println("RequiredSkills added successfully with ID: " + event.getId());
-                     } else {
-                         System.out.println("Failed to add RequiredSkills");
-                }
-                }catch(SQLException e){
-                    System.out.println("Error adding required skills: " + e.getMessage());
-
-                }
+                
+                int event_id = 0;
                 try {
-                 boolean isAdded = EventDAO.addEvent(event);
-                     if (isAdded == true) {
-                         System.out.println("Event added successfully with ID: " + event.getId());
-                     } else {
-                         System.out.println("Failed to add event.");
-                     }
+                  event_id = EventDAO.addEvent(event);
+                 System.out.println("Event added successfully with ID: " + event.getId());
+                    
                  } catch (SQLException e) {
                          System.out.println("Error adding event: " + e.getMessage());
 
                  }
-
+                RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
+                requiredSkill.setEventId(event_id);
                 
+                if(eventTypeId == 0){
+                requiredSkill.setSkillId(0);
+                }else{requiredSkill.setSkillId(1); 
+                }// skill with id 1 which is required for workshop
+                try{
+                    int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
+                    System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());
+                     
+                
+        
+                }catch(SQLException e){
+                    System.out.println("Error adding required skills: " + e.getMessage());
+
+                }
                 return event;
         }
-            
+
         
         return null;
         

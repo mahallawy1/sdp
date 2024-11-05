@@ -28,7 +28,7 @@ public class EventDAO {
     }
 
     // Check if the event is full based on its capacity
-    public boolean isEventFull(int eventId) throws SQLException {
+    public static boolean isEventFull(int eventId) throws SQLException {
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement("SELECT capacity FROM events WHERE id = ?")) {
 
@@ -64,7 +64,7 @@ public class EventDAO {
     }
 
     // Remove a required skill from an event
-    public boolean removeRequiredSkill(int eventId, SkillDTO skill) throws SQLException {
+    public static boolean removeRequiredSkill(int eventId, SkillDTO skill) throws SQLException {
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement("DELETE FROM event_skills WHERE event_id = ? AND skill_id = ?")) {
 
@@ -75,7 +75,7 @@ public class EventDAO {
     }
 
     // Check if an event has all required skills from a given list
-    public boolean hasRequiredSkills(int eventId, List<SkillDTO> skills) throws SQLException {
+    public static boolean hasRequiredSkills(int eventId, List<SkillDTO> skills) throws SQLException {
         List<Integer> requiredSkills = new ArrayList<>();
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
@@ -97,12 +97,12 @@ public class EventDAO {
         return true;
     }
 
-    // Add a new event
-    public static boolean addEvent(EventDTO event) throws SQLException {
+    // Add a new event and return the generated ID
+    public static int addEvent(EventDTO event) throws SQLException {
         String sql = "INSERT INTO event (name, event_type_id, description, event_date, time_from, time_to, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
+        
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, event.getName());
             pstmt.setInt(2, event.getEventTypeId());
@@ -111,12 +111,23 @@ public class EventDAO {
             pstmt.setObject(5, event.getTimeFrom());
             pstmt.setObject(6, event.getTimeTo());
             pstmt.setInt(7, event.getCapacity());
-            return pstmt.executeUpdate() == 1;
+
+            pstmt.executeUpdate();
+
+            // Retrieve the generated event ID
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    event.setId(generatedKeys.getInt(1));
+                    return generatedKeys.getInt(1); // Return the generated event ID
+                } else {
+                    throw new SQLException("Creating event failed, no ID obtained.");
+                }
+            }
         }
     }
 
     // Remove an event by its ID
-    public boolean removeEvent(int eventId) throws SQLException {
+    public static boolean removeEvent(int eventId) throws SQLException {
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement("DELETE FROM events WHERE id = ?")) {
 

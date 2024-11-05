@@ -12,15 +12,25 @@ import java.util.List;
 
 public class RequiredSkillsDAO {
 
-    // Add a required skill for an event
-    public static boolean addRequiredSkill(RequiredSkillsDTO requiredSkill) throws SQLException {
+    // Add a required skill for an event and return the generated ID
+    public static int addRequiredSkill(RequiredSkillsDTO requiredSkill) throws SQLException {
         String sql = "INSERT INTO required_skills_id (event_id, skill_id) VALUES (?, ?)";
         
         try (Connection connection = DbConnectionSingleton.getInstance().getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+             PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, requiredSkill.getEventId());
             pstmt.setInt(2, requiredSkill.getSkillId());
-            return pstmt.executeUpdate() == 1;
+            pstmt.executeUpdate();
+            
+            // Retrieve the generated ID
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    requiredSkill.setId(generatedKeys.getInt(1));
+                    return generatedKeys.getInt(1); // Return the generated ID
+                } else {
+                    throw new SQLException("Creating required skill failed, no ID obtained.");
+                }
+            }
         }
     }
 

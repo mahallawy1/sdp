@@ -14,11 +14,12 @@ public class SkillsDAO {
 
     // Add a skill to the database
     public static boolean addSkill(SkillDTO skill) throws SQLException {
-        String sql = "INSERT INTO skill (name) VALUES (?)";
+        String sql = "INSERT INTO skill (id,name) VALUES (?,?)";
 
         try (Connection connection = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, skill.getName());
+            pstmt.setInt(1, skill.getId());
+            pstmt.setString(2, skill.getName());
             return pstmt.executeUpdate() == 1;
         }
     }
