@@ -27,7 +27,7 @@ public class AdminEventFactory {
             int capacity){
         if((admin.getRoleId())==1){
             // if event is seminar
-            if(eventTypeId == 0){
+                
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
                 // Set ID                
                 event.setId(counter++);
@@ -47,10 +47,12 @@ public class AdminEventFactory {
                 event.setCapacity(capacity);
                 // Output the event details
                 RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
-                requiredSkill.setEventId(counter++);
-                requiredSkill.setId(counter++);
+                requiredSkill.setEventId(counter);
+                requiredSkill.setId(counter);
                 // skills with id 0 is required for seminar 
+                if(eventTypeId == 0){
                 requiredSkill.setSkillId(0);
+                }else{requiredSkill.setSkillId(1); }// skill with id 1 which is required for workshop
                 try{
                     boolean isAdded  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
                     if (isAdded == true) {
@@ -64,7 +66,7 @@ public class AdminEventFactory {
                 }
                 try {
                  boolean isAdded = EventDAO.addEvent(event);
-                     if (isAdded == false) {
+                     if (isAdded == true) {
                          System.out.println("Event added successfully with ID: " + event.getId());
                      } else {
                          System.out.println("Failed to add event.");
@@ -78,7 +80,7 @@ public class AdminEventFactory {
                 return event;
         }
             
-        }
+        
         return null;
         
     }

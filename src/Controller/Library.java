@@ -6,12 +6,14 @@ import MODEL.DAO.DonationRecordDAO;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
+import MODEL.DAO.SkillsDAO;
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.AddressDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.DonationRecordTypeDTO;
+import MODEL.DTO.Donation.SkillDTO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.Patterns.factory.AdminEventFactory;
 
@@ -223,9 +225,7 @@ public class Library {
                     case 7:
 
                        
-                        System.out.println("Enter Event ID:");
-                        int eventId = Integer.parseInt(scanner.nextLine());
-
+                     
                         System.out.println("Enter Event Name:");
                         String eventName = scanner.nextLine();
 
@@ -267,9 +267,15 @@ public class Library {
                                 System.out.println("Invalid time format. Please use HH:MM.");
                             }
                         }
-                        System.out.println("Enter Event ID:");
+                        System.out.println("Enter Capcaity");
                         int capacity = Integer.parseInt(scanner.nextLine());
-                        EventDTO newEvent = AdminEventFactory.createEvent(admin, eventId, eventName,eventTypeId,description,eventDate,startTime, endTime, capacity);
+                        
+                        SkillDTO skill1 = new SkillDTO(0,"Reading,Writing"); // seminar
+                        SkillDTO skill2 = new SkillDTO(1,null); // workshop
+                        SkillsDAO.addSkill(skill1);
+                        SkillsDAO.addSkill(skill2);
+                        
+                        EventDTO newEvent = AdminEventFactory.createEvent(admin, eventName,eventTypeId,description,eventDate,startTime, endTime, capacity);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
                         break;

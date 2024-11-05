@@ -99,7 +99,7 @@ public class EventDAO {
 
     // Add a new event
     public static boolean addEvent(EventDTO event) throws SQLException {
-        String sql = "INSERT INTO event (name, eventTypeId, description, eventDate, timeFrom, timeTo, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO event (name, event_type_id, description, event_date, time_from, time_to, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
