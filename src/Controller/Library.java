@@ -12,9 +12,13 @@ import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.DonationRecordTypeDTO;
+import MODEL.DTO.Event.EventDTO;
+import MODEL.Patterns.factory.AdminEventFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +35,24 @@ public class Library {
             if (conn != null) {
                 System.out.println("Connection established successfully.");
             }
+            UserDTO admin = new UserDTO();
+            System.out.print("Enter password: ");
+                        admin.setPassword(scanner.nextLine());
+                        System.out.print("Enter email: ");
+                        admin.setEmail(scanner.nextLine());
+                        System.out.print("Enter first name: ");
+                        admin.setFirstname(scanner.nextLine());
+                        System.out.print("Enter address ID: ");
+                        admin.setAddressId(scanner.nextInt());
+                        System.out.print("Enter mobile phone: ");
+                        admin.setMobilePhone(scanner.next());
+                        // set admin to id 1
+                        admin.setRoleId(1);
+                        System.out.print("Enter status (true/false): ");
+                        admin.setStatus(scanner.nextInt());
 
+                        boolean isAddedAdmin = UserDAO.addUser(admin);
+                        System.out.println("Admin added: " + isAddedAdmin);
             // Loop to continuously prompt the user for operations
             while (true) {
                 System.out.println("\nChoose an operation:");
@@ -41,7 +62,8 @@ public class Library {
                 System.out.println("4. Retrieve All Users");
                 System.out.println("5. Delete User by ID");
                 System.out.println("6. Add Donation");
-                System.out.println("7. Exit");
+                System.out.println("7. Create Event");
+                System.out.println("8. Exit");
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
@@ -198,8 +220,61 @@ public class Library {
                         }
                         break;
 
-
                     case 7:
+
+                       
+                        System.out.println("Enter Event ID:");
+                        int eventId = Integer.parseInt(scanner.nextLine());
+
+                        System.out.println("Enter Event Name:");
+                        String eventName = scanner.nextLine();
+
+                        System.out.println("Enter Event Type ID:");
+                        int eventTypeId = Integer.parseInt(scanner.nextLine());
+
+                        System.out.println("Enter Description:");
+                        String description = scanner.nextLine();
+
+                        LocalDate eventDate;
+                        while (true) {
+                            System.out.println("Enter Event Date (yyyy-mm-dd):");
+                            try {
+                                eventDate = LocalDate.parse(scanner.nextLine());
+                                break;
+                            } catch (Exception e) {
+                                System.out.println("Invalid date format. Please use yyyy-mm-dd.");
+                            }
+                        }
+
+                        LocalTime startTime;
+                        while (true) {
+                            System.out.println("Enter Start Time (HH:MM):");
+                            try {
+                                startTime = LocalTime.parse(scanner.nextLine());
+                                break;
+                            } catch (Exception e) {
+                                System.out.println("Invalid time format. Please use HH:MM.");
+                            }
+                        }
+
+                        LocalTime endTime;
+                        while (true) {
+                            System.out.println("Enter End Time (HH:MM):");
+                            try {
+                                endTime = LocalTime.parse(scanner.nextLine());
+                                break;
+                            } catch (Exception e) {
+                                System.out.println("Invalid time format. Please use HH:MM.");
+                            }
+                        }
+                        System.out.println("Enter Event ID:");
+                        int capacity = Integer.parseInt(scanner.nextLine());
+                        EventDTO newEvent = AdminEventFactory.createEvent(admin, eventId, eventName,eventTypeId,description,eventDate,startTime, endTime, capacity);
+                        System.out.println(newEvent.getName());
+                        System.out.println(newEvent.getDescription());
+                        break;
+
+                    case 8:
                         System.out.println("Exiting...");
                         DbConnectionSingleton.getInstance().close(conn, null);
                         scanner.close();

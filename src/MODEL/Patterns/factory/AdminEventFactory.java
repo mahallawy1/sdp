@@ -10,6 +10,7 @@ import java.util.Scanner;
 import MODEL.DAO.EventDAO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.User.RoleDTO;
+import MODEL.DTO.User.UserDTO;
 import java.sql.SQLException;
 
 /**
@@ -19,59 +20,51 @@ import java.sql.SQLException;
 public class AdminEventFactory {
     
     
-    public static EventDTO createEvent(RoleDTO admin){
-        if("admin".equals(admin.getName())){
+    public static EventDTO createEvent(UserDTO admin,int eventId, String eventName,
+            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,
+            int capacity){
+        if((admin.getRoleId())==1){
           
                 Scanner scanner = new Scanner(System.in);
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
-
+                event.s
                 // Set ID
                 System.out.print("Enter event ID: ");
-                event.setId(scanner.nextInt());
+                event.setId(eventId);
                 scanner.nextLine(); // Consume newline left-over
 
                 // Set Name
                 System.out.print("Enter event name: ");
-                event.setName(scanner.nextLine());
+                event.setName(eventName);
 
                 // Set Event Type ID
                 System.out.print("Enter event type ID: ");
-                event.setEventTypeId(scanner.nextInt());
+                event.setEventTypeId(eventTypeId);
 
                 scanner.nextLine(); // Consume newline left-over
 
                 // Set Description
                 System.out.print("Enter event description: ");
-                event.setDescription(scanner.nextLine());
+                event.setDescription(description);
 
                 // Set Event Date
                 System.out.print("Enter event date (YYYY-MM-DD): ");
-                event.setEventDate(LocalDate.parse(scanner.nextLine()));
+                event.setEventDate(eventDate);
 
                 // Set Time From
                 System.out.print("Enter start time (HH:MM): ");
-                event.setTimeFrom(LocalTime.parse(scanner.nextLine()));
+                event.setTimeFrom(from);
 
                 // Set Time To
                 System.out.print("Enter end time (HH:MM): ");
-                event.setTimeTo(LocalTime.parse(scanner.nextLine()));
+                event.setTimeTo(to);
 
                 // Set Capacity
                 System.out.print("Enter event capacity: ");
-                event.setCapacity(scanner.nextInt());
+                event.setCapacity(capacity);
 
                 // Output the event details
-                System.out.println("\nEvent Details:");
-                System.out.println("ID: " + event.getId());
-                System.out.println("Name: " + event.getName());
-                System.out.println("Event Type ID: " + event.getEventTypeId());
-                System.out.println("Description: " + event.getDescription());
-                System.out.println("Event Date: " + event.getEventDate());
-                System.out.println("Time From: " + event.getTimeFrom());
-                System.out.println("Time To: " + event.getTimeTo());
-                System.out.println("Capacity: " + event.getCapacity());
-
-                scanner.close(); // Close the scanner
+              
                    try {
                     boolean isAdded = EventDAO.addEvent(event);
                         if (isAdded == false) {
