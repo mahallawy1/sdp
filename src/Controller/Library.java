@@ -13,7 +13,7 @@ import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.DonationRecordTypeDTO;
-import MODEL.DTO.Donation.SkillDTO;
+import MODEL.DTO.Event.SkillDTO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.Patterns.factory.AdminEventFactory;
 
