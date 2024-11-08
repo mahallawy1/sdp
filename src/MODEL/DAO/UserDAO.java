@@ -146,5 +146,13 @@ public class UserDAO {
         }
         return userList;
     }
+
+    public UserDTO getUserByEmailAndPassword(String email, String password) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public UserDTO getUserByMobilePhone(String mobilePhone) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
 

@@ -4,10 +4,13 @@
  */
 package MODEL.Patterns.LoginStrategy;
 
+import MODEL.DTO.User.UserDTO;
+
 /**
  *
  * @author Eslam
  */
 public interface ILogin {
-    
+        UserDTO login();
+
 }
