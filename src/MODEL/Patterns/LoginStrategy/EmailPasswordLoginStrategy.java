@@ -6,12 +6,15 @@ package MODEL.Patterns.LoginStrategy;
 
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Eslam
  */
-public class EmailPasswordLoginStrategy implements ILogin {
+public class EmailPasswordLoginStrategy implements LoginStrategy {
     private final String email;
     private final String password;
     private final UserDAO userDAO;
@@ -23,7 +26,12 @@ public class EmailPasswordLoginStrategy implements ILogin {
     }
     @Override
     public UserDTO login() {
-        return userDAO.getUserByEmailAndPassword(email, password);// note : should complete the implementation in userDAO
+        try {
+            return userDAO.getUserByEmailAndPassword(email, password);// note : should complete the implementation in userDAO
+        } catch (SQLException ex) {
+            Logger.getLogger(EmailPasswordLoginStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
 }

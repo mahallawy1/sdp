@@ -6,12 +6,15 @@ package MODEL.Patterns.LoginStrategy;
 
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Eslam
  */
-public class MobilePhoneLoginStrategy implements ILogin {
+public class MobilePhoneLoginStrategy implements LoginStrategy {
 
     private final String mobilePhone;
     private final UserDAO userDAO;
@@ -23,8 +26,13 @@ public class MobilePhoneLoginStrategy implements ILogin {
 
     @Override
     public UserDTO login() {
-        // Implement login logic using mobile phone
-        return userDAO.getUserByMobilePhone(mobilePhone); // note : should complete the implementation in userDAO
+        try {
+            // Implement login logic using mobile phone
+            return userDAO.getUserByMobilePhone(mobilePhone); // note : should complete the implementation in userDAO
+        } catch (SQLException ex) {
+            Logger.getLogger(MobilePhoneLoginStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
 }
