@@ -129,7 +129,7 @@ public class EventDAO {
     // Remove an event by its ID
     public static boolean removeEvent(int eventId) throws SQLException {
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM events WHERE id = ?")) {
+             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM event WHERE id = ?")) {
 
             pstmt.setInt(1, eventId);
             return pstmt.executeUpdate() == 1;

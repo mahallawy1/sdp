@@ -3,6 +3,7 @@ package Controller;
 //////////////////
 import MODEL.DAO.AddressDAO;
 import MODEL.DAO.DonationRecordDAO;
+import MODEL.DAO.EventDAO;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
@@ -68,7 +69,8 @@ public class Library {
                 System.out.println("5. Delete User by ID");
                 System.out.println("6. Add Donation");
                 System.out.println("7. Create Event");
-                System.out.println("8. Exit");
+                System.out.println("8. Delete Event");
+                System.out.println("9. Exit");
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
@@ -289,8 +291,17 @@ public class Library {
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
                         break;
-
                     case 8:
+                            int eventId =Integer.parseInt(scanner.nextLine());
+                            try{
+                               EventDAO.removeEvent( eventId);
+                            }catch(SQLException e){
+                                 System.out.println("Error removing event " + e.getMessage());
+
+                             }
+                          
+
+                    case 9:
                         System.out.println("Exiting...");
                         DbConnectionSingleton.getInstance().close(conn, null);
                         scanner.close();
