@@ -16,6 +16,8 @@ import MODEL.DTO.Donation.DonationRecordTypeDTO;
 import MODEL.DTO.Donation.SkillDTO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.Patterns.factory.AdminEventFactory;
+import MODEL.Patterns.factory.EventFactory;
+import MODEL.Patterns.factory.VolunteerEventFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,25 +39,26 @@ public class Library {
             if (conn != null) {
                 System.out.println("Connection established successfully.");
             }
-            UserDTO admin = new UserDTO();
-            System.out.print("Enter password: ");
-                        admin.setPassword(scanner.nextLine());
-                        System.out.print("Enter email: ");
-                        admin.setEmail(scanner.nextLine());
-                        System.out.print("Enter first name: ");
-                        admin.setFirstname(scanner.nextLine());
-                        System.out.print("Enter address ID: ");
-                        admin.setAddressId(scanner.nextInt());
-                        System.out.print("Enter mobile phone: ");
-                        admin.setMobilePhone(scanner.next());
-                        // set admin to id 1
-                        admin.setRoleId(1);
-                        System.out.print("Enter status (true/false): ");
-                        admin.setStatus(scanner.nextInt());
-
-                        boolean isAddedAdmin = UserDAO.addUser(admin);
-                        System.out.println("Admin added: " + isAddedAdmin);
-            // Loop to continuously prompt the user for operations
+//            UserDTO admin = new UserDTO();
+//            System.out.print("Enter password: ");
+//                        admin.setPassword(scanner.nextLine());
+//                        System.out.print("Enter email: ");
+//                        admin.setEmail(scanner.nextLine());
+//                        System.out.print("Enter first name: ");
+//                        admin.setFirstname(scanner.nextLine());
+//                        System.out.print("Enter address ID: ");
+//                        admin.setAddressId(scanner.nextInt());
+//                        System.out.print("Enter mobile phone: ");
+//                        admin.setMobilePhone(scanner.next());
+//                        // set admin to id 1
+//                        admin.setRoleId(1);
+//                        System.out.print("Enter status (true/false): ");
+//                        admin.setStatus(scanner.nextInt());
+//
+//                        boolean isAddedAdmin = UserDAO.addUser(admin);
+//                        System.out.println("Admin added: " + isAddedAdmin);
+//            // Loop to continuously prompt the user for operations
+          UserDTO newUser=new UserDTO(); 
             while (true) {
                 System.out.println("\nChoose an operation:");
                 System.out.println("1. Add User");
@@ -69,11 +72,11 @@ public class Library {
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
-
+                  
                 switch (choice) {
                     case 1:
                         // Add User
-                        UserDTO newUser = new UserDTO();
+                        
                         System.out.print("Enter password: ");
                         newUser.setPassword(scanner.nextLine());
                         System.out.print("Enter email: ");
@@ -85,6 +88,7 @@ public class Library {
                         System.out.print("Enter mobile phone: ");
                         newUser.setMobilePhone(scanner.next());
                         System.out.print("Enter role ID: ");
+                        
                         newUser.setRoleId(scanner.nextInt());
                         System.out.print("Enter status (true/false): ");
                         newUser.setStatus(scanner.nextInt());
@@ -223,13 +227,21 @@ public class Library {
                         break;
 
                     case 7:
-
-                       
-                     
+                        EventFactory ev;
+                               
+                       if(newUser.getRoleId()==2){
+                       //volunteer
+                           ev= new VolunteerEventFactory(); 
+                       }else if(newUser.getId()==1){
+                            ev = new AdminEventFactory(); 
+                       }else{
+                           break;
+                       }
+                        
                         System.out.println("Enter Event Name:");
                         String eventName = scanner.nextLine();
 
-                        System.out.println("Enter Event Type ID:");
+                        System.out.println("Enter Event Type ID: (Note: If you are volunteer it will be set to 0 (seminar) ");
                         int eventTypeId = Integer.parseInt(scanner.nextLine());
 
                         System.out.println("Enter Description:");
@@ -267,15 +279,13 @@ public class Library {
                                 System.out.println("Invalid time format. Please use HH:MM.");
                             }
                         }
-                        System.out.println("Enter Capcaity");
-                        int capacity = Integer.parseInt(scanner.nextLine());
+                       
+                        //SkillDTO skill1 = new SkillDTO(0,"Reading,Writing"); // seminar
+                     //   SkillDTO skill2 = new SkillDTO(1,null); // workshop
+                       // SkillsDAO.addSkill(skill1);
+                      //  SkillsDAO.addSkill(skill2);
                         
-                        SkillDTO skill1 = new SkillDTO(0,"Reading,Writing"); // seminar
-                        SkillDTO skill2 = new SkillDTO(1,null); // workshop
-                        SkillsDAO.addSkill(skill1);
-                        SkillsDAO.addSkill(skill2);
-                        
-                        EventDTO newEvent = AdminEventFactory.createEvent(admin, eventName,eventTypeId,description,eventDate,startTime, endTime, capacity);
+                        EventDTO newEvent = ev.createEvent(newUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
                         break;
