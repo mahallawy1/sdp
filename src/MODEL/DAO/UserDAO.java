@@ -146,5 +146,66 @@ public class UserDAO {
         }
         return userList;
     }
-}
+
+    public UserDTO getUserByEmailAndPassword(String email, String password) throws SQLException {
+         Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        UserDTO user = null;
+        try {
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                user = new UserDTO();
+                user.setId(rset.getInt("id"));
+                user.setPassword(rset.getString("password"));
+                user.setEmail(rset.getString("email"));
+                user.setFirstname(rset.getString("firstname"));
+                user.setAddressId(rset.getInt("address_id"));
+                user.setMobilePhone(rset.getString("mobile_phone"));
+                user.setRoleId(rset.getInt("role_id"));
+                user.setStatus(rset.getInt("status"));
+            }
+        } finally {
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
+        }
+        return user;
+        
+    }
+
+    public UserDTO getUserByMobilePhone(String mobilePhone) throws SQLException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        UserDTO user = null;
+        try {
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            String sql = "SELECT * FROM user WHERE mobile_phone = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, mobilePhone);
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                user = new UserDTO();
+                user.setId(rset.getInt("id"));
+                user.setPassword(rset.getString("password"));
+                user.setEmail(rset.getString("email"));
+                user.setFirstname(rset.getString("firstname"));
+                user.setAddressId(rset.getInt("address_id"));
+                user.setMobilePhone(rset.getString("mobile_phone"));
+                user.setRoleId(rset.getInt("role_id"));
+                user.setStatus(rset.getInt("status"));
+            }
+        } finally {
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
+        }
+        return user;
+    }
+    }
+
 

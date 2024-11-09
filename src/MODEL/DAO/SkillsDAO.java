@@ -1,6 +1,6 @@
 package MODEL.DAO;
 
-import MODEL.DTO.Donation.SkillDTO;
+import MODEL.DTO.Event.SkillDTO;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 
 import java.sql.Connection;
