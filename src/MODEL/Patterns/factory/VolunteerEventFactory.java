@@ -4,28 +4,25 @@
  */
 package MODEL.Patterns.factory;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Scanner;
 import MODEL.DAO.EventDAO;
 import MODEL.DAO.RequiredSkillsDAO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.Event.RequiredSkillsDTO;
-import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
  * @author hussien
  */
-public class AdminEventFactory implements EventFactory{
-    
-    
-    public EventDTO createEvent(UserDTO admin, String eventName,
-            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to
-       ){
-        if((admin.getRoleId())==1){
+public class VolunteerEventFactory implements EventFactory{
+
+   
+    public EventDTO createEvent(UserDTO volunteer, String eventName,int eventTypeId, String description, LocalDate eventDate, LocalTime from, LocalTime to) {
+       {// if volunteer is creating the event
+        if((volunteer.getRoleId())==2){
             // if event is seminar
                 
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
@@ -33,7 +30,8 @@ public class AdminEventFactory implements EventFactory{
                 
                 // Set Name
                 event.setName(eventName);
-                // Set Event Type ID               
+                // Set Event Type ID to seminar always      
+                eventTypeId = 0;
                 event.setEventTypeId(eventTypeId);
                 // Set Description                
                 event.setDescription(description);
@@ -43,14 +41,15 @@ public class AdminEventFactory implements EventFactory{
                 event.setTimeFrom(from);
                 // Set Time               
                 event.setTimeTo(to);
-                // Set Capacity = admin event takes a 50 capacity room               
-                event.setCapacity(50);
+                // Set Capacity = admin event takes a 25 capacity room               
+                event.setCapacity(25);
                 // Output the event details
                 
                 // skills with id 0 is required for seminar 
                 
                 int event_id = 0;
                 try {
+                    //CALL FOR APPROVAL Function processed by admin
                   event_id = EventDAO.addEvent(event);
                  System.out.println("Event added successfully with ID: " + event.getId());
                     
@@ -61,10 +60,9 @@ public class AdminEventFactory implements EventFactory{
                 RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
                 requiredSkill.setEventId(event_id);
                 
-                if(eventTypeId == 0){
+                
                 requiredSkill.setSkillId(0);
-                }else{requiredSkill.setSkillId(1); 
-                }// skill with id 1 which is required for workshop
+                
                 try{
                     int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
                     System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());
@@ -80,6 +78,8 @@ public class AdminEventFactory implements EventFactory{
 
         
         return null;
+        
+    }
         
     }
     
