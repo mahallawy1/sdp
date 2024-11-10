@@ -291,7 +291,7 @@ public class Library {
                                 endTime = LocalTime.parse(scanner.nextLine());
                                 break;
                             } catch (Exception e) {
-                                System.out.println("Invalid time format. Please use HH:MM.");
+                                System.out.println("Invalid time format. Please use HH:MM..");
                             }
                         }
                        
