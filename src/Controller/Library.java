@@ -15,10 +15,17 @@ import MODEL.DTO.User.UserDTO;
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.DonationRecordTypeDTO;
 import MODEL.DTO.Event.SkillDTO;
+import MODEL.DTO.Donation.PaymentDTO;
+import MODEL.DTO.Donation.PaymentMethodDTO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.Patterns.factory.AdminEventFactory;
 import MODEL.Patterns.factory.EventFactory;
 import MODEL.Patterns.factory.VolunteerEventFactory;
+import MODEL.Patterns.paymentstrategy.PaymentStategy;
+import MODEL.Patterns.paymentstrategy.PaymentMethode;
+import MODEL.Patterns.paymentstrategy.PaymentStategy;
+import MODEL.Patterns.paymentstrategy.FawryPayment;
+import MODEL.Patterns.paymentstrategy.CreditCardPayment;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+
 
 public class Library {
 
@@ -40,26 +48,9 @@ public class Library {
             if (conn != null) {
                 System.out.println("Connection established successfully.");
             }
-//            UserDTO admin = new UserDTO();
-//            System.out.print("Enter password: ");
-//                        admin.setPassword(scanner.nextLine());
-//                        System.out.print("Enter email: ");
-//                        admin.setEmail(scanner.nextLine());
-//                        System.out.print("Enter first name: ");
-//                        admin.setFirstname(scanner.nextLine());
-//                        System.out.print("Enter address ID: ");
-//                        admin.setAddressId(scanner.nextInt());
-//                        System.out.print("Enter mobile phone: ");
-//                        admin.setMobilePhone(scanner.next());
-//                        // set admin to id 1
-//                        admin.setRoleId(1);
-//                        System.out.print("Enter status (true/false): ");
-//                        admin.setStatus(scanner.nextInt());
-//
-//                        boolean isAddedAdmin = UserDAO.addUser(admin);
-//                        System.out.println("Admin added: " + isAddedAdmin);
-//            // Loop to continuously prompt the user for operations
-          UserDTO newUser=new UserDTO(); 
+
+            UserDTO newUser = new UserDTO();
+
             while (true) {
                 System.out.println("\nChoose an operation:");
                 System.out.println("1. Add User");
@@ -70,15 +61,14 @@ public class Library {
                 System.out.println("6. Add Donation");
                 System.out.println("7. Create Event");
                 System.out.println("8. Delete Event");
-                System.out.println("9. Exit");
+                
+                System.out.println("10. Exit");
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
-                  
                 switch (choice) {
                     case 1:
                         // Add User
-                        
                         System.out.print("Enter password: ");
                         newUser.setPassword(scanner.nextLine());
                         System.out.print("Enter email: ");
@@ -90,7 +80,6 @@ public class Library {
                         System.out.print("Enter mobile phone: ");
                         newUser.setMobilePhone(scanner.next());
                         System.out.print("Enter role ID: ");
-                        
                         newUser.setRoleId(scanner.nextInt());
                         System.out.print("Enter status (true/false): ");
                         newUser.setStatus(scanner.nextInt());
@@ -98,7 +87,6 @@ public class Library {
                         boolean isAdded = UserDAO.addUser(newUser);
                         System.out.println("User added: " + isAdded);
                         break;
-
                     case 2:
                         // Retrieve User by ID
                         System.out.print("Enter user ID: ");
@@ -223,6 +211,31 @@ public class Library {
                         try {
                             donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
                             System.out.println("Donation successfully added with cumulative amount: " + cumulativeAmount);
+                            System.out.println("Choose payment method:");
+                            System.out.println("1. Fawry Payment");
+                            System.out.println("2. Credit Card Payment");
+                            int paymentChoice = scanner.nextInt();
+
+                            PaymentStategy paymentStrategy = null;
+ 
+        switch (paymentChoice) {
+            case 1:
+                paymentStrategy = new FawryPayment();
+                break;
+            case 2:
+                paymentStrategy = new CreditCardPayment();
+                break;
+            default:
+                System.out.println("Invalid choice, no payment method selected.");
+                break;
+        }
+
+        if (paymentStrategy != null) {
+            PaymentDTO payment = new PaymentDTO();
+            PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
+            paymentService.executePayment(payment);
+            System.out.println("Payment processed successfully.");
+        }
                         } catch (SQLException e) {
                             System.out.println("Error saving donation: " + e.getMessage());
                         }
@@ -299,9 +312,10 @@ public class Library {
                                  System.out.println("Error removing event " + e.getMessage());
 
                              }
+                 
                           
 
-                    case 9:
+                    case 10:
                         System.out.println("Exiting...");
                         DbConnectionSingleton.getInstance().close(conn, null);
                         scanner.close();
