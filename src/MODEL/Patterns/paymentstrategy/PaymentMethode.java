@@ -11,7 +11,7 @@ import MODEL.DTO.Donation.PaymentDTO;
  * @author belal
  */
 public class PaymentMethode {
-     private PaymentStategy paymentStrategy;
+     PaymentStategy paymentStrategy;
      
      public PaymentMethode(PaymentStategy X) {
         this.paymentStrategy = X;
