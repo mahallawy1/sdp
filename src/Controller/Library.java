@@ -171,8 +171,10 @@ public class Library {
     }
       private static void displayMainMenu(Scanner scanner, UserDTO loggedInUser) throws SQLException {
         while (true) {
-            System.out.println("\nChoose an operation:");
-            System.out.println("1. Add User");// to beadded to control panal
+            if (loggedInUser.getRoleId() == 1) {
+            // Role ID 1: Admin - has access to all operations
+            System.out.println(" WELCOME TO YOUR  control panal MR"+loggedInUser.getFirstname());
+            System.out.println("1. Add User");
             System.out.println("2. Retrieve User by ID");
             System.out.println("3. Update User");
             System.out.println("4. Retrieve All Users");
@@ -182,6 +184,23 @@ public class Library {
             System.out.println("8. Delete Event");
             System.out.println("9. Logout");
             System.out.println("10. Exit");
+        } else if (loggedInUser.getRoleId() == 2) {
+            // Role ID 2: Volunteer - has limited access
+            System.out.println("6. Add Donation");
+            System.out.println("7. Create Event");
+            System.out.println("8. Delete Event");
+
+            System.out.println("9. Logout");
+            System.out.println("10. Exit");
+        } else if (loggedInUser.getRoleId() == 3) {
+            // Role ID 3: Member - has limited access
+            System.out.println("6. Add Donation");
+            System.out.println("9. Logout");
+            System.out.println("10. Exit");
+        } else {
+            System.out.println("Invalid role ID. Access denied.");
+            return;
+        }
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
