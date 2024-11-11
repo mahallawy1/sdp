@@ -286,7 +286,7 @@ switch (choice) {
                             System.out.println("User ID: " + user.getId());
                             System.out.println("Name: " + user.getFirstname());
                             System.out.println("Email: " + user.getEmail());
-                            System.out.println("Mobile Phone: " + user.getMobilePhone());
+                            System.out.println("Mobile Phone:. " + user.getMobilePhone());
                             System.out.println("Status: " + user.getStatus());
                             System.out.println("Role: " + (userRole != null ? userRole.getName() : "Role not found"));
                             System.out.println("Address: " + (userAddress != null ? userAddress : "Address not found"));
