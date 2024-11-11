@@ -1,22 +1,21 @@
 package Controller;
 
 //////////////////
-import MODEL.DAO.AddressDAO;
+import MODEL.DAO.*;
 import MODEL.DAO.DonationRecordDAO;
 import MODEL.DAO.EventDAO;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
 import MODEL.DAO.SkillsDAO;
-import MODEL.DAO.UserDAO;
-import MODEL.DTO.User.AddressDTO;
+import MODEL.DAO.*;
+import MODEL.DTO.User.*;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
-import MODEL.DTO.Donation.DonationRecordDTO;
-import MODEL.DTO.Donation.DonationRecordTypeDTO;
-import MODEL.DTO.Event.SkillDTO;
-import MODEL.DTO.Donation.PaymentDTO;
-import MODEL.DTO.Donation.PaymentMethodDTO;
+
+import MODEL.DTO.Event.*;
+import MODEL.DTO.Donation.*;
+
 import MODEL.DTO.Event.EventDTO;
 import MODEL.Patterns.factory.AdminEventFactory;
 import MODEL.Patterns.factory.EventFactory;
@@ -40,7 +39,7 @@ import java.util.Scanner;
 public class Library {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        /*Scanner scanner = new Scanner(System.in);
         Connection conn = null;
         try {
             // Obtain singleton connection instance
@@ -66,9 +65,74 @@ public class Library {
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
+               */ 
+        Scanner scanner = new Scanner(System.in);
+        Connection conn = null;
+        UserDTO loggedInUser = null;
+
+        try {
+            // Obtain singleton connection instance
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            if (conn != null) {
+                System.out.println("Connection established successfully.");
+            }
+
+            while (true) {
+                System.out.println("\nChoose an option:");
+                System.out.println("1. Login");
+                System.out.println("2. Signup");
+                System.out.println("3. Exit");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
                 switch (choice) {
                     case 1:
-                        // Add User
+                        // Login
+                        System.out.println("Choose login method:");
+                        System.out.println("1. Login by Email and Password");
+                        System.out.println("2. Login by Mobile Phone");
+
+                        int loginChoice = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+
+                        UserDAO userDAO = new UserDAO();
+
+                        switch (loginChoice) {
+                            case 1:
+                                // Login by Email and Password
+                                System.out.print("Enter email: ");
+                                String email = scanner.nextLine();
+                                System.out.print("Enter password: ");
+                                String password = scanner.nextLine();
+
+                                loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
+                                break;
+
+                            case 2:
+                                // Login by Mobile Phone
+                                System.out.print("Enter mobile phone: ");
+                                String mobilePhone = scanner.nextLine();
+
+                                loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
+                                break;
+
+                            default:
+                                System.out.println("Invalid login choice.");
+                                break;
+                        }
+
+                        if (loggedInUser != null) {
+                            System.out.println("Login successful! Welcome, " + loggedInUser.getFirstname());
+                            displayMainMenu(scanner, loggedInUser);
+                        } else {
+                            System.out.println("Login failed. Please check your credentials.");
+                        }
+                        break;
+
+                    case 2:
+                        // Signupp
+                        UserDTO newUser = new UserDTO();
                         System.out.print("Enter password: ");
                         newUser.setPassword(scanner.nextLine());
                         System.out.print("Enter email: ");
@@ -85,6 +149,62 @@ public class Library {
                         newUser.setStatus(scanner.nextInt());
 
                         boolean isAdded = UserDAO.addUser(newUser);
+                        System.out.println("Signup successful: " + isAdded);
+                        break;
+
+                    case 3:
+                        System.out.println("Exiting...");
+                        DbConnectionSingleton.getInstance().close(conn, null);
+                        scanner.close();
+                        return;
+
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Ensure the connection is closed when the application ends
+            DbConnectionSingleton.getInstance().close(conn, null);
+        }
+    }
+      private static void displayMainMenu(Scanner scanner, UserDTO loggedInUser) throws SQLException {
+        while (true) {
+            System.out.println("\nChoose an operation:");
+            System.out.println("1. Add User");// to beadded to control panal
+            System.out.println("2. Retrieve User by ID");
+            System.out.println("3. Update User");
+            System.out.println("4. Retrieve All Users");
+            System.out.println("5. Delete User by ID");
+            System.out.println("6. Add Donation");
+            System.out.println("7. Create Event");
+            System.out.println("8. Delete Event");
+            System.out.println("9. Logout");
+            System.out.println("10. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+switch (choice) {
+                    case 1:
+                        // Add User
+                        System.out.print("Enter password: ");
+                        loggedInUser.setPassword(scanner.nextLine());
+                        System.out.print("Enter email: ");
+                        loggedInUser.setEmail(scanner.nextLine());
+                        System.out.print("Enter first name: ");
+                        loggedInUser.setFirstname(scanner.nextLine());
+                        System.out.print("Enter address ID: ");
+                        loggedInUser.setAddressId(scanner.nextInt());
+                        System.out.print("Enter mobile phone: ");
+                        loggedInUser.setMobilePhone(scanner.next());
+                        System.out.print("Enter role ID: ");
+                        loggedInUser.setRoleId(scanner.nextInt());
+                        System.out.print("Enter status (true/false): ");
+                        loggedInUser.setStatus(scanner.nextInt());
+
+                        boolean isAdded = UserDAO.addUser(loggedInUser);
                         System.out.println("User added: " + isAdded);
                         break;
                     case 2:
@@ -157,9 +277,9 @@ public class Library {
 
                     case 6:
                         // Add Donation
-                        System.out.print("Enter user ID: ");
+                        /*System.out.print("Enter user ID: ");
                         userId = scanner.nextInt();
-
+*/
                         // Start with the base donation
                         IDonation donation = new SupportUsDonation(50.0); // Base donation amount (e.g., Support Us)
                         List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
@@ -201,12 +321,15 @@ public class Library {
 
                         // Create DonationRecordDTO
                         DonationRecordDTO donationRecord = new DonationRecordDTO();
-                        donationRecord.setUserId(userId);
+                        donationRecord.setUserId(loggedInUser.getId()); 
                         donationRecord.setDonateDate(new Date());
                         donationRecord.setCumulativeAmount((int) cumulativeAmount);
                         donationRecord.setStatus(true);
-
                         // Save to database
+                        
+                                Connection conn = null;
+            conn = DbConnectionSingleton.getInstance().getConnection();
+
                         DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn); // Use the existing connection
                         try {
                             donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
@@ -244,10 +367,10 @@ public class Library {
                     case 7:
                         EventFactory ev;
                                
-                       if(newUser.getRoleId()==2){
+                       if(loggedInUser.getRoleId()==2){
                        //volunteer
                            ev= new VolunteerEventFactory(); 
-                       }else if(newUser.getId()==1){
+                       }else if(loggedInUser.getRoleId()==1){ 
                             ev = new AdminEventFactory(); 
                        }else{
                            break;
@@ -300,7 +423,7 @@ public class Library {
                        // SkillsDAO.addSkill(skill1);
                       //  SkillsDAO.addSkill(skill2);
                         
-                        EventDTO newEvent = ev.createEvent(newUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
+                        EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
                         break;
@@ -313,23 +436,25 @@ public class Library {
 
                              }
                  
-                          
+                case 9:
+                    System.out.println("Logging out...");
+                    return; // Go back to the main login/signup menu
 
-                    case 10:
-                        System.out.println("Exiting...");
-                        DbConnectionSingleton.getInstance().close(conn, null);
-                        scanner.close();
-                        return;
-
+                case 10:
+                    System.out.println("Exiting...");
+                    DbConnectionSingleton.getInstance().close(null, null);
+                    scanner.close();
+                    System.exit(0);
+                    return;
                     default:
                         System.out.println("Invalid choice. Please try again.");
-                }
+                }}
             }
-        } catch (Exception e) {
+    /*    } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // Ensure the connection is closed when the application ends
             DbConnectionSingleton.getInstance().close(conn, null);
-        }
+        }*/
     }
-}
+
