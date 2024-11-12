@@ -148,34 +148,38 @@ public class UserDAO {
     }
 
     public UserDTO getUserByEmailAndPassword(String email, String password) throws SQLException {
-         Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rset = null;
-        UserDTO user = null;
-        try {
-            conn = DbConnectionSingleton.getInstance().getConnection();
-            String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
-            pstmt = conn.prepareStatement(sql);
+        // Using try-with-resources for automatic closing of resources
+        String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+        try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, email);
             pstmt.setString(2, password);
-            rset = pstmt.executeQuery();
 
-            if (rset.next()) {
-                user = new UserDTO();
-                user.setId(rset.getInt("id"));
-                user.setPassword(rset.getString("password"));
-                user.setEmail(rset.getString("email"));
-                user.setFirstname(rset.getString("firstname"));
-                user.setAddressId(rset.getInt("address_id"));
-                user.setMobilePhone(rset.getString("mobile_phone"));
-                user.setRoleId(rset.getInt("role_id"));
-                user.setStatus(rset.getInt("status"));
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    UserDTO user = new UserDTO();
+                    user.setId(rset.getInt("id"));
+                    user.setPassword(rset.getString("password"));
+                    user.setEmail(rset.getString("email"));
+                    user.setFirstname(rset.getString("firstname"));
+                    user.setAddressId(rset.getInt("address_id"));
+                    user.setMobilePhone(rset.getString("mobile_phone"));
+                    user.setRoleId(rset.getInt("role_id"));
+                    user.setStatus(rset.getInt("status"));
+                    return user;  // Return the user if found
+                }
+            } catch (SQLException e) {
+                // Log the SQLException or handle it as needed
+                throw new SQLException("Error executing query", e);
             }
-        } finally {
-            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
+        } catch (SQLException e) {
+            // Log the connection or SQL execution error
+            throw new SQLException("Error getting user by email and password", e);
         }
-        return user;
-        
+
+        // Return null if no user is found or if there was an error
+        return null;
     }
 
     public UserDTO getUserByMobilePhone(String mobilePhone) throws SQLException {
