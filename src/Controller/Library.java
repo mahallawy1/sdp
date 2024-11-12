@@ -21,6 +21,9 @@ import MODEL.DTO.Event.*;
 import MODEL.DTO.Donation.*;
 
 import MODEL.DTO.Event.EventDTO;
+import MODEL.Patterns.LoginStrategy.EmailPasswordLoginStrategy;
+import MODEL.Patterns.LoginStrategy.LoginService;
+import MODEL.Patterns.LoginStrategy.MobilePhoneLoginStrategy;
 import MODEL.Patterns.factory.AdminEventFactory;
 import MODEL.Patterns.factory.EventFactory;
 import MODEL.Patterns.factory.VolunteerEventFactory;
@@ -111,7 +114,7 @@ public class Library {
                         scanner.nextLine(); // Consume newline
 
                         UserDAO userDAO = new UserDAO();
-
+                        LoginService loginService = new LoginService();
                         switch (loginChoice) {
                             case 1:
                                 // Login by Email and Password
@@ -120,7 +123,15 @@ public class Library {
                                 System.out.print("Enter password: ");
                                 String password = scanner.nextLine();
 
-                                loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
+                              //  loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
+                                loginService.setStrategy(new EmailPasswordLoginStrategy(email, password, userDAO));
+                                try {
+                                    UserDTO user = loginService.executeLogin();
+                                    loggedInUser = user;
+                                    System.out.println("Login successful " );
+                                } catch (RuntimeException e) {
+                                    System.out.println("Login failed: " + e.getMessage());
+                                }
                                 break;
 
                             case 2:
@@ -128,7 +139,14 @@ public class Library {
                                 System.out.print("Enter mobile phone: ");
                                 String mobilePhone = scanner.nextLine();
 
-                                loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
+                                loginService.setStrategy(new MobilePhoneLoginStrategy(mobilePhone, userDAO));
+                                try {
+                                    UserDTO user = loginService.executeLogin();
+                                    loggedInUser = user;
+                                    System.out.println("Login successful" );
+                                } catch (RuntimeException e) {
+                                    System.out.println("Login failed: " + e.getMessage());
+                                }
                                 break;
 
                             default:
