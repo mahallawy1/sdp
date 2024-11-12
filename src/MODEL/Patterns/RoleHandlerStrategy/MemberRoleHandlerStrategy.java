@@ -4,7 +4,7 @@ import View.UserView;
 
 public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
     @Override
-    public void processChoice(int choice, UserDTO loggedInUser ,  UserView userView) {
+    public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) {
         switch (choice) {
             case 1:
                 // Member-specific logic for "Add Donation"
@@ -16,6 +16,7 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
             default:
                 break;
         }
+        return false;
     }
 }
 

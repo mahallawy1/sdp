@@ -16,6 +16,10 @@ public class UserController {
         this.userView = userView;
     }
 
+    public void setUserView(UserView userView) {
+        this.userView = userView;
+    }
+
     public void handleUserMenu() throws SQLException {
         userView.showLoginMenu();
         int choice = userView.getChoice();
@@ -79,7 +83,7 @@ public class UserController {
         String firstName = userView.getInputWithValidation("Enter first name: ", "text");
         String mobilePhone = userView.getInputWithValidation("Enter mobile phone: ", "phone");
         String addressIdInput = userView.getInputWithValidation("Enter address ID: ", "addressid");
-        String roleIdInput = userView.getInputWithValidation("Are you An author or a donor chose 1 or 2 respectively: ", "role");
+        String roleIdInput = userView.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
         // what is the status i don't know !!
         String statusInput = userView.getInputWithValidation("enter the status: ", "status");
 

@@ -5,6 +5,6 @@ import View.UserView;
 import java.sql.SQLException;
 
 public interface RoleHandlerStrategy {
-    void processChoice(int choice, UserDTO loggedInUser, UserView userView) throws SQLException;
+    boolean processChoice(int choice, UserDTO loggedInUser, UserView userView) throws SQLException;
 }
 

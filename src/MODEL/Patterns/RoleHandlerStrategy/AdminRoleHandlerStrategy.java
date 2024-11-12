@@ -5,6 +5,7 @@ import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.AddressDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 import View.UserView;
 
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
     @Override
-    public void processChoice(int choice, UserDTO loggedInUser , UserView userView) throws SQLException {
+    public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) throws SQLException {
         String EmailIpnut = null;
         String PasswordInput= null;
         String firstNameIpnut = null;
@@ -20,7 +21,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
         String addressIdInput = null;
         String roleIdInput = null;
         String statusInput = null;
-        int userId = Integer.parseInt(null);
+        int userId = 0;
 
         switch (choice) {
             case 1:
@@ -30,7 +31,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                  firstNameIpnut = userView.getInputWithValidation("Enter first name: ", "text");
                  mobilePhoneInput = userView.getInputWithValidation("Enter mobile phone: ", "phone");
                  addressIdInput = userView.getInputWithValidation("Enter address ID: ", "addressid");
-                 roleIdInput = userView.getInputWithValidation("Are you An author or a donor chose 1 or 2 respectively: ", "role");
+                 roleIdInput = userView.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
                  statusInput = userView.getInputWithValidation("enter the status: ", "status");
 
                 UserDTO newUser = new UserDTO();
@@ -126,11 +127,32 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 }
                 break;
             case 5:
-                // Admin-specific logic for "Delete User by ID"
+
+                break;
+            case 6:
+
+                break;
+            case 7:
+
+                break;
+
+            case 8:
+
+                break;
+            case 9:
+                // Volunteer-specific logic for "Logout"
+                userView.showMessage("Logging out...");
+                return true;
+
+            case 10:
+                System.out.println("Exiting...");
+                DbConnectionSingleton.getInstance().close(null, null);
+                System.exit(0);
                 break;
             // Add more cases for admin-specific operations
             default:
                 break;
         }
+        return false;
     }
 }

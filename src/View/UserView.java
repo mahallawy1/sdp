@@ -1,5 +1,6 @@
 
 package View;
+import Controller.UserController;
 import MODEL.DTO.User.UserDTO;
 
 import java.sql.SQLException;
@@ -13,10 +14,14 @@ import utils.InputValidator;
 // View/UserView.java
 public class UserView {
     private Scanner scanner;
+    private UserController userController;  // Add this line
 
-    public UserView() {
-        scanner = new Scanner(System.in);
+    public UserView(UserController userController) {
+        this.scanner = new Scanner(System.in);
+        this.userController = userController;  // Store the controller instance
     }
+
+
 
 
     public void showLoginMenu() {
@@ -57,13 +62,23 @@ public class UserView {
                 return;
             }
 
-            // Display menu based on the user's role
-            displayMenu(loggedInUser);
+            boolean exit = false;
+            while (!exit) {
+                // Display the menu
+                displayMenu(loggedInUser);
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-            // this mean the current user view is passed as parameter !!
-            roleHandler.processChoice(choice, loggedInUser ,  this);
+                // Get the user's choice
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                // Process the user's choice based on the role handler
+                exit = roleHandler.processChoice(choice, loggedInUser, this);
+
+                // If the choice was to exit (logout), break out of the loop and show login menu
+                if (exit) {
+                    userController.handleUserMenu();
+                }
+            }
         }
 
         private void displayMenu(UserDTO loggedInUser) {
