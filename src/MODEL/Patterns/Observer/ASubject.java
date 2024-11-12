@@ -12,7 +12,7 @@ public abstract class ASubject {
 
     public void addObserver(AObserver o){
         observers.add(o);
-        System.out.println(observers.size());
+//        System.out.println(observers.size());
     }
 
     public void removeObserver(AObserver o){

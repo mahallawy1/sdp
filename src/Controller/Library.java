@@ -4,6 +4,10 @@ package Controller;
 import MODEL.DAO.*;
 import MODEL.DAO.DonationRecordDAO;
 import MODEL.DAO.EventDAO;
+import MODEL.Patterns.Observer.DonationObserver;
+import MODEL.Patterns.Observer.DonationSubject;
+import MODEL.Patterns.Observer.EventObserver;
+import MODEL.Patterns.Observer.EventSubject;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
@@ -37,6 +41,12 @@ import java.util.Scanner;
 
 
 public class Library {
+    // subjects
+    static EventSubject eventSubj = new EventSubject();
+    static DonationSubject donationSubj = new DonationSubject();
+
+    static EventObserver eventObsrv = new EventObserver(eventSubj);
+    static DonationObserver donationObsrv = new DonationObserver(donationSubj);
 
     public static void main(String[] args) {
         /*Scanner scanner = new Scanner(System.in);
@@ -69,6 +79,10 @@ public class Library {
         Scanner scanner = new Scanner(System.in);
         Connection conn = null;
         UserDTO loggedInUser = null;
+
+
+        // observers
+
 
         try {
             // Obtain singleton connection instance
@@ -173,6 +187,9 @@ public class Library {
         while (true) {
             if (loggedInUser.getRoleId() == 1) {
             // Role ID 1: Admin - has access to all operations
+                // Notify admin with the latest donation
+                donationObsrv.display();
+
             System.out.println(" WELCOME TO YOUR  control panal MR"+loggedInUser.getFirstname());
             System.out.println("1. Add User");
             System.out.println("2. Retrieve User by ID");
@@ -194,6 +211,9 @@ public class Library {
             System.out.println("10. Exit");
         } else if (loggedInUser.getRoleId() == 3) {
             // Role ID 3: Member - has limited access
+                // Notify member with the latest event
+                eventObsrv.display();
+
             System.out.println("6. Add Donation");
             System.out.println("9. Logout");
             System.out.println("10. Exit");
@@ -344,6 +364,7 @@ switch (choice) {
                         donationRecord.setDonateDate(new Date());
                         donationRecord.setCumulativeAmount((int) cumulativeAmount);
                         donationRecord.setStatus(true);
+
                         // Save to database
                         
                                 Connection conn = null;
@@ -377,6 +398,9 @@ switch (choice) {
             PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
             paymentService.executePayment(payment);
             System.out.println("Payment processed successfully.");
+            // notify subject
+            donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
+
         }
                         } catch (SQLException e) {
                             System.out.println("Error saving donation: " + e.getMessage());
@@ -445,6 +469,7 @@ switch (choice) {
                         EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
+                        eventSubj.setNotification(eventName, eventDate, startTime, endTime);
                         break;
                     case 8:
                             int eventId =Integer.parseInt(scanner.nextLine());
