@@ -47,6 +47,8 @@ import java.util.Scanner;
 
 import java.sql.SQLException;
 
+import static Controller.testLibrary.*;
+
 // Controller/UserController.java
 public class UserController {
     private UserDAO userDAO;
@@ -110,7 +112,11 @@ public class UserController {
 
         if (loggedInUser != null) {
             userView.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
+            if(loggedInUser.getRoleId()==1) donationObsrv.display();
+            if(loggedInUser.getRoleId()==3) eventObsrv.display();
             userView.showMainMenu(loggedInUser); // Show menu after successful login
+
+
         } else {
             userView.showMessage("Login failed. Please check your credentials.");
         }
@@ -157,6 +163,8 @@ public class UserController {
 
             userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
             processPayment(loggedInUser, cumulativeAmount);
+            donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
+
         } catch (SQLException e) {
             userView.showMessage("Error saving donation: " + e.getMessage());
         }
@@ -175,6 +183,7 @@ public class UserController {
             paymentService.executePayment(new PaymentDTO());
             userView.showMessage("Payment processed successfully.");
             // Notify observers if needed
+
         } else {
             userView.showMessage("Invalid payment choice. No payment processed.");
         }
@@ -190,7 +199,8 @@ public class UserController {
             ev = new VolunteerEventFactory(); 
         } else if (loggedInUser.getRoleId() == 1) { 
             // Admin
-            ev = new AdminEventFactory(); 
+            ev = new AdminEventFactory();
+
         } else {
             userView.showMessage("Invalid role, cannot create event.");
             return;
@@ -209,6 +219,8 @@ public class UserController {
         
         userView.showMessage("Event created: " + newEvent.getName());
         userView.showMessage("Description: " + newEvent.getDescription());
+        eventSubj.setNotification(eventName, eventDate, startTime, endTime);
+
     }
     //////////////////////////delete event/////////////////
     public void deleteEvent() {

@@ -1,10 +1,18 @@
 package Controller;
 
 import MODEL.DAO.UserDAO;
+import MODEL.Patterns.Observer.DonationObserver;
+import MODEL.Patterns.Observer.DonationSubject;
+import MODEL.Patterns.Observer.EventObserver;
+import MODEL.Patterns.Observer.EventSubject;
 import View.UserView;
 
 // Main/Library.java
 public class testLibrary {
+    static EventSubject eventSubj = new EventSubject();
+    static DonationSubject donationSubj = new DonationSubject();
+    static DonationObserver donationObsrv = new DonationObserver(donationSubj);
+    static EventObserver eventObsrv = new EventObserver(eventSubj);
     public static void main(String[] args) {
         // Instantiate UserDAO
         UserDAO userDAO = new UserDAO();
