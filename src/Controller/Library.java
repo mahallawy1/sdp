@@ -305,7 +305,15 @@ switch (choice) {
                             System.out.println();
                         }
                         break;
-
+                   case 5:
+                       System.out.print("Enter user ID to delete: ");
+                        int deleteUserId = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        boolean userTodelete = UserDAO.deleteUser(deleteUserId);
+                     System.out.println("User deleted: " + userTodelete);
+                      //delete here 
+                       
+                       break;
                     case 6:
                         // Add Donation
                         /*System.out.print("Enter user ID: ");

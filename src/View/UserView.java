@@ -211,6 +211,11 @@ public boolean confirm(String message) {
     }
 
         //////////////////////////////////
+     public int getUsrIdForDeletion() {
+ System.out.println("Enter the usr ID to delete:");
+        return Integer.parseInt(scanner.nextLine());
+    }
+//////////////////////////////////
     public String getInputWithValidation(String prompt, String validationType) {
         String input = "";
         boolean isValid = false;
