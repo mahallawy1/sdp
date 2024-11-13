@@ -20,9 +20,13 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
                 break;
             case 2:
                 // Volunteer-specific logic for "Create Event"
+                userController.createEvent(loggedInUser);
+                
                 break;
             case 3:
                 // Volunteer-specific logic for "Delete Event"
+                
+                userController.deleteEvent();
                 break;
             case 4:
                 // Volunteer-specific logic for "Logout"

@@ -10,6 +10,8 @@ import MODEL.Patterns.RoleHandlerStrategy.AdminRoleHandlerStrategy;
 import MODEL.Patterns.RoleHandlerStrategy.MemberRoleHandlerStrategy;
 import MODEL.Patterns.RoleHandlerStrategy.RoleHandlerStrategy;
 import MODEL.Patterns.RoleHandlerStrategy.VolunteerRoleHandlerStrategy;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import utils.InputValidator;
 // View/UserView.java
 public class UserView {
@@ -128,17 +130,87 @@ public boolean confirm(String message) {
         private RoleHandlerStrategy getRoleHandler(int roleId) {
             switch (roleId) {
                 case 1:
-                    return new AdminRoleHandlerStrategy();
+                    return new AdminRoleHandlerStrategy(userController);
                 case 2:
-                return new VolunteerRoleHandlerStrategy(userController); // Pass UserController                    
+                return new VolunteerRoleHandlerStrategy(userController);                   
                 case 3:
-                    return new MemberRoleHandlerStrategy();
+                    return new MemberRoleHandlerStrategy(userController);
                 default:
                     return null;
             }
         }
 
+//////////////////////////////////////////
+        
+        public String getEventName() {
+        System.out.println("Enter Event Name:");
+        return scanner.nextLine();
+    }
 
+    public int getEventTypeId(int userRoleId) {
+        int eventTypeId;
+        if (userRoleId == 2) {  // Volunteer
+            eventTypeId = 0; // Default to "seminar" for volunteer
+        } else {
+            System.out.println("Enter Event Type ID:");
+            eventTypeId = Integer.parseInt(scanner.nextLine());
+        }
+        return eventTypeId;
+    }
+
+    public String getEventDescription() {
+        System.out.println("Enter Event Description:");
+        return scanner.nextLine();
+    }
+
+    public LocalDate getEventDate() {
+        LocalDate eventDate;
+        while (true) {
+            System.out.println("Enter Event Date (yyyy-mm-dd):");
+            try {
+                eventDate = LocalDate.parse(scanner.nextLine());
+                break;
+            } catch (Exception e) {
+                showMessage("Invalid date format. Please use yyyy-mm-dd.");
+            }
+        }
+        return eventDate;
+    }
+
+    public LocalTime getStartTime() {
+        LocalTime startTime;
+        while (true) {
+            System.out.println("Enter Start Time (HH:mm):");
+            try {
+                startTime = LocalTime.parse(scanner.nextLine());
+                break;
+            } catch (Exception e) {
+                showMessage("Invalid time format. Please use HH:mm.");
+            }
+        }
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        LocalTime endTime;
+        while (true) {
+            System.out.println("Enter End Time (HH:mm):");
+            try {
+                endTime = LocalTime.parse(scanner.nextLine());
+                break;
+            } catch (Exception e) {
+                showMessage("Invalid time format. Please use HH:mm.");
+            }
+        }
+        return endTime;
+    }
+    
+     public int getEventIdForDeletion() {
+ System.out.println("Enter the Event ID to delete:");
+        return Integer.parseInt(scanner.nextLine());
+    }
+
+        //////////////////////////////////
     public String getInputWithValidation(String prompt, String validationType) {
         String input = "";
         boolean isValid = false;
@@ -216,9 +288,11 @@ public boolean confirm(String message) {
                     break;
             }
         }
+       
 
         return input; // Return the valid input
     }
 
+   
 
 }

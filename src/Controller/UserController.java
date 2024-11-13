@@ -122,7 +122,6 @@ public class UserController {
         List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
         donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
 
-        // Prompt for additional donations
         if (userView.confirm("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ")) {
             if (userView.confirm("Add Charity Donation? (y/n): ")) {
                 double charityAmount = userView.getDonationAmount("Enter amount for Charity Donation: ");
@@ -143,10 +142,9 @@ public class UserController {
             userView.showMessage("Processing default 50 Dollar donation...");
         }
 
-        // Calculate cumulative amount
+        // cumulative amount
         double cumulativeAmount = donation.getAmount();
 
-        // Create and save DonationRecordDTO
         DonationRecordDTO donationRecord = new DonationRecordDTO();
         donationRecord.setUserId(loggedInUser.getId());
         donationRecord.setDonateDate(new Date());
@@ -182,6 +180,49 @@ public class UserController {
         }
     }
 /////////////////////////////////////////////////////
+    ///event
+    
+    public void createEvent(UserDTO loggedInUser) {
+        EventFactory ev;
+
+        if (loggedInUser.getRoleId() == 2) {
+            // Volunteer
+            ev = new VolunteerEventFactory(); 
+        } else if (loggedInUser.getRoleId() == 1) { 
+            // Admin
+            ev = new AdminEventFactory(); 
+        } else {
+            userView.showMessage("Invalid role, cannot create event.");
+            return;
+        }
+
+        String eventName = userView.getEventName();
+        int eventTypeId = userView.getEventTypeId(loggedInUser.getRoleId());
+        String description = userView.getEventDescription();
+
+        LocalDate eventDate = userView.getEventDate();
+
+        LocalTime startTime = userView.getStartTime();
+        LocalTime endTime = userView.getEndTime();
+
+        EventDTO newEvent = ev.createEvent(loggedInUser, eventName, eventTypeId, description, eventDate, startTime, endTime);
+        
+        userView.showMessage("Event created: " + newEvent.getName());
+        userView.showMessage("Description: " + newEvent.getDescription());
+    }
+    //////////////////////////delete event/////////////////
+    public void deleteEvent() {
+        int eventId = userView.getEventIdForDeletion();
+
+        try {
+            EventDAO.removeEvent(eventId);
+            userView.showMessage("Event with ID " + eventId + " removed successfully.");
+        } catch (SQLException e) {
+            userView.showMessage("Error removing event: " + e.getMessage());
+        }
+    }
+    
+    /////////////////////////////////////////////////////
     private void signupUser() {
         // Signup logic
         String signupEmail = userView.getInputWithValidation("Enter email: ", "email");
@@ -216,10 +257,8 @@ public class UserController {
 
 
 
-            // Add the user to the database
             boolean isAdded = userDAO.addUser(newUser);
 
-            // Provide feedback to the user
             if (isAdded) {
                 userView.showMessage("Signup successful!");
                 userView.showMainMenu(newUser);  // Show the main menu after successful signup

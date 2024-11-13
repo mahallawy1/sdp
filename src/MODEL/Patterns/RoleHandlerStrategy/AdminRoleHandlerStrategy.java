@@ -1,4 +1,5 @@
 package MODEL.Patterns.RoleHandlerStrategy;
+import Controller.UserController;
 import MODEL.DAO.AddressDAO;
 import MODEL.DAO.RoleDAO;
 import MODEL.DAO.UserDAO;
@@ -12,6 +13,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
+    
+    private final UserController userController;
+    
+    public AdminRoleHandlerStrategy(UserController userController) {
+        this.userController = userController;
+    }
     @Override
     public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) throws SQLException {
         String EmailIpnut = null;
@@ -127,17 +134,19 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 }
                 break;
             case 5:
-
+                       ////////delete user here
                 break;
             case 6:
+               userController.processDonation(loggedInUser);
 
                 break;
             case 7:
+                userController.createEvent(loggedInUser);
 
                 break;
 
             case 8:
-
+               userController.deleteEvent();
                 break;
             case 9:
                 // Volunteer-specific logic for "Logout"
