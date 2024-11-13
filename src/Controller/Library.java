@@ -4,10 +4,7 @@ package Controller;
 import MODEL.DAO.*;
 import MODEL.DAO.DonationRecordDAO;
 import MODEL.DAO.EventDAO;
-import MODEL.Patterns.Observer.DonationObserver;
-import MODEL.Patterns.Observer.DonationSubject;
-import MODEL.Patterns.Observer.EventObserver;
-import MODEL.Patterns.Observer.EventSubject;
+import MODEL.Patterns.Observer.*;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import MODEL.DAO.RoleDAO;
@@ -50,6 +47,8 @@ public class Library {
     static DonationObserver donationObsrv = new DonationObserver(donationSubj);
 
     static EventObserver eventObsrv = new EventObserver(eventSubj);
+    static EventObserver4Volunteer eventObsrv4Volunteer = new EventObserver4Volunteer(eventSubj);
+
 
     public static void main(String[] args) {
        
@@ -474,7 +473,7 @@ switch (choice) {
                         EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
-                        eventSubj.setNotification(eventName, eventDate, startTime, endTime);
+                        eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);
                         break;
                     case 8:
                             int eventId =Integer.parseInt(scanner.nextLine());
