@@ -47,38 +47,12 @@ public class Library {
     // subjects
     static EventSubject eventSubj = new EventSubject();
     static DonationSubject donationSubj = new DonationSubject();
-
-    static EventObserver eventObsrv = new EventObserver(eventSubj);
     static DonationObserver donationObsrv = new DonationObserver(donationSubj);
 
+    static EventObserver eventObsrv = new EventObserver(eventSubj);
+
     public static void main(String[] args) {
-        /*Scanner scanner = new Scanner(System.in);
-        Connection conn = null;
-        try {
-            // Obtain singleton connection instance
-            conn = DbConnectionSingleton.getInstance().getConnection();
-            if (conn != null) {
-                System.out.println("Connection established successfully.");
-            }
-
-            UserDTO newUser = new UserDTO();
-
-            while (true) {
-                System.out.println("\nChoose an operation:");
-                System.out.println("1. Add User");
-                System.out.println("2. Retrieve User by ID");
-                System.out.println("3. Update User");
-                System.out.println("4. Retrieve All Users");
-                System.out.println("5. Delete User by ID");
-                System.out.println("6. Add Donation");
-                System.out.println("7. Create Event");
-                System.out.println("8. Delete Event");
-                
-                System.out.println("10. Exit");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-
-               */ 
+       
         Scanner scanner = new Scanner(System.in);
         Connection conn = null;
         UserDTO loggedInUser = null;
@@ -512,11 +486,5 @@ switch (choice) {
                         System.out.println("Invalid choice. Please try again.");
                 }}
             }
-    /*    } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // Ensure the connection is closed when the application ends
-            DbConnectionSingleton.getInstance().close(conn, null);
-        }*/
-    }
+      }
 

@@ -42,8 +42,26 @@ public class UserView {
         String answer = scanner.nextLine();
         return answer;
     }
+////////////////////////////////////////
+    /////////donation**************/*/*/*/*
+public boolean confirm(String message) {
+        System.out.print(message);
+        return scanner.nextLine().trim().equalsIgnoreCase("y");
+    }
 
+    public double getDonationAmount(String message) {
+        System.out.print(message);
+        return scanner.nextDouble();
+    }
 
+    public int getPaymentChoice() {
+        System.out.println("Choose payment method:");
+        System.out.println("1. Fawry Payment");
+        System.out.println("2. Credit Card Payment");
+        System.out.print("Enter choice: ");
+        return scanner.nextInt();
+    }
+    ///////////////////////////////////////
     public void showMessage(String message) {
         System.out.println(message);
     }
@@ -112,7 +130,7 @@ public class UserView {
                 case 1:
                     return new AdminRoleHandlerStrategy();
                 case 2:
-                    return new VolunteerRoleHandlerStrategy();
+                return new VolunteerRoleHandlerStrategy(userController); // Pass UserController                    
                 case 3:
                     return new MemberRoleHandlerStrategy();
                 default:

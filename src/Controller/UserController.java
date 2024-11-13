@@ -3,6 +3,47 @@ package Controller;
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
 import View.UserView;
+import MODEL.DAO.*;
+import MODEL.DAO.DonationRecordDAO;
+import MODEL.DAO.EventDAO;
+import MODEL.Patterns.Observer.DonationObserver;
+import MODEL.Patterns.Observer.DonationSubject;
+import MODEL.Patterns.Observer.EventObserver;
+import MODEL.Patterns.Observer.EventSubject;
+import MODEL.Patterns.decorator.*;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
+import MODEL.DAO.RoleDAO;
+import MODEL.DAO.SkillsDAO;
+import MODEL.DAO.*;
+import MODEL.DTO.User.*;
+import MODEL.DTO.User.RoleDTO;
+import MODEL.DTO.User.UserDTO;
+
+import MODEL.DTO.Event.*;
+import MODEL.DTO.Donation.*;
+
+import MODEL.DTO.Event.EventDTO;
+import MODEL.Patterns.LoginStrategy.EmailPasswordLoginStrategy;
+import MODEL.Patterns.LoginStrategy.LoginService;
+import MODEL.Patterns.LoginStrategy.MobilePhoneLoginStrategy;
+import MODEL.Patterns.factory.AdminEventFactory;
+import MODEL.Patterns.factory.EventFactory;
+import MODEL.Patterns.factory.VolunteerEventFactory;
+import MODEL.Patterns.paymentstrategy.PaymentStategy;
+import MODEL.Patterns.paymentstrategy.PaymentMethode;
+import MODEL.Patterns.paymentstrategy.PaymentStategy;
+import MODEL.Patterns.paymentstrategy.FawryPayment;
+import MODEL.Patterns.paymentstrategy.CreditCardPayment;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+
 
 import java.sql.SQLException;
 
@@ -68,14 +109,79 @@ public class UserController {
         }
 
         if (loggedInUser != null) {
-            userView.showMessage("Login successful! Welcome, " + loggedInUser.getFirstname());
+            userView.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
             userView.showMainMenu(loggedInUser); // Show menu after successful login
         } else {
             userView.showMessage("Login failed. Please check your credentials.");
         }
     }
+/////////////////////////////////////////////
+//donation
+    public void processDonation(UserDTO loggedInUser) {
+        IDonation donation = new SupportUsDonation(50.0);  // Base donation
+        List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
+        donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
 
+        // Prompt for additional donations
+        if (userView.confirm("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ")) {
+            if (userView.confirm("Add Charity Donation? (y/n): ")) {
+                double charityAmount = userView.getDonationAmount("Enter amount for Charity Donation: ");
+                donation = new CharityDonation(donation, charityAmount);
+                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
+            }
+            if (userView.confirm("Add Gaza Donation? (y/n): ")) {
+                double gazaAmount = userView.getDonationAmount("Enter amount for Gaza Donation: ");
+                donation = new GazaDonation(donation, gazaAmount);
+                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
+            }
+            if (userView.confirm("Add Sudan Donation? (y/n): ")) {
+                double sudanAmount = userView.getDonationAmount("Enter amount for Sudan Donation: ");
+                donation = new SudanDonation(donation, sudanAmount);
+                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
+            }
+        } else {
+            userView.showMessage("Processing default 50 Dollar donation...");
+        }
 
+        // Calculate cumulative amount
+        double cumulativeAmount = donation.getAmount();
+
+        // Create and save DonationRecordDTO
+        DonationRecordDTO donationRecord = new DonationRecordDTO();
+        donationRecord.setUserId(loggedInUser.getId());
+        donationRecord.setDonateDate(new Date());
+        donationRecord.setCumulativeAmount((int) cumulativeAmount);
+        donationRecord.setStatus(true);
+
+        try (Connection conn = DbConnectionSingleton.getInstance().getConnection()) {
+            DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn);
+            donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
+
+            userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
+            processPayment(loggedInUser, cumulativeAmount);
+        } catch (SQLException e) {
+            userView.showMessage("Error saving donation: " + e.getMessage());
+        }
+    }
+
+    private void processPayment(UserDTO user, double amount) {
+        int paymentChoice = userView.getPaymentChoice();
+        PaymentStategy paymentStrategy = switch (paymentChoice) {
+            case 1 -> new FawryPayment();
+            case 2 -> new CreditCardPayment();
+            default -> null;
+        };
+
+        if (paymentStrategy != null) {
+            PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
+            paymentService.executePayment(new PaymentDTO());
+            userView.showMessage("Payment processed successfully.");
+            // Notify observers if needed
+        } else {
+            userView.showMessage("Invalid payment choice. No payment processed.");
+        }
+    }
+/////////////////////////////////////////////////////
     private void signupUser() {
         // Signup logic
         String signupEmail = userView.getInputWithValidation("Enter email: ", "email");
