@@ -235,6 +235,25 @@ public class UserController {
     }
     
     /////////////////////////////////////////////////////
+    ///////////////////////////////////////
+    ///delete ust 
+    public void deleteusr() {
+        int deleteUserId = userView.getUsrIdForDeletion();
+
+        try {
+            UserDAO.deleteUser(deleteUserId);
+            userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+        } catch (SQLException e) {
+            userView.showMessage("Error removing usr: " + e.getMessage());
+        }
+    }
+    /* System.out.print("Enter user ID to delete: ");
+                        int deleteUserId = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        boolean userTodelete = UserDAO.deleteUser(deleteUserId);
+                     System.out.println("User deleted: " + userTodelete);
+                      //delete here */
+    ///////////////////////////////////////////
     private void signupUser() {
         // Signup logic
         String signupEmail = userView.getInputWithValidation("Enter email: ", "email");

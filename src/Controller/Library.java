@@ -198,7 +198,7 @@ public class Library {
             System.out.println("6. Add Donation");
             System.out.println("7. Create Event");
             System.out.println("8. Delete Event");
-
+            
             System.out.println("9. Logout");
             System.out.println("10. Exit");
         } else if (loggedInUser.getRoleId() == 3) {
@@ -305,7 +305,15 @@ switch (choice) {
                             System.out.println();
                         }
                         break;
-
+                   case 5:
+                       System.out.print("Enter user ID to delete: ");
+                        int deleteUserId = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        boolean userTodelete = UserDAO.deleteUser(deleteUserId);
+                     System.out.println("User deleted: " + userTodelete);
+                      //delete here 
+                       
+                       break;
                     case 6:
                         // Add Donation
                         /*System.out.print("Enter user ID: ");

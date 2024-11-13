@@ -13,18 +13,16 @@ public class VolunteeringDTO {
     private Integer eventId;
     private Integer userId;
 
-    public VolunteeringDTO(int id, Integer eventId, Integer userId) {
+    public VolunteeringDTO(int id,int userId) {
         this.id = id;
-        this.eventId = eventId;
+       
         this.userId = userId;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public Integer getEventId() { return eventId; }
-    public void setEventId(Integer eventId) { this.eventId = eventId; }
-
+    
     public Integer getUserId() { return userId; }
     public void setUserId(Integer userId) { this.userId = userId; }
 }

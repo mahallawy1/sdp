@@ -135,6 +135,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 break;
             case 5:
                        ////////delete user here
+               userController.deleteusr();
                 break;
             case 6:
                userController.processDonation(loggedInUser);
