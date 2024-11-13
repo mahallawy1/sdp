@@ -113,6 +113,7 @@ public class UserController {
         if (loggedInUser != null) {
             userView.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
             if(loggedInUser.getRoleId()==1) donationObsrv.display();
+            if(loggedInUser.getRoleId()==2) eventObsrv4Volunteer.display();
             if(loggedInUser.getRoleId()==3) eventObsrv.display();
             userView.showMainMenu(loggedInUser); // Show menu after successful login
 
@@ -219,7 +220,7 @@ public class UserController {
         
         userView.showMessage("Event created: " + newEvent.getName());
         userView.showMessage("Description: " + newEvent.getDescription());
-        eventSubj.setNotification(eventName, eventDate, startTime, endTime);
+        eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);
 
     }
     //////////////////////////delete event/////////////////
