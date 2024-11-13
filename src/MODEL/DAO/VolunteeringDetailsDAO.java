@@ -13,19 +13,32 @@ import java.util.List;
 public class VolunteeringDetailsDAO {
 
     // Add a volunteering details record to the database
-    public static boolean addVolunteeringDetails(VolunteeringDetailsDTO details) throws SQLException {
-        String sql = "INSERT INTO volunteering_details (id, event_id, volunteering_id, hours, status) VALUES (?, ?, ?, ?, ?)";
+   public static boolean addVolunteeringDetails(VolunteeringDetailsDTO details) throws SQLException {
+    String sql = "INSERT INTO volunteering_details (event_id, volunteering_id, hours, status) VALUES (?, ?, ?, ?)";
 
-        try (Connection connection = DbConnectionSingleton.getInstance().getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, details.getId());
-            pstmt.setInt(2, details.getEventId());
-            pstmt.setInt(3, details.getVolunteeringId());
-            pstmt.setInt(4, details.getHours());
-            pstmt.setString(5, details.getStatus());
-            return pstmt.executeUpdate() == 1;
+    try (Connection connection = DbConnectionSingleton.getInstance().getConnection();
+         PreparedStatement pstmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        
+        pstmt.setInt(1, details.getEventId());
+        pstmt.setInt(2, details.getVolunteeringId());
+        pstmt.setInt(3, details.getHours());
+        pstmt.setString(4, details.getStatus());
+
+        int affectedRows = pstmt.executeUpdate();
+
+        if (affectedRows == 1) {
+            // Get the generated ID for the new record
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1); // Retrieve the auto-generated id
+                    details.setId(generatedId); // Set the generated ID in the DTO
+                    return true;
+                }
+            }
         }
     }
+    return false;
+}
 
     // Remove a volunteering details record from the database
     public static boolean removeVolunteeringDetails(int detailsId) throws SQLException {

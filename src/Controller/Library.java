@@ -130,6 +130,7 @@ public class Library {
 
                         if (loggedInUser != null) {
                             System.out.println("Login successful! Welcome, " + loggedInUser.getFirstname());
+                            System.out.println(loggedInUser.getId());
                             displayMainMenu(scanner, loggedInUser);
                         } else {
                             System.out.println("Login failed. Please check your credentials.");
@@ -156,6 +157,10 @@ public class Library {
 
                         boolean isAdded = UserDAO.addUser(newUser);
                         System.out.println("Signup successful: " + isAdded);
+                        if(newUser.getRoleId()==2){
+                            VolunteeringDTO volunteer = new VolunteeringDTO(newUser.getId());
+                            VolunteeringDAO.addVolunteering(volunteer);
+                        }
                         break;
 
                     case 3:
@@ -198,9 +203,9 @@ public class Library {
             System.out.println("6. Add Donation");
             System.out.println("7. Create Event");
             System.out.println("8. Delete Event");
-            
-            System.out.println("9. Logout");
-            System.out.println("10. Exit");
+            System.out.println("9. Join event");
+            System.out.println("10. Logout");
+            System.out.println("11. Exit");
         } else if (loggedInUser.getRoleId() == 3) {
             // Role ID 3: Member - has limited access
                 // Notify member with the latest event
@@ -234,7 +239,7 @@ switch (choice) {
                         loggedInUser.setRoleId(scanner.nextInt());
                         System.out.print("Enter status (true/false): ");
                         loggedInUser.setStatus(scanner.nextInt());
-
+                        
                         boolean isAdded = UserDAO.addUser(loggedInUser);
                         System.out.println("User added: " + isAdded);
                         break;
@@ -479,12 +484,27 @@ switch (choice) {
                                  System.out.println("Error removing event " + e.getMessage());
 
                              }
-                 
-                case 9:
+                    case 9:
+                        
+                    
+                        System.out.println("Enter the id of the event you wish to join : ");
+                        int ev_id =Integer.parseInt(scanner.nextLine());
+                        System.out.println("Enter how many hours are you willing to volunteer for : ");
+                        int vol_hours= Integer.parseInt(scanner.nextLine());
+                        String status = "pending";
+                        VolunteeringDTO volunteer = VolunteeringDAO.getVolunteeringByUserId(loggedInUser.getId());
+                        VolunteeringDetailsDTO details = new VolunteeringDetailsDTO(ev_id,volunteer.getId(),vol_hours, status);
+                        VolunteeringDetailsDAO.addVolunteeringDetails(details);
+                        
+                        
+                        
+                        break;
+                            
+                case 10:
                     System.out.println("Logging out...");
                     return; // Go back to the main login/signup menu
 
-                case 10:
+                case 11:
                     System.out.println("Exiting...");
                     DbConnectionSingleton.getInstance().close(null, null);
                     scanner.close();

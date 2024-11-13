@@ -10,9 +10,11 @@ package MODEL.DTO.Event;
  */
 public class VolunteeringDTO {
     private int id;
-    private Integer eventId;
+    
     private Integer userId;
-
+    
+    public VolunteeringDTO(int userId){
+    this.userId=userId;}
     public VolunteeringDTO(int id,int userId) {
         this.id = id;
        

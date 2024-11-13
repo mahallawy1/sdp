@@ -14,7 +14,13 @@ public class VolunteeringDetailsDTO {
     private Integer volunteeringId;
     private Integer hours;
     private String status; // Assuming status is a String as per the ENUM comment
-
+    public VolunteeringDetailsDTO(int eventId,int volunteeringId,int hours,String status) {
+    
+    this.eventId = eventId;
+    this.volunteeringId = volunteeringId;
+    this.hours = hours;
+    this.status = status;
+    }
     public VolunteeringDetailsDTO(int id,int eventId,int volunteeringId,int hours,String status) {
     this.id = id;
     this.eventId = eventId;
