@@ -1,6 +1,7 @@
 package MODEL.Patterns.RoleHandlerStrategy;
 import Controller.UserController;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 import View.UserView;
 
 public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
@@ -21,7 +22,11 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
                 // Member-specific logic for "Logout"
                  userView.showMessage("Logging out...");
                 return true;
-                
+            case 3:
+                System.out.println("Exiting...");
+                DbConnectionSingleton.getInstance().close(null, null);
+                System.exit(0);
+                break;
             // Add more cases for member-specific operations
             default:
                 break;

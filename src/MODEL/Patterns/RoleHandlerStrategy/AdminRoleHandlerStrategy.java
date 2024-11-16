@@ -66,7 +66,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
             case 2:
                 // Admin-specific logic for "Retrieve User by ID"
                 // Retrieve User by ID
-                String userIdInput = userView.getInputWithValidation("userId email: ", "userId");
+                String userIdInput = userView.getInputWithValidation("enter userId : ", "userId");
                  userId = Integer.parseInt(userIdInput);
 
                 UserDTO retrievedUser = UserDAO.getUserById(userId);
@@ -89,20 +89,24 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 break;
             case 3:
                 // Update User
-                 userIdInput = userView.getInputWithValidation("userId email: ", "userId");
+                 userIdInput = userView.getInputWithValidation("enter userId: ", "userId");
                 userId = Integer.parseInt(userIdInput);
 
                 UserDTO userToUpdate = UserDAO.getUserById(userId);
 
                 if (userToUpdate != null) {
 
+
+                     firstNameIpnut= userView.getInputWithValidation("Enter name : ", "text");
+                     userToUpdate.setFirstname(firstNameIpnut);
                      PasswordInput= userView.getInputWithValidation("Enter password: ", "password");
                      userToUpdate.setPassword(PasswordInput);
-                     firstNameIpnut = userView.getInputWithValidation("Enter email: ", "email");
-                     userToUpdate.setFirstname(firstNameIpnut);
-                     mobilePhoneInput = userView.getInputWithValidation("Enter first name: ", "text");
+                     EmailIpnut = userView.getInputWithValidation("Enter email: ", "email");
+                     userToUpdate.setEmail(EmailIpnut);
+                     mobilePhoneInput = userView.getInputWithValidation("Enter Mobile number: ", "phone");
                      userToUpdate.setMobilePhone(mobilePhoneInput);
-                     statusInput = userView.getInputWithValidation("Enter mobile phone: ", "phone");
+
+                     statusInput = userView.getInputWithValidation("Enter status : ", "status");
                      userToUpdate.setStatus(Integer.parseInt(statusInput));
 
 
@@ -113,25 +117,40 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 }
                 break;
             case 4:
-                // Admin-specific logic for "Retrieve All Users"
-                // Retrieve All Users
+                // ANSI escape codes for colors
+                String BLUE = "\033[34m";   // Blue color
+                String RESET = "\033[0m";   // Reset color
+
+// Admin-specific logic for "Retrieve All Users"
+// Retrieve All Users
                 List<UserDTO> users = UserDAO.getAllUsers();
                 System.out.println("All users:");
+
+// Print a header for the table with blue color
+                System.out.printf(BLUE + "%-10s %-20s %-30s %-15s %-15s %-20s %-50s%n" + RESET,
+                        "User ID", "Name", "Email", "Mobile Phone", "Status", "Role", "Address");
+
+// Print a separator line
+                System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------");
 
                 for (UserDTO user : users) {
                     // Fetch Address and Role for each user
                     String userAddress = AddressDAO.getFullAddressPath(user.getAddressId());
                     RoleDTO userRole = RoleDAO.getRoleById(user.getRoleId());
 
-                    System.out.println("User ID: " + user.getId());
-                    System.out.println("Name: " + user.getFirstname());
-                    System.out.println("Email: " + user.getEmail());
-                    System.out.println("Mobile Phone:. " + user.getMobilePhone());
-                    System.out.println("Status: " + user.getStatus());
-                    System.out.println("Role: " + (userRole != null ? userRole.getName() : "Role not found"));
-                    System.out.println("Address: " + (userAddress != null ? userAddress : "Address not found"));
-                    System.out.println();
+                    // Print each user's details in a formatted way
+                    System.out.printf("%-10d %-20s %-30s %-15s %-15s %-20s %-50s%n",
+                            user.getId(),
+                            user.getFirstname(), // Assuming a 'lastname' field
+                            user.getEmail(),
+                            user.getMobilePhone(),
+                            user.getStatus(),
+                            (userRole != null ? userRole.getName() : "Role not found"),
+                            (userAddress != null ? userAddress : "Address not found"));
                 }
+
+                System.out.println();
+
                 break;
             case 5:
                        ////////delete user here

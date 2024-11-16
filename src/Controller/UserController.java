@@ -165,7 +165,6 @@ public void processDonation(UserDTO loggedInUser) {
         if (donationId != -1) {
             userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
 
-            userView.showMessage("Choose payment method:\n1. Fawry Payment\n2. Credit Card Payment");
             int paymentChoice = userView.getPaymentChoice();
 
             PaymentStategy paymentStrategy = null;

@@ -103,7 +103,18 @@ public boolean confirm(String message) {
         }
 
         private void displayMenu(UserDTO loggedInUser) {
-            System.out.println("WELCOME TO YOUR CONTROL PANEL, " + loggedInUser.getFirstname());
+
+            // ANSI escape codes for colors
+            String BLUE = "\033[34m";   // Blue
+            String GREEN = "\033[32m";  // Green
+            String RESET = "\033[0m";   // Reset color
+
+// Emojis
+            String sunglassesEmoji = "\uD83D\uDE0E";  // Unicode for 😎 (smiling face with sunglasses)
+            String glowingStarEmoji = "\uD83C\uDF1F";  // Unicode for 🌟 (glowing star)
+
+// Print the message with colors and emojis
+            System.out.println("WELCOME TO YOUR" + BLUE + " CONTROL PANEL, " + GREEN + loggedInUser.getFirstname() + " " + sunglassesEmoji + " " + glowingStarEmoji + RESET);
             if (loggedInUser.getRoleId() == 1) {
                 System.out.println("1. Add User");
                 System.out.println("2. Retrieve User by ID");
