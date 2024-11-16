@@ -210,6 +210,9 @@ public class UserDAO {
         }
         return user;
     }
+    public static boolean callForEventApproval(){
+        return true;
+    }
     }
 
 

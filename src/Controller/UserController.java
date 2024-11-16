@@ -215,8 +215,8 @@ public class UserController {
 
         LocalTime startTime = userView.getStartTime();
         LocalTime endTime = userView.getEndTime();
-
-        EventDTO newEvent = ev.createEvent(loggedInUser, eventName, eventTypeId, description, eventDate, startTime, endTime);
+        ArrayList <Integer> skills = userView.getSkills();
+        EventDTO newEvent = ev.createEvent(loggedInUser, eventName, eventTypeId, description, eventDate, startTime, endTime,skills);
         
         userView.showMessage("Event created: " + newEvent.getName());
         userView.showMessage("Description: " + newEvent.getDescription());

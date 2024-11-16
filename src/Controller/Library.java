@@ -55,9 +55,8 @@ public class Library {
         Scanner scanner = new Scanner(System.in);
         Connection conn = null;
         UserDTO loggedInUser = null;
-
-
-        // observers
+      
+// observers
 
 
         try {
@@ -465,12 +464,26 @@ switch (choice) {
                             }
                         }
                        
-                        //SkillDTO skill1 = new SkillDTO(0,"Reading,Writing"); // seminar
-                     //   SkillDTO skill2 = new SkillDTO(1,null); // workshop
-                       // SkillsDAO.addSkill(skill1);
-                      //  SkillsDAO.addSkill(skill2);
-                        
-                        EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime);
+                        ArrayList<Integer> skills = new ArrayList<>();
+                       
+
+                        System.out.println("Enter Skill ids (type 'done' to finish):");
+                        while (scanner.hasNext()) {
+                            if (scanner.hasNextInt()) {
+                                skills.add(scanner.nextInt()); 
+                            } else {
+                                String input = scanner.next();
+                                if (input.equalsIgnoreCase("done")) {
+                                    break; 
+                                } else {
+                                    System.out.println("Invalid input. Please enter an integer or type 'done'.");
+                                }
+                            }
+                        }
+
+                       
+                     
+                        EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime,skills);
                         System.out.println(newEvent.getName());
                         System.out.println(newEvent.getDescription());
                         eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);

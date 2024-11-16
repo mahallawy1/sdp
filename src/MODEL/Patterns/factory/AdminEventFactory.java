@@ -14,6 +14,7 @@ import MODEL.DTO.Event.RequiredSkillsDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -23,7 +24,7 @@ public class AdminEventFactory implements EventFactory{
     
     
     public EventDTO createEvent(UserDTO admin, String eventName,
-            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to
+            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,ArrayList<Integer> skills
        ){
         if((admin.getRoleId())==1){
             // if event is seminar
@@ -61,10 +62,9 @@ public class AdminEventFactory implements EventFactory{
                 RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
                 requiredSkill.setEventId(event_id);
                 
-                if(eventTypeId == 0){
-                requiredSkill.setSkillId(0);
-                }else{requiredSkill.setSkillId(1); 
-                }// skill with id 1 which is required for workshop
+                for(int i = 0 ; i < skills.size();i++){
+                        requiredSkill.setSkillId(skills.get(i));
+                }
                 try{
                     int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
                     System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());

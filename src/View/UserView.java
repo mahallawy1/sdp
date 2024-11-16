@@ -12,6 +12,7 @@ import MODEL.Patterns.RoleHandlerStrategy.RoleHandlerStrategy;
 import MODEL.Patterns.RoleHandlerStrategy.VolunteerRoleHandlerStrategy;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import utils.InputValidator;
 // View/UserView.java
 public class UserView {
@@ -204,7 +205,26 @@ public boolean confirm(String message) {
         }
         return endTime;
     }
-    
+    public ArrayList<Integer> getSkills(){
+        ArrayList<Integer> list = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter skill ids (type 'done' to finish):");
+        while (scanner.hasNext()) {
+            if (scanner.hasNextInt()) {
+                list.add(scanner.nextInt()); // Add integer to ArrayList
+            } else {
+                String input = scanner.next();
+                if (input.equalsIgnoreCase("done")) {
+                    break; // Exit loop if user types "done"
+                } else {
+                    System.out.println("Invalid input. Please enter an integer or type 'done'.");
+                }
+            }
+        }
+
+        return list;
+    }
      public int getEventIdForDeletion() {
  System.out.println("Enter the Event ID to delete:");
         return Integer.parseInt(scanner.nextLine());
