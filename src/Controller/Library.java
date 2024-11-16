@@ -33,6 +33,7 @@ import MODEL.Patterns.paymentstrategy.CreditCardPayment;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -318,72 +319,73 @@ switch (choice) {
                        
                        break;
                     case 6:
-                        // Add Donation
-                        /*System.out.print("Enter user ID: ");
-                        userId = scanner.nextInt();
-*/
-                        // Start with the base donation
-                        IDonation donation = new SupportUsDonation(50.0); // Base donation amount (e.g., Support Us)
-                        List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
-                        donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
-
-                        // Prompt user for additional donations
-                        System.out.print("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ");
-                        if (scanner.next().equalsIgnoreCase("y")) {
-                            // Additional donation options
-                            System.out.print("Add Charity Donation? (y/n): ");
-                            if (scanner.next().equalsIgnoreCase("y")) {
-                                System.out.print("Enter amount for Charity Donation: ");
-                                double charityAmount = scanner.nextDouble();
-                                donation = new CharityDonation(donation, charityAmount);
-                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
-                            }
-
-                            System.out.print("Add Gaza Donation? (y/n): ");
-                            if (scanner.next().equalsIgnoreCase("y")) {
-                                System.out.print("Enter amount for Gaza Donation: ");
-                                double gazaAmount = scanner.nextDouble();
-                                donation = new GazaDonation(donation, gazaAmount);
-                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
-                            }
-
-                            System.out.print("Add Sudan Donation? (y/n): ");
-                            if (scanner.next().equalsIgnoreCase("y")) {
-                                System.out.print("Enter amount for Sudan Donation: ");
-                                double sudanAmount = scanner.nextDouble();
-                                donation = new SudanDonation(donation, sudanAmount);
-                                donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
-                            }
-                        } else {
-                            System.out.println("No additional donations added. Processing default 50 Dollar donation...");
-                        }
-
-                        // Get the cumulative amount from the decorated donation object
-                        double cumulativeAmount = donation.getAmount();
-
-                        // Create DonationRecordDTO
-                        DonationRecordDTO donationRecord = new DonationRecordDTO();
-                        donationRecord.setUserId(loggedInUser.getId()); 
-                        donationRecord.setDonateDate(new Date());
-                        donationRecord.setCumulativeAmount((int) cumulativeAmount);
-                        donationRecord.setStatus(true);
-
-                        // Save to database
                         
-                                Connection conn = null;
-            conn = DbConnectionSingleton.getInstance().getConnection();
+    // Start with the base donation
+    IDonation donation = new SupportUsDonation(50.0); // Base donation amount (e.g., Support Us)
+    List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
+    donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
 
-                        DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn); // Use the existing connection
-                        try {
-                            donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
-                            System.out.println("Donation successfully added with cumulative amount: " + cumulativeAmount);
-                            System.out.println("Choose payment method:");
-                            System.out.println("1. Fawry Payment");
-                            System.out.println("2. Credit Card Payment");
-                            int paymentChoice = scanner.nextInt();
+    // Prompt user for additional donations
+    System.out.print("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ");
+    if (scanner.next().equalsIgnoreCase("y")) {
+        // Additional donation options
+        System.out.print("Add Charity Donation? (y/n): ");
+        if (scanner.next().equalsIgnoreCase("y")) {
+            System.out.print("Enter amount for Charity Donation: ");
+            double charityAmount = scanner.nextDouble();
+            donation = new CharityDonation(donation, charityAmount);
+            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
+        }
 
-                            PaymentStategy paymentStrategy = null;
- 
+        System.out.print("Add Gaza Donation? (y/n): ");
+        if (scanner.next().equalsIgnoreCase("y")) {
+            System.out.print("Enter amount for Gaza Donation: ");
+            double gazaAmount = scanner.nextDouble();
+            donation = new GazaDonation(donation, gazaAmount);
+            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
+        }
+
+        System.out.print("Add Sudan Donation? (y/n): ");
+        if (scanner.next().equalsIgnoreCase("y")) {
+            System.out.print("Enter amount for Sudan Donation: ");
+            double sudanAmount = scanner.nextDouble();
+            donation = new SudanDonation(donation, sudanAmount);
+            donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
+        }
+    } else {
+        System.out.println("No additional donations added. Processing default 50 Dollar donation...");
+    }
+
+    // Get the cumulative amount from the decorated donation object
+    double cumulativeAmount = donation.getAmount();
+
+    // Create DonationRecordDTO
+    DonationRecordDTO donationRecord = new DonationRecordDTO();
+    donationRecord.setUserId(loggedInUser.getId());
+    donationRecord.setDonateDate(new Date());
+    donationRecord.setCumulativeAmount((int) cumulativeAmount);
+    donationRecord.setStatus(true);
+
+    // Database connection
+    Connection conn = null;
+    conn = DbConnectionSingleton.getInstance().getConnection();
+
+    // DAO for donation records
+    DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn); // Use the existing connection
+    try {
+        // Create donation record in the database
+        donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
+        System.out.println("Donation successfully added with cumulative amount: " + cumulativeAmount);
+
+        // Prompt user for payment method
+        System.out.println("Choose payment method:");
+        System.out.println("1. Fawry Payment");
+        System.out.println("2. Credit Card Payment");
+        int paymentChoice = scanner.nextInt();
+
+        // Prepare payment strategy
+        PaymentStategy paymentStrategy = null;
+
         switch (paymentChoice) {
             case 1:
                 paymentStrategy = new FawryPayment();
@@ -397,18 +399,29 @@ switch (choice) {
         }
 
         if (paymentStrategy != null) {
+            // Create PaymentDTO for the transaction
             PaymentDTO payment = new PaymentDTO();
-            PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
-            paymentService.executePayment(payment);
-            System.out.println("Payment processed successfully.");
-            // notify subject
-            donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
+            payment.setPaymentMethodId(paymentChoice); // 1 for Fawry, 2 for Credit Card
+            payment.setTimestamp(LocalDateTime.now());
+            payment.setIsDeleted(false);
 
+            // Use PaymentDAO to create the payment record in the database
+            PaymentDAO paymentDAO = new PaymentDAO(conn);
+            int paymentId = paymentDAO.createPayment(payment, paymentStrategy);
+
+            // Notify user
+            System.out.println("Payment processed successfully with Payment ID: " + paymentId);
+
+            // Notify subject (assuming donationSubj is the subject for notifications)
+            donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
         }
-                        } catch (SQLException e) {
-                            System.out.println("Error saving donation: " + e.getMessage());
-                        }
-                        break;
+    } catch (SQLException e) {
+        System.out.println("Error saving donation: " + e.getMessage());
+    }
+    break;
+
+                        
+    
 
                     case 7:
                         EventFactory ev;
