@@ -59,22 +59,21 @@ public class AdminEventFactory implements EventFactory{
                          System.out.println("Error adding event: " + e.getMessage());
 
                  }
-                RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
-                requiredSkill.setEventId(event_id);
+                
                 
                 for(int i = 0 ; i < skills.size();i++){
+                        RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
+                        requiredSkill.setEventId(event_id);
                         requiredSkill.setSkillId(skills.get(i));
-                }
-                try{
+                        try{
                     int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
                     System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());
-                     
-                
-        
-                }catch(SQLException e){
+                     }catch(SQLException e){
                     System.out.println("Error adding required skills: " + e.getMessage());
 
                 }
+                }
+                
                 return event;
         }
 
