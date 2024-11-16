@@ -18,7 +18,7 @@ public class PaymentDAO {
         this.connection = connection;
     }
 
-    // Ensure Payment Methods are added to the paymentmethode table if they don't already exist
+    // Ensure Payment Methods are added to the paymentmethod table if they don't already exist
     public void addPaymentMethodIfNotExists(String paymentMethodName) throws SQLException {
         String sql = "SELECT id FROM paymentmethod WHERE name = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -64,7 +64,17 @@ public class PaymentDAO {
         }
     }
 
-    // Retrieve payment by ID and populate PaymentDTO
+    // Link DonationRecord to Payment in the donationrecord_payment table
+    public void linkDonationToPayment(int donationId, int paymentId) throws SQLException {
+        String sql = "INSERT INTO donationrecord_payment (donation_id, payment_id) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, donationId);
+            stmt.setInt(2, paymentId);
+            stmt.executeUpdate();
+        }
+    }
+
+    // Retrieve payment details by ID
     public PaymentDTO getPaymentById(int paymentId) throws SQLException {
         String sql = "SELECT id, payment_method_id, timestamp, is_deleted FROM payment WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -77,37 +87,9 @@ public class PaymentDAO {
                     payment.setTimestamp(rs.getTimestamp("timestamp").toLocalDateTime());
                     payment.setIsDeleted(rs.getBoolean("is_deleted"));
                     return payment;
-                } else {
-                    return null;
                 }
             }
         }
-    }
-
-    // Delete a payment by updating the is_deleted flag
-    public void deletePayment(int paymentId) throws SQLException {
-        String sql = "UPDATE payment SET is_deleted = true WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, paymentId);
-            stmt.executeUpdate();
-        }
-    }
-
-    // Retrieve the PaymentMethod details by its ID
-    public PaymentMethodDTO getPaymentMethodById(int paymentMethodId) throws SQLException {
-        String sql = "SELECT id, name FROM paymentmethod WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, paymentMethodId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    PaymentMethodDTO paymentMethod = new PaymentMethodDTO();
-                    paymentMethod.setId(rs.getInt("id"));
-                    paymentMethod.setName(rs.getString("name"));
-                    return paymentMethod;
-                } else {
-                    return null;
-                }
-            }
-        }
+        return null;
     }
 }
