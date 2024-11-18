@@ -33,7 +33,7 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
                 userView.showMessage("Logging out...");
                 return true; // This will exit the menu loop
             case 5:
-                System.out.println("Exiting...");
+                userView.showMessage("Exiting...");//
                 DbConnectionSingleton.getInstance().close(null, null);
                 System.exit(0);
                 break;

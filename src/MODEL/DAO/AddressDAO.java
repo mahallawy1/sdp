@@ -41,7 +41,6 @@ public class AddressDAO {
     public static String getFullAddressPath(int addressId) {
         AddressDTO address = getAddressById(addressId);
         if (address == null) {
-            System.out.println("Address not found for ID: " + addressId);
             return null;
         }
 

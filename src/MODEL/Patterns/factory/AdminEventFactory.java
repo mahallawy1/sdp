@@ -13,6 +13,7 @@ import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.Event.RequiredSkillsDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
+import View.UserView;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -21,7 +22,10 @@ import java.util.ArrayList;
  * @author hussien
  */
 public class AdminEventFactory implements EventFactory{
-    
+       private UserView userView;
+    public AdminEventFactory(UserView userView) {
+        this.userView = userView;
+    }
     
     public EventDTO createEvent(UserDTO admin, String eventName,
             int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,ArrayList<Integer> skills
@@ -52,11 +56,11 @@ public class AdminEventFactory implements EventFactory{
                 
                 int event_id = 0;
                 try {
-                  event_id = EventDAO.addEvent(event);
-                 System.out.println("Event added successfully with ID: " + event.getId());
+                  event_id = EventDAO.addEvent(event);//
+                 userView.showMessage("Event added successfully with ID: " + event.getId());
                     
-                 } catch (SQLException e) {
-                         System.out.println("Error adding event: " + e.getMessage());
+                 } catch (SQLException e) {//
+                         userView.showMessage("Error adding event: " + e.getMessage());
 
                  }
                 
@@ -66,10 +70,10 @@ public class AdminEventFactory implements EventFactory{
                         requiredSkill.setEventId(event_id);
                         requiredSkill.setSkillId(skills.get(i));
                         try{
-                    int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
-                    System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());
+                    int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);//
+                    userView.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
                      }catch(SQLException e){
-                    System.out.println("Error adding required skills: " + e.getMessage());
+                    userView.showMessage("Error adding required skills: " + e.getMessage());//
 
                 }
                 }

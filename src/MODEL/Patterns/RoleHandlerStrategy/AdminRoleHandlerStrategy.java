@@ -59,8 +59,8 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 newUser.setRoleId(roleId);
                 newUser.setStatus(status);
 
-                boolean isAdded = UserDAO.addUser(loggedInUser);
-                System.out.println("User added: " + isAdded);
+                boolean isAdded = UserDAO.addUser(loggedInUser);//
+                userView.showMessage("User added: " + isAdded);
                 break;
 
             case 2:
@@ -75,16 +75,16 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                     // Fetch Address and Role
                     AddressDTO address = AddressDAO.getAddressById(retrievedUser.getAddressId());
                     RoleDTO role = RoleDAO.getRoleById(retrievedUser.getRoleId());
-
-                    System.out.println("User ID: " + retrievedUser.getId());
-                    System.out.println("Name: " + retrievedUser.getFirstname());
-                    System.out.println("Email: " + retrievedUser.getEmail());
-                    System.out.println("Mobile Phone: " + retrievedUser.getMobilePhone());
-                    System.out.println("Status: " + retrievedUser.getStatus());
-                    System.out.println("Role: " + (role != null ? role.getName() : "Role not found"));
-                    System.out.println("Address: " + (address != null ? address.getName() : "Address not found"));
+//
+                    userView.showMessage("User ID: " + retrievedUser.getId());
+                    userView.showMessage("Name: " + retrievedUser.getFirstname());
+                    userView.showMessage("Email: " + retrievedUser.getEmail());
+                    userView.showMessage("Mobile Phone: " + retrievedUser.getMobilePhone());
+                    userView.showMessage("Status: " + retrievedUser.getStatus());
+                    userView.showMessage("Role: " + (role != null ? role.getName() : "Role not found"));
+                    userView.showMessage("Address: " + (address != null ? address.getName() : "Address not found"));
                 } else {
-                    System.out.println("User not found.");
+                    userView.showMessage("User not found.");
                 }
                 break;
             case 3:
@@ -109,47 +109,53 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                      statusInput = userView.getInputWithValidation("Enter status : ", "status");
                      userToUpdate.setStatus(Integer.parseInt(statusInput));
 
-
+//
                     boolean isUpdated = UserDAO.updateUser(userToUpdate);
-                    System.out.println("User updated: " + isUpdated);
+                    userView.showMessage("User updated: " + isUpdated);
                 } else {
-                    System.out.println("User not found.");
+                    userView.showMessage("User not found.");//
                 }
                 break;
             case 4:
                 // ANSI escape codes for colors
-                String BLUE = "\033[34m";   // Blue color
-                String RESET = "\033[0m";   // Reset color
+                  // Reset color
 
 // Admin-specific logic for "Retrieve All Users"
 // Retrieve All Users
-                List<UserDTO> users = UserDAO.getAllUsers();
-                System.out.println("All users:");
+                List<UserDTO> users = UserDAO.getAllUsers();//
+                userView.showMessage("All users:");
 
-// Print a header for the table with blue color
-                System.out.printf(BLUE + "%-10s %-20s %-30s %-15s %-15s %-20s %-50s%n" + RESET,
-                        "User ID", "Name", "Email", "Mobile Phone", "Status", "Role", "Address");
+// Print a header for the table with blue color//
+                String format = "%-10s %-20s %-30s %-15s %-15s %-20s %-50s%n";
+userView.displayTableHeader(format, "User ID", "Name", "Email", "Mobile Phone", "Status", "Role", "Address");
+                
+               
 
-// Print a separator line
-                System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------");
+// Print a separator line//
+                userView.showMessage("-------------------------------------------------------------------------------------------------------------------------------------------------");
 
                 for (UserDTO user : users) {
                     // Fetch Address and Role for each user
                     String userAddress = AddressDAO.getFullAddressPath(user.getAddressId());
                     RoleDTO userRole = RoleDAO.getRoleById(user.getRoleId());
-
+//
                     // Print each user's details in a formatted way
-                    System.out.printf("%-10d %-20s %-30s %-15s %-15s %-20s %-50s%n",
-                            user.getId(),
-                            user.getFirstname(), // Assuming a 'lastname' field
-                            user.getEmail(),
-                            user.getMobilePhone(),
-                            user.getStatus(),
-                            (userRole != null ? userRole.getName() : "Role not found"),
-                            (userAddress != null ? userAddress : "Address not found"));
+                     format = "%-10d %-20s %-30s %-15s %-15s %-20s %-50s%n";
+userView.displayTableRow(
+    format,
+    user.getId(),
+    user.getFirstname(),
+    user.getEmail(),
+    user.getMobilePhone(),
+    user.getStatus(),
+    (userRole != null ? userRole.getName() : "Role not found"),
+    (userAddress != null ? userAddress : "Address not found")
+);
+                    
+                   
                 }
-
-                System.out.println();
+//
+                userView.showMessage("**********************************************************");
 
                 break;
             case 5:
@@ -173,9 +179,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 userView.showMessage("Logging out...");
                 return true;
 
-            case 10:
-                System.out.println("Exiting...");
-                DbConnectionSingleton.getInstance().close(null, null);
+            case 10://
+                userView.showMessage("Exiting...");
+                DbConnectionSingleton.getInstance().close(null, null);//
                 System.exit(0);
                 break;
             // Add more cases for admin-specific operations

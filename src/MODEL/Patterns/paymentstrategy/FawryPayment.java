@@ -5,15 +5,20 @@
 package MODEL.Patterns.paymentstrategy;
 
 import MODEL.DTO.Donation.PaymentDTO;
+import View.UserView;
 
 /**
  *
  * @author belal
  */
 public class FawryPayment implements PaymentStategy {
+    private UserView userView;
+    public FawryPayment(UserView userView) {
+        this.userView = userView;
+    }
      @Override
     public void pay(PaymentDTO payment) {
-        System.out.println("Pay by Fawry");
+        userView.showMessage("Pay by Fawry");//
        
     }
 }

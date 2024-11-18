@@ -1,4 +1,4 @@
-package MODEL.Patterns.Observer;
+/*package MODEL.Patterns.Observer;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,4 +18,4 @@ public class Test {
         donationSubj.setNotification("Mariam", 200000.99);
 
     }
-}
+}*/

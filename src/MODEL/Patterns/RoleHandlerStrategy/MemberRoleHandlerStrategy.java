@@ -23,9 +23,9 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
                  userView.showMessage("Logging out...");
                 return true;
             case 3:
-                System.out.println("Exiting...");
+                userView.showMessage("Exiting...");//
                 DbConnectionSingleton.getInstance().close(null, null);
-                System.exit(0);
+                System.exit(0);//
                 break;
             // Add more cases for member-specific operations
             default:

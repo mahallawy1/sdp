@@ -246,6 +246,21 @@ public boolean confirm(String message) {
  System.out.println("Enter the usr ID to delete:");
         return Integer.parseInt(scanner.nextLine());
     }
+     //////////////////////////
+     
+     public void displayMessageWithId(String message, int id) {
+    System.out.println(message + " with ID: " + id);
+}
+     public void displayTableHeader(String format, String... headers) {
+    String BLUE = "\033[34m";   
+    String RESET = "\033[0m";   
+
+    System.out.printf(BLUE + format + RESET, (Object[]) headers);
+}
+
+     public void displayTableRow(String format, Object... values) {
+    System.out.printf(format, values);
+}
 //////////////////////////////////
     public String getInputWithValidation(String prompt, String validationType) {
         String input = "";

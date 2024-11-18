@@ -52,6 +52,7 @@ import java.time.LocalDateTime;
 
 // Controller/UserController.java
 public class UserController {
+    
     private UserDAO userDAO;
     private UserView userView;
 
@@ -169,9 +170,9 @@ public void processDonation(UserDTO loggedInUser) {
 
             PaymentStategy paymentStrategy = null;
             if (paymentChoice == 1) {
-                paymentStrategy = new FawryPayment();
+                paymentStrategy = new FawryPayment(userView);
             } else if (paymentChoice == 2) {
-                paymentStrategy = new CreditCardPayment();
+                paymentStrategy = new CreditCardPayment( userView);
             }
 
             if (paymentStrategy != null) {
@@ -201,8 +202,8 @@ public void processDonation(UserDTO loggedInUser) {
     private void processPayment(UserDTO user, double amount) {
         int paymentChoice = userView.getPaymentChoice();
         PaymentStategy paymentStrategy = switch (paymentChoice) {
-            case 1 -> new FawryPayment();
-            case 2 -> new CreditCardPayment();
+            case 1 -> new FawryPayment(userView );
+            case 2 -> new CreditCardPayment(userView);
             default -> null;
         };
 
@@ -224,10 +225,10 @@ public void processDonation(UserDTO loggedInUser) {
 
         if (loggedInUser.getRoleId() == 2) {
             // Volunteer
-            ev = new VolunteerEventFactory(); 
+            ev = new VolunteerEventFactory(userView); 
         } else if (loggedInUser.getRoleId() == 1) { 
             // Admin
-            ev = new AdminEventFactory();
+            ev = new AdminEventFactory(userView);
 
         } else {
             userView.showMessage("Invalid role, cannot create event.");
