@@ -11,6 +11,14 @@ public class EventObserver4Volunteer extends AObserver {
         super(subject);
     }
 
+    public String getEventName() {
+        return eventName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public void update() {
         EventSubject subj = (EventSubject)(super.subject);
@@ -18,14 +26,5 @@ public class EventObserver4Volunteer extends AObserver {
         this.description = subj.description;
         super.newNotification = true;
 
-    }
-
-    @Override
-    public void display() {
-        if(super.newNotification) {
-            System.out.println("\uD83D\uDD14  New Event Added! \n Event Name: " + eventName + "\n Description: " + description +
-                    ".\nSee you \uD83D\uDE04.");
-            super.newNotification = false;
-        }
     }
 }

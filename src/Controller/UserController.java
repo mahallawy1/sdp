@@ -114,9 +114,10 @@ public class UserController {
 
         if (loggedInUser != null) {
             userView.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
-            if(loggedInUser.getRoleId()==1) donationObsrv.display();
-            if(loggedInUser.getRoleId()==2) eventObsrv4Volunteer.display();
-            if(loggedInUser.getRoleId()==3) eventObsrv.display();
+            // Show notifications
+            if(loggedInUser.getRoleId()==1)  userView.showNotification(donationObsrv);
+            if(loggedInUser.getRoleId()==2) userView.showNotification(eventObsrv4Volunteer);
+            if(loggedInUser.getRoleId()==3) userView.showNotification(eventObsrv);
             userView.showMainMenu(loggedInUser); // Show menu after successful login
 
 

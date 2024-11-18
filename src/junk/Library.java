@@ -184,7 +184,7 @@ public class Library {
             if (loggedInUser.getRoleId() == 1) {
             // Role ID 1: Admin - has access to all operations
                 // Notify admin with the latest donation
-                donationObsrv.display();
+                //donationObsrv.display();
 
             System.out.println(" WELCOME TO YOUR  control panal MR"+loggedInUser.getFirstname());
             System.out.println("1. Add User");
@@ -208,7 +208,7 @@ public class Library {
         } else if (loggedInUser.getRoleId() == 3) {
             // Role ID 3: Member - has limited access
                 // Notify member with the latest event
-                eventObsrv.display();
+                //eventObsrv.display();
 
             System.out.println("6. Add Donation");
             System.out.println("9. Logout");
@@ -373,8 +373,8 @@ switch (choice) {
             int paymentChoice = scanner.nextInt();
 
             PaymentStategy paymentStrategy = null;
-            if (paymentChoice == 1) paymentStrategy = new FawryPayment();
-            else if (paymentChoice == 2) paymentStrategy = new CreditCardPayment();
+//            if (paymentChoice == 1) paymentStrategy = new FawryPayment();
+//            else if (paymentChoice == 2) paymentStrategy = new CreditCardPayment();
 
             if (paymentStrategy != null) {
                 PaymentDTO payment = new PaymentDTO();
@@ -411,9 +411,9 @@ switch (choice) {
                                
                        if(loggedInUser.getRoleId()==2){
                        //volunteer
-                           ev= new VolunteerEventFactory(); 
+//                           ev= new VolunteerEventFactory();
                        }else if(loggedInUser.getRoleId()==1){ 
-                            ev = new AdminEventFactory(); 
+//                            ev = new AdminEventFactory();
                        }else{
                            break;
                        }
@@ -479,9 +479,9 @@ switch (choice) {
 
                        
                      
-                        EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime,skills);
-                        System.out.println(newEvent.getName());
-                        System.out.println(newEvent.getDescription());
+//                        EventDTO newEvent = ev.createEvent(loggedInUser, eventName,eventTypeId,description,eventDate,startTime, endTime,skills);
+//                        System.out.println(newEvent.getName());
+//                        System.out.println(newEvent.getDescription());
                         eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);
                         break;
                     case 8:

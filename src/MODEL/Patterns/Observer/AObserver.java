@@ -4,6 +4,10 @@ public abstract class AObserver {
     protected ASubject subject;
     protected boolean newNotification;
 
+    public boolean isNewNotification() {
+        return newNotification;
+    }
+
     protected AObserver(ASubject subject){
         this.subject = subject;
         this.subject.addObserver(this);
@@ -11,6 +15,8 @@ public abstract class AObserver {
     }
     public abstract void update();
 
-    public abstract void display();
+    public void clearNotification(){
+        newNotification = false;
+    }
 
 }

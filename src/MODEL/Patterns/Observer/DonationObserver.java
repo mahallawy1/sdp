@@ -16,11 +16,11 @@ public class DonationObserver extends AObserver{
         super.newNotification = true;
     }
 
-    @Override
-    public void display() {
-        if(super.newNotification) {
-            System.out.println("\uD83D\uDD14  New Donation \uD83C\uDF89. " + donationAmount + "EG£ from " + donorName + ".");
-            super.newNotification = false;
-        }
+    public String getDonorName() {
+        return donorName;
+    }
+
+    public Double getDonationAmount() {
+        return donationAmount;
     }
 }

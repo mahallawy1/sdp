@@ -8,6 +8,23 @@ public class EventObserver extends AObserver{
     private String eventName;
     private LocalDate eventDate;
     private LocalTime timeFrom;
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public LocalTime getTimeFrom() {
+        return timeFrom;
+    }
+
+    public LocalTime getTimeTo() {
+        return timeTo;
+    }
+
     private LocalTime timeTo;
 
     public EventObserver(EventSubject subject) {
@@ -23,14 +40,5 @@ public class EventObserver extends AObserver{
         this.timeFrom = subj.timeFrom;
         super.newNotification = true;
 
-    }
-
-    @Override
-    public void display() {
-        if(super.newNotification) {
-            System.out.println("\uD83D\uDD14  New Event Added! " + eventName + " at " + eventDate +
-                    " from " + timeFrom + " to " + timeTo + ". See you \uD83D\uDE04.");
-            super.newNotification = false;
-        }
     }
 }
