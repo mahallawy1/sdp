@@ -45,13 +45,13 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
                        
     EventDTO event = EventDAO.getEventById(eventId);
     if (event == null) {
-        System.out.println("Event not found. Please check the ID.");
+         userView.showMessage("Event not found. Please check the ID.");
         break;
     }
 
     // Check if the event is full  and it still need fixes
     if (EventDAO.isEventFull(eventId)) {
-        System.out.println("Sorry, this event is already full.");
+         userView.showMessage("Sorry, this event is already full.");
         break;
     }
 
@@ -67,7 +67,7 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
     TicketGenerator eventTicket = new EventJoiningAdapter(details, event);
     eventTicket.saveTicketToFile("G:/Spring24/this summer/last fall/sdp/tickets/event_ticket_" + loggedInUser.getId() + ".txt");
 
-    System.out.println("You have successfully joined the event. Your ticket has been saved.");
+     userView.showMessage("You have successfully joined the event. Your ticket has been saved.");
     break;
                         
                         
