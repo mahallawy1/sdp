@@ -1,0 +1,6 @@
+Event Joining Ticket
+Event Name: reading day
+Event Date: 1999-05-17
+User ID: 2
+Volunteer Hours: 4
+Status: pending
