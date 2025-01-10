@@ -4,8 +4,11 @@
  */
 package MODEL.Patterns.LoginStrategy;
 
+import MODEL.DTO.User.UserDTO;
+
 /**
  *
+ *   
  * @author Eslam
  */
 public class LoginService {
@@ -14,5 +17,11 @@ public class LoginService {
     // Method to set the login strategy
     public void setStrategy(LoginStrategy strategy) {
         this.strategy = strategy;
+    }
+    public UserDTO executeLogin() {
+        if (strategy == null) {
+            throw new IllegalStateException("Login strategy not set");
+        }
+        return strategy.login();
     }
 }

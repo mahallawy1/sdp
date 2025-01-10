@@ -9,6 +9,7 @@ import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,6 +17,6 @@ import java.time.LocalTime;
  */
 public interface EventFactory {
      public  EventDTO createEvent(UserDTO admin, String eventName,
-            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to
+            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,ArrayList<Integer>skills
             );
 }

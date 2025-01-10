@@ -13,17 +13,22 @@ import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.Event.RequiredSkillsDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
+import View.UserView;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
  * @author hussien
  */
 public class AdminEventFactory implements EventFactory{
-    
+       private UserView userView;
+    public AdminEventFactory(UserView userView) {
+        this.userView = userView;
+    }
     
     public EventDTO createEvent(UserDTO admin, String eventName,
-            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to
+            int eventTypeId,String description,LocalDate eventDate,LocalTime from, LocalTime to,ArrayList<Integer> skills
        ){
         if((admin.getRoleId())==1){
             // if event is seminar
@@ -51,30 +56,28 @@ public class AdminEventFactory implements EventFactory{
                 
                 int event_id = 0;
                 try {
-                  event_id = EventDAO.addEvent(event);
-                 System.out.println("Event added successfully with ID: " + event.getId());
+                  event_id = EventDAO.addEvent(event);//
+                 userView.showMessage("Event added successfully with ID: " + event.getId());
                     
-                 } catch (SQLException e) {
-                         System.out.println("Error adding event: " + e.getMessage());
+                 } catch (SQLException e) {//
+                         userView.showMessage("Error adding event: " + e.getMessage());
 
                  }
-                RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
-                requiredSkill.setEventId(event_id);
                 
-                if(eventTypeId == 0){
-                requiredSkill.setSkillId(0);
-                }else{requiredSkill.setSkillId(1); 
-                }// skill with id 1 which is required for workshop
-                try{
-                    int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
-                    System.out.println("RequiredSkills added successfully with ID: " + requiredSkill.getId());
-                     
                 
-        
-                }catch(SQLException e){
-                    System.out.println("Error adding required skills: " + e.getMessage());
+                for(int i = 0 ; i < skills.size();i++){
+                        RequiredSkillsDTO requiredSkill = new RequiredSkillsDTO();
+                        requiredSkill.setEventId(event_id);
+                        requiredSkill.setSkillId(skills.get(i));
+                        try{
+                    int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);//
+                    userView.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
+                     }catch(SQLException e){
+                    userView.showMessage("Error adding required skills: " + e.getMessage());//
 
                 }
+                }
+                
                 return event;
         }
 

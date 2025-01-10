@@ -55,4 +55,3 @@ public class DonationRecordTypeDTO {
         this.amount = amount;
     }
 }
-

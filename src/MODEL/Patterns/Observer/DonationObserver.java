@@ -13,11 +13,14 @@ public class DonationObserver extends AObserver{
         DonationSubject subj = (DonationSubject)(super.subject);
         this.donorName = subj.donorName;
         this.donationAmount = subj.donationAmount;
-        display();
+        super.newNotification = true;
     }
 
-    @Override
-    public void display() {
-        System.out.println("New Donation \uD83C\uDF89. " + donationAmount + "EG£ from " + donorName + ".");
+    public String getDonorName() {
+        return donorName;
+    }
+
+    public Double getDonationAmount() {
+        return donationAmount;
     }
 }

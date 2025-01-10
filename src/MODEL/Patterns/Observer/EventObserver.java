@@ -1,11 +1,31 @@
 package MODEL.Patterns.Observer;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class EventObserver extends AObserver{
 
     private String eventName;
-    private String eventDate;
-    private String timeFrom;
-    private String timeTo;
+    private LocalDate eventDate;
+    private LocalTime timeFrom;
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public LocalTime getTimeFrom() {
+        return timeFrom;
+    }
+
+    public LocalTime getTimeTo() {
+        return timeTo;
+    }
+
+    private LocalTime timeTo;
 
     public EventObserver(EventSubject subject) {
         super(subject);
@@ -18,12 +38,7 @@ public class EventObserver extends AObserver{
         this.eventDate = subj.eventDate;
         this.timeTo = subj.timeTo;
         this.timeFrom = subj.timeFrom;
-        display();
-    }
+        super.newNotification = true;
 
-    @Override
-    public void display() {
-        System.out.println("New Event Added! " + eventName + " at " + eventDate +
-                " from " + timeFrom + " to " + timeTo + ". See you \uD83D\uDE04.");
     }
 }

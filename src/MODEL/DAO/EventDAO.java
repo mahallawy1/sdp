@@ -29,15 +29,19 @@ public class EventDAO {
 
     // Check if the event is full based on its capacity
     public static boolean isEventFull(int eventId) throws SQLException {
+       
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("SELECT capacity FROM events WHERE id = ?")) {
+             PreparedStatement pstmt = conn.prepareStatement("SELECT capacity FROM event WHERE id = ?")) {
 
             pstmt.setInt(1, eventId);
             try (ResultSet rset = pstmt.executeQuery()) {
                 if (rset.next()) {
                     int capacity = rset.getInt("capacity");
-
-                    try (PreparedStatement countStmt = conn.prepareStatement("SELECT COUNT(*) AS count FROM event_attendees WHERE event_id = ?")) {
+ return false;
+ 
+ /// hussien check this plzzz
+                    /*try (PreparedStatement countStmt = conn.prepareStatement("SELECT COUNT(*) AS count FROM event_attendees WHERE event_id = ?")) {
+ 
                         countStmt.setInt(1, eventId);
                         try (ResultSet countRset = countStmt.executeQuery()) {
                             if (countRset.next()) {
@@ -45,7 +49,7 @@ public class EventDAO {
                                 return attendeeCount >= capacity;
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -125,6 +129,29 @@ public class EventDAO {
             }
         }
     }
+public static EventDTO getEventById(int eventId) throws SQLException {
+    String sql = "SELECT id, name, event_type_id, description, event_date, time_from, time_to, capacity FROM event WHERE id = ?";
+    try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, eventId);
+        try (ResultSet rset = pstmt.executeQuery()) {
+            if (rset.next()) {
+                EventDTO event = new EventDTO() {};
+                event.setId(rset.getInt("id"));
+                event.setName(rset.getString("name"));
+                event.setEventTypeId(rset.getInt("event_type_id"));
+                event.setDescription(rset.getString("description"));
+                event.setEventDate(rset.getDate("event_date").toLocalDate());
+                event.setTimeFrom(rset.getTime("time_from").toLocalTime());
+                event.setTimeTo(rset.getTime("time_to").toLocalTime());
+                event.setCapacity(rset.getInt("capacity"));
+                return event;
+            }
+        }
+    }
+    return null; // Return null if no event is found
+}
 
     // Remove an event by its ID
     public static boolean removeEvent(int eventId) throws SQLException {
