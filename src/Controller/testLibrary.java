@@ -15,7 +15,7 @@ public class testLibrary {
     public static void main(String[] args) {
         // Instantiate UserDAO
         UserDAO userDAO = new UserDAO();
-
+        System.out.println("test");
         // Create the UserController and pass the UserDAO to it
         UserController userController = new UserController(userDAO, null);  // Temporarily passing null for UserView
 

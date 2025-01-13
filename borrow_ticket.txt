@@ -1,0 +1,7 @@
+=== Borrow Ticket ===
+Borrow ID: 0
+User ID: 10
+Days: 7
+Book:
+- Physics (Learning)
+=====================

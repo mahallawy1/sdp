@@ -48,6 +48,8 @@ import java.util.Scanner;
 import java.sql.SQLException;
 
 import static Controller.testLibrary.*;
+import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.State.BookContext;
 import java.time.LocalDateTime;
 
 // Controller/UserController.java
@@ -263,7 +265,55 @@ public void processDonation(UserDTO loggedInUser) {
             userView.showMessage("Error removing event: " + e.getMessage());
         }
     }
-    
+
+    public void addBook(){
+       try{    
+        BookDAO bookDAO = new BookDAO();
+        String description = userView.getInputWithValidation("Enter book description:", "text");
+        String title = userView.getInputWithValidation("Enter book title" , "text");
+        String cover = userView.getInputWithValidation("Enter book cover URL:", "text");
+        String publishYear = userView.getInputWithValidation("Enter publish year:", "text");
+        String quantity = userView.getInputWithValidation("Enter quantity:", "text");
+        String status = "available";
+        BookDTO bookDTO = new BookDTO(0,description,title,cover,false,Integer.parseInt(publishYear),Integer.parseInt(quantity),status);
+       
+        bookDAO.addBook(bookDTO);
+        System.out.println("Book added Successfully");
+       }
+       catch(Exception e){
+           System.out.println("Error adding book" + e);
+       }
+    }
+    public void deleteBook(){
+       try{
+        String id = userView.getInputWithValidation("Enter the ID of the book to delete:","text");
+        BookDAO bookDAO = new BookDAO();
+        bookDAO.deleteBook(Integer.parseInt(id));
+        System.out.println("test");
+       }
+       catch(Exception e){
+           System.out.println("Error deleting book " + e);
+       }
+    }
+    public void borrowBook(UserDTO loggedInUser){
+        String bookId = userView.getInputWithValidation("Enter the book id you wish to borrow", "userid");
+        try{
+            BookDAO bookDAO = new BookDAO();
+            BookDTO bookDTO = bookDAO.getBookById(Integer.parseInt(bookId));
+            System.out.println(bookDTO.getStatus());
+            if(!bookDTO.getDeleted()){
+                BookContext book = new BookContext(bookDTO);
+                book.requestBook();
+                book.reserveBook();
+                book.checkoutBook(loggedInUser.getId());
+                book.markOverdue();
+               // book.returnBook();
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error borrowing" + e);
+        }
+    }
     /////////////////////////////////////////////////////
     ///////////////////////////////////////
     ///delete ust 

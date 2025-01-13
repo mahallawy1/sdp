@@ -174,12 +174,20 @@ userView.displayTableRow(
             case 8:
                userController.deleteEvent();
                 break;
+                
             case 9:
+                userController.addBook();
+                break;
+                
+            case 10:
+                userController.deleteBook();
+                break;
+            case 11:
                 // Volunteer-specific logic for "Logout"
                 userView.showMessage("Logging out...");
                 return true;
 
-            case 10://
+            case 12://
                 userView.showMessage("Exiting...");
                 DbConnectionSingleton.getInstance().close(null, null);//
                 System.exit(0);

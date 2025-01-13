@@ -137,7 +137,7 @@ public static EventDTO getEventById(int eventId) throws SQLException {
         pstmt.setInt(1, eventId);
         try (ResultSet rset = pstmt.executeQuery()) {
             if (rset.next()) {
-                EventDTO event = new EventDTO() {};
+                EventDTO event = new EventDTO();
                 event.setId(rset.getInt("id"));
                 event.setName(rset.getString("name"));
                 event.setEventTypeId(rset.getInt("event_type_id"));
