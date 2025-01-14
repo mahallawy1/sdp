@@ -19,14 +19,17 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
 
                 break;
             case 2:
+                userController.displayAvailableBooks();
+                break;
+            case 3:
                 userController.borrowBook(loggedInUser);
                 break;
           
-            case 3:
+            case 4:
                 // Member-specific logic for "Logout"
                  userView.showMessage("Logging out...");
                 return true;
-            case 4:
+            case 5:
                 userView.showMessage("Exiting...");//
                 DbConnectionSingleton.getInstance().close(null, null);
                 System.exit(0);//

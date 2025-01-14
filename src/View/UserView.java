@@ -165,9 +165,10 @@ public class UserView {
             System.out.println("6. Exit");
         } else if (loggedInUser.getRoleId() == 3) {
             System.out.println("1. Add Donation");
-            System.out.println("2. Borrow A book");
-            System.out.println("3. Logout");
-            System.out.println("4. Exit");
+            System.out.println("2. Display Books");
+            System.out.println("3. Borrow A book");
+            System.out.println("4. Logout");
+            System.out.println("5. Exit");
         }
     }
 

@@ -49,6 +49,9 @@ import java.sql.SQLException;
 
 import static Controller.testLibrary.*;
 import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.AvailableBookCollection;
+import MODEL.Patterns.Iterator.BookIterator;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
 import java.time.LocalDateTime;
 
@@ -295,25 +298,89 @@ public void processDonation(UserDTO loggedInUser) {
            System.out.println("Error deleting book " + e);
        }
     }
-    public void borrowBook(UserDTO loggedInUser){
-        String bookId = userView.getInputWithValidation("Enter the book id you wish to borrow", "userid");
-        try{
+    public void displayAvailableBooks() {
+        try {
+            // Create an instance of BookDAO to fetch books
             BookDAO bookDAO = new BookDAO();
-            BookDTO bookDTO = bookDAO.getBookById(Integer.parseInt(bookId));
-            System.out.println(bookDTO.getStatus());
-            if(!bookDTO.getDeleted()){
-                BookContext book = new BookContext(bookDTO);
-                book.requestBook();
-                book.reserveBook();
-                book.checkoutBook(loggedInUser.getId());
-                book.markOverdue();
-               // book.returnBook();
+
+            // Fetch all books into an AvailableBookCollection
+            AvailableBookCollection availableBooks = bookDAO.getAllBooks();
+
+            // Create an iterator to traverse the collection
+            BookIterator iterator = availableBooks.createIterator();
+
+            // Iterate through the books and display their details
+            while (iterator.hasNext()) {
+                BookDTO book = iterator.next();
+                System.out.println("ID: " + book.getId());
+                System.out.println("Title: " + book.getTitle());
+                System.out.println("Description: " + book.getDescription());
+                System.out.println("Publish Year: " + book.getPublishYear());
+                System.out.println("Quantity: " + book.getQuantity());
+                System.out.println("Status: " + book.getStatus());
+                System.out.println("-----------------------------------");
             }
+        } catch (Exception e) {
+            System.out.println("Error displaying books: " + e.getMessage());
         }
-        catch(Exception e){
-            System.out.println("Error borrowing" + e);
-        }
-    }
+        }    
+        public void borrowBooks(UserDTO loggedInUser) {
+            // Display available books
+            displayAvailableBooks();
+
+            // Initialize the BorrowedBookCollection to store the books being borrowed
+            BorrowedBookCollection borrowedBooks = new BorrowedBookCollection();
+
+            // Loop to allow user to enter multiple book IDs
+            while (true) {
+                // Prompt user to enter the book id they wish to borrow in a user-friendly way
+                String bookId = userView.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
+
+                // Check if the user is done entering books
+                if (bookId.equalsIgnoreCase("done")) {
+                    System.out.println("You have finished entering books.");
+                    break;
+                }
+
+                try {
+                    // Create BookDAO to fetch book data from the database or collection
+                    BookDAO bookDAO = new BookDAO();
+                    BookDTO bookDTO = bookDAO.getBookById(Integer.parseInt(bookId));
+
+                    // Check if the book is available and not deleted
+                    if (bookDTO != null && !bookDTO.getDeleted()) {
+                        // Add the book to the borrowed books collection
+                        borrowedBooks.addBook(bookDTO);
+
+                        // Inform the user
+                        System.out.println("Book '" + bookDTO.getTitle() + "' has been added to your borrowed list.");
+                    } else {
+                        System.out.println("This book is either deleted or unavailable.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid book ID. Please enter a valid numeric ID.");
+                } catch (Exception e) {
+                    System.out.println("Error adding the book: " + e.getMessage());
+                }
+            }
+
+    // Once all books are added, pass the BorrowedBookCollection to BookContext for processing
+            
+                // Create a BookContext for the entire BorrowedBookCollection
+                BookContext bookContext = new BookContext(borrowedBooks);
+
+                // Now, process the books in the BorrowedBookCollection using the methods in BookContext
+                bookContext.requestBook();
+                bookContext.reserveBook();
+                bookContext.checkoutBook(loggedInUser.getId());
+                bookContext.markOverdue();
+                // Optionally, bookContext.returnBooks(); can be called if needed
+
+                // Inform the user that the books have been successfully borrowed
+                System.out.println("All selected books have been successfully borrowed.");
+           
+            }
+        
     /////////////////////////////////////////////////////
     ///////////////////////////////////////
     ///delete ust 

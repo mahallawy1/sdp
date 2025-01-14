@@ -1,6 +1,7 @@
 package MODEL.DAO;
 
 import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.AvailableBookCollection;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,8 +10,9 @@ import java.util.List;
 public class BookDAO {
 
     // Method to get all books from the database
-    public List<BookDTO> getAllBooks() throws SQLException {
-        List<BookDTO> books = new ArrayList<>();
+    public AvailableBookCollection getAllBooks() throws SQLException {
+        //List<BookDTO> books = new ArrayList<>();
+        AvailableBookCollection books = new AvailableBookCollection();
         String query = "SELECT * FROM books WHERE deleted = false";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
@@ -19,7 +21,7 @@ public class BookDAO {
 
             while (rs.next()) {
                 BookDTO book = mapRowToBook(rs);
-                books.add(book);
+                books.addBook(book);
             }
         }
         return books;
