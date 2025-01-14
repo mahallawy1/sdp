@@ -2,6 +2,11 @@ package Controller;
 
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.Cmd.*;
+import MODEL.Patterns.Command.Invoker;
+import MODEL.Patterns.Command.Manager.DonationManager;
+import MODEL.Patterns.Command.Manager.EventManager;
+import MODEL.Patterns.Command.Manager.UserManager;
 import View.UserView;
 import MODEL.DAO.*;
 import MODEL.DAO.DonationRecordDAO;
@@ -60,10 +65,14 @@ public class UserController {
     
     private UserDAO userDAO;
     private UserView userView;
+    private Invoker invoker;
+
 
     public UserController(UserDAO userDAO, UserView userView) {
         this.userDAO = userDAO;
         this.userView = userView;
+        this.invoker = new Invoker();
+
     }
 
     public void setUserView(UserView userView) {
@@ -99,17 +108,32 @@ public class UserController {
         int loginChoice = userView.getChoice();
         UserDTO loggedInUser = null;
 
+        // command design pattern
+        UserManager userManager;
         switch (loginChoice) {
             case 1:
                 // Login by Email and Password
                 String email = userView.getInputWithValidation("Enter email: " , "email");
                 String password = userView.getInputWithValidation("Enter password: " , "password");
-                loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
+
+                // command design pattern
+                loggedInUser = new UserDTO(email, password);
+                userManager = new UserManager(loggedInUser);
+                invoker.setCommand(new LoginByPasswordCmd(userManager));
+                invoker.execute();
+                loggedInUser = userManager.getUser();
+                //loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
                 break;
             case 2:
                 // Login by Mobile Phone
                 String mobilePhone = userView.getInputWithValidation("Enter mobile phone: " , "phone");
-                loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
+                // command design pattern
+                loggedInUser = new UserDTO(mobilePhone);
+                userManager = new UserManager(loggedInUser);
+                invoker.setCommand(new LoginByMobilePhoneCmd(userManager));
+                invoker.execute();
+                loggedInUser = userManager.getUser();
+                //loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
                 break;
 
             default:
@@ -167,7 +191,13 @@ public void processDonation(UserDTO loggedInUser) {
 
     try (Connection conn = DbConnectionSingleton.getInstance().getConnection()) {
         DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn);
-        int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
+
+        // commmand design pattern
+        DonationManager donationManager = new DonationManager(donationRecord, donationRecordDAO, donationTypes);
+        invoker.setCommand(new AddDonationCmd(donationManager));
+        invoker.execute();
+        int donationId = donationManager.getDonationId();
+        //int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
 
         if (donationId != -1) {
             userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
@@ -258,12 +288,20 @@ public void processDonation(UserDTO loggedInUser) {
 
     }
     //////////////////////////delete event/////////////////
-    public void deleteEvent() {
+    public void deleteEvent() throws SQLException {
         int eventId = userView.getEventIdForDeletion();
 
+
         try {
-            EventDAO.removeEvent(eventId);
-            userView.showMessage("Event with ID " + eventId + " removed successfully.");
+            //EventDAO.removeEvent(eventId);
+            // Command design patten
+            EventManager eventManager = new EventManager(eventId);
+            invoker.setCommand(new DeleteEventCmd(eventManager));
+            invoker.execute();
+            if(eventManager.isSuccessful())
+                userView.showMessage("Event with ID " + eventId + " removed successfully.");
+            else
+                userView.showMessage("Error removing event with ID "+ eventId +". Maybe id was wrong.");
         } catch (SQLException e) {
             userView.showMessage("Error removing event: " + e.getMessage());
         }
@@ -388,8 +426,18 @@ public void processDonation(UserDTO loggedInUser) {
         int deleteUserId = userView.getUsrIdForDeletion();
 
         try {
-            UserDAO.deleteUser(deleteUserId);
-            userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+            // command design pattern
+            UserManager userManager = new UserManager();
+            userManager.setUser(new UserDTO(deleteUserId));
+            invoker.setCommand(new DeleteUserCmd(userManager));
+            invoker.execute();
+            boolean isDeleted = userManager.isSuccessful();
+            //UserDAO.deleteUser(deleteUserId);
+            if(isDeleted)
+                userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+            else
+                userView.showMessage("Error removing usr with ID " + deleteUserId + ". Maybe id is wrong." );
+
         } catch (SQLException e) {
             userView.showMessage("Error removing usr: " + e.getMessage());
         }
@@ -433,11 +481,13 @@ public void processDonation(UserDTO loggedInUser) {
             newUser.setRoleId(roleId);
             newUser.setStatus(status);
 
+            // command design pattern
+            UserManager userManager = new UserManager(newUser);
+            invoker.setCommand(new AddUserCmd(userManager));
+            invoker.execute();
+            //boolean isAdded = userDAO.addUser(newUser);
 
-
-            boolean isAdded = userDAO.addUser(newUser);
-
-            if (isAdded) {
+            if (userManager.isSuccessful()) {
                 userView.showMessage("Signup successful!");
                 userView.showMainMenu(newUser);  // Show the main menu after successful signup
             } else {
