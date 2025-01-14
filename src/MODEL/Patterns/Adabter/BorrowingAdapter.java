@@ -4,26 +4,28 @@
  */
 package MODEL.Patterns.Adabter;
 
+import MODEL.DTO.Book.BookDTO;
+import MODEL.DTO.Book.BorrowDTO;
+import MODEL.Patterns.Iterator.BookIterator;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  *
  * @author mahallawy
  */
-import MODEL.DTO.Book.BookDTO;
-import MODEL.DTO.Book.BorrowDTO;
-import java.awt.print.Book;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
+
 
 public class BorrowingAdapter implements TicketGenerator {
     private final BorrowDTO borrow;
-    private final BookDTO book;
+    private final BorrowedBookCollection borrowedBooks;
 
     // Constructor initializes the required data
-    public BorrowingAdapter(BorrowDTO borrow, BookDTO book) {
+    public BorrowingAdapter(BorrowDTO borrow, BorrowedBookCollection borrowedBooks) {
         this.borrow = borrow;
-        this.book = book;
+        this.borrowedBooks = borrowedBooks;
     }
 
     @Override
@@ -33,8 +35,15 @@ public class BorrowingAdapter implements TicketGenerator {
         ticket.append("Borrow ID: ").append(borrow.getId()).append("\n");
         ticket.append("User ID: ").append(borrow.getUserId()).append("\n");
         ticket.append("Days: ").append(borrow.getDays()).append("\n");
-        ticket.append("Book:\n");
-        ticket.append("- ").append(book.getTitle()).append(" (").append(book.getDescription()).append(")\n");
+        ticket.append("Books:\n");
+
+        // Iterate over all books in the borrowed collection and append to the ticket
+        BookIterator iterator = borrowedBooks.createIterator();
+        while (iterator.hasNext()) {
+            BookDTO book = iterator.next();
+            ticket.append("- ").append(book.getTitle()).append(" (").append(book.getDescription()).append(")\n");
+        }
+
         ticket.append("=====================\n");
         return ticket.toString();
     }

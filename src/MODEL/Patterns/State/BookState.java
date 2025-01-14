@@ -10,12 +10,17 @@ import MODEL.DTO.Book.BookDTO;
  *
  * @author hussien
  */
+
+
+import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
+
 public interface BookState {
-    void requestBook(BookContext context,BookDTO book);
-    void reserveBook(BookContext context,BookDTO book);
-    void checkoutBook(BookContext context,BookDTO book,int user_id);
-    void returnBook(BookContext context,BookDTO book);
-    void markOverdue(BookContext context,BookDTO book);
-    void markUnavailable(BookContext context,BookDTO book);
-    void makeAvailable(BookContext context,BookDTO book);
+    void requestBook(BookContext context, BorrowedBookCollection borrowedBooks);
+    void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks);
+    void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id);
+    void returnBook(BookContext context, BorrowedBookCollection borrowedBooks);
+    void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks);
+    void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks);
+    void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks);
 }

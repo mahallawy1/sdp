@@ -338,16 +338,13 @@ public void processDonation(UserDTO loggedInUser) {
     }
     public void displayAvailableBooks() {
         try {
-            // Create an instance of BookDAO to fetch books
+            
             BookDAO bookDAO = new BookDAO();
 
-            // Fetch all books into an AvailableBookCollection
             AvailableBookCollection availableBooks = bookDAO.getAllBooks();
 
-            // Create an iterator to traverse the collection
             BookIterator iterator = availableBooks.createIterator();
 
-            // Iterate through the books and display their details
             while (iterator.hasNext()) {
                 BookDTO book = iterator.next();
                 System.out.println("ID: " + book.getId());
@@ -362,35 +359,26 @@ public void processDonation(UserDTO loggedInUser) {
             System.out.println("Error displaying books: " + e.getMessage());
         }
         }    
-        public void borrowBooks(UserDTO loggedInUser) {
-            // Display available books
+        public void borrowBook(UserDTO loggedInUser) {
             displayAvailableBooks();
 
-            // Initialize the BorrowedBookCollection to store the books being borrowed
             BorrowedBookCollection borrowedBooks = new BorrowedBookCollection();
 
-            // Loop to allow user to enter multiple book IDs
             while (true) {
-                // Prompt user to enter the book id they wish to borrow in a user-friendly way
                 String bookId = userView.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
 
-                // Check if the user is done entering books
                 if (bookId.equalsIgnoreCase("done")) {
                     System.out.println("You have finished entering books.");
                     break;
                 }
 
                 try {
-                    // Create BookDAO to fetch book data from the database or collection
                     BookDAO bookDAO = new BookDAO();
                     BookDTO bookDTO = bookDAO.getBookById(Integer.parseInt(bookId));
 
-                    // Check if the book is available and not deleted
                     if (bookDTO != null && !bookDTO.getDeleted()) {
-                        // Add the book to the borrowed books collection
                         borrowedBooks.addBook(bookDTO);
 
-                        // Inform the user
                         System.out.println("Book '" + bookDTO.getTitle() + "' has been added to your borrowed list.");
                     } else {
                         System.out.println("This book is either deleted or unavailable.");
@@ -402,19 +390,14 @@ public void processDonation(UserDTO loggedInUser) {
                 }
             }
 
-    // Once all books are added, pass the BorrowedBookCollection to BookContext for processing
-            
-                // Create a BookContext for the entire BorrowedBookCollection
+
                 BookContext bookContext = new BookContext(borrowedBooks);
 
-                // Now, process the books in the BorrowedBookCollection using the methods in BookContext
-                bookContext.requestBook();
-                bookContext.reserveBook();
-                bookContext.checkoutBook(loggedInUser.getId());
-                bookContext.markOverdue();
-                // Optionally, bookContext.returnBooks(); can be called if needed
+                bookContext.requestBooks();
+                bookContext.reserveBooks();
+                bookContext.checkoutBooks(loggedInUser.getId());
+                bookContext.markOverdueBooks();
 
-                // Inform the user that the books have been successfully borrowed
                 System.out.println("All selected books have been successfully borrowed.");
            
             }

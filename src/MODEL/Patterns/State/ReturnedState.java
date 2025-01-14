@@ -6,56 +6,75 @@ package MODEL.Patterns.State;
 
 import MODEL.DAO.BookDAO;
 import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.BookIterator;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
 
 /**
  *
  * @author hussien
  */
+
 public class ReturnedState implements BookState {
-    BookDAO bookDAO = new BookDAO();
+    private final BookDAO bookDAO = new BookDAO();
+
     @Override
-    public void requestBook(BookContext context,BookDTO bookDTO) {
-        System.out.println("Book is now available for request.");
-        context.setState(new RequestedState());
+    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
+        // Iterate over the collection of books to handle their individual states
+        BookIterator iterator = borrowedBooks.createIterator();
+        while (iterator.hasNext()) {
+            BookDTO bookDTO = iterator.next();
+            System.out.println("Book is now available for request: " + bookDTO.getTitle());
+            context.setState(new RequestedState());  // Change to RequestedState for each book
+        }
     }
 
     @Override
-    public void reserveBook(BookContext context,BookDTO bookDTO) {
-        System.out.println("Book is now available for reservation.");
-        context.setState(new ReservedState());
+    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
+        // Iterate over the collection of books to handle their individual states
+        BookIterator iterator = borrowedBooks.createIterator();
+        while (iterator.hasNext()) {
+            BookDTO bookDTO = iterator.next();
+            System.out.println("Book is now available for reservation: " + bookDTO.getTitle());
+            context.setState(new ReservedState());  // Change to ReservedState for each book
+        }
     }
 
     @Override
- public void checkoutBook(BookContext context,BookDTO book,int user_id) {
+    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
         System.out.println("Book must be requested or reserved before checkout.");
     }
 
     @Override
-    public void returnBook(BookContext context,BookDTO bookDTO) {
+    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
         System.out.println("Book is already returned.");
     }
 
     @Override
-    public void markOverdue(BookContext context,BookDTO bookDTO) {
+    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
         System.out.println("Book cannot be marked overdue after being returned.");
     }
 
     @Override
-    public void markUnavailable(BookContext context,BookDTO bookDTO) {
-        System.out.println("Book has just returned.");
+    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
+        System.out.println("Book has just been returned.");
     }
 
     @Override
-    public void makeAvailable(BookContext context,BookDTO bookDTO) {
-       try{
-        bookDTO.setStatus("available");
-        bookDAO.updateBook(bookDTO);
-        System.out.println("Book is now available.");
-        context.setState(new AvailableState());
-       }
-       catch(Exception e){
-           System.out.println("Error making book available" + e);
-       }
-       
+    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
+        try {
+            // Iterate over the borrowed books collection to update the status of each book
+            BookIterator iterator = borrowedBooks.createIterator();
+            while (iterator.hasNext()) {
+                BookDTO bookDTO = iterator.next();
+                // Update the status of the book to available
+                bookDTO.setStatus("available");
+                bookDAO.updateBook(bookDTO);  // Update book in the database
+                System.out.println("Book is now available: " + bookDTO.getTitle());
+            }
+            // After making all books available, change the state
+            context.setState(new AvailableState());  // Transition to AvailableState after updating
+        } catch (Exception e) {
+            System.out.println("Error making books available: " + e.getMessage());
+        }
     }
 }
