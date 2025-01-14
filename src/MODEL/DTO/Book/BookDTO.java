@@ -6,8 +6,9 @@ package MODEL.DTO.Book;
 
 /**
  *
- * @author mahallawy
+ * @author hussien
  */
+
 public class BookDTO {
     private int id;
     private String description;
@@ -16,8 +17,22 @@ public class BookDTO {
     private Boolean deleted;
     private Integer publishYear;
     private Integer quantity;
+    private String status;
 
+    // Default constructor
     public BookDTO() {}
+
+    // Constructor with all variables
+    public BookDTO(int id, String description, String title, String cover, Boolean deleted, Integer publishYear, Integer quantity, String status) {
+        this.id = id;
+        this.description = description;
+        this.title = title;
+        this.cover = cover;
+        this.deleted = deleted;
+        this.publishYear = publishYear;
+        this.quantity = quantity;
+        this.status = status;
+    }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -40,4 +55,6 @@ public class BookDTO {
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
     
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

@@ -20,6 +20,19 @@ public class UserDTO {
 
     public UserDTO() {}
 
+    public UserDTO(int id) {
+        this.id = id;
+    }
+
+    public UserDTO(String email, String password) {
+        this.password = password;
+        this.email = email;
+    }
+
+    public UserDTO(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
     public UserDTO(int i, String admin123, String adminmailcom, String admin_User, Object object, String string, int i0, int i1) {
        // throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }

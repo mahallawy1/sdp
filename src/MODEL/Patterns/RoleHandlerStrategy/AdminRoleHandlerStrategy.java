@@ -6,6 +6,9 @@ import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.AddressDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.Cmd.*;
+import MODEL.Patterns.Command.Invoker;
+import MODEL.Patterns.Command.Manager.UserManager;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import View.UserView;
 
@@ -15,9 +18,14 @@ import java.util.List;
 public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
     
     private final UserController userController;
-    
+    private Invoker invoker;
+
+
     public AdminRoleHandlerStrategy(UserController userController) {
+
         this.userController = userController;
+        invoker = new Invoker();
+
     }
     @Override
     public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) throws SQLException {
@@ -30,6 +38,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
         String statusInput = null;
         int userId = 0;
 
+        UserManager userManager; // used in command design pattern
         switch (choice) {
             case 1:
                 // Signup logic
@@ -59,7 +68,12 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 newUser.setRoleId(roleId);
                 newUser.setStatus(status);
 
-                boolean isAdded = UserDAO.addUser(loggedInUser);//
+                // command design pattern
+                userManager = new UserManager(newUser);
+                invoker.setCommand(new AddUserCmd(userManager));
+                invoker.execute();
+                boolean isAdded = userManager.isSuccessful();
+                //boolean isAdded = UserDAO.addUser(loggedInUser);//
                 userView.showMessage("User added: " + isAdded);
                 break;
 
@@ -67,9 +81,15 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 // Admin-specific logic for "Retrieve User by ID"
                 // Retrieve User by ID
                 String userIdInput = userView.getInputWithValidation("enter userId : ", "userId");
-                 userId = Integer.parseInt(userIdInput);
+                userId = Integer.parseInt(userIdInput);
+                UserDTO retrievedUser;// = UserDAO.getUserById(userId);
 
-                UserDTO retrievedUser = UserDAO.getUserById(userId);
+                // command design pattern
+                retrievedUser = new UserDTO(userId);
+                userManager = new UserManager(retrievedUser);
+                invoker.setCommand(new RetrieveUserCmd(userManager));
+                invoker.execute();
+                retrievedUser = userManager.getUser();
 
                 if (retrievedUser != null) {
                     // Fetch Address and Role
@@ -92,7 +112,12 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                  userIdInput = userView.getInputWithValidation("enter userId: ", "userId");
                 userId = Integer.parseInt(userIdInput);
 
-                UserDTO userToUpdate = UserDAO.getUserById(userId);
+                // command design pattern
+                userManager = new UserManager(new UserDTO(userId));
+                invoker.setCommand(new RetrieveUserCmd(userManager));
+                invoker.execute();
+                UserDTO userToUpdate = userManager.getUser();
+                //UserDTO userToUpdate = UserDAO.getUserById(userId);
 
                 if (userToUpdate != null) {
 
@@ -109,8 +134,12 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                      statusInput = userView.getInputWithValidation("Enter status : ", "status");
                      userToUpdate.setStatus(Integer.parseInt(statusInput));
 
-//
-                    boolean isUpdated = UserDAO.updateUser(userToUpdate);
+                    // command design pattern
+                    userManager.setUser(userToUpdate);
+                    invoker.setCommand(new UpdateUserCmd(userManager));
+                    invoker.execute();
+                    boolean isUpdated = userManager.isSuccessful();
+//                    boolean isUpdated = UserDAO.updateUser(userToUpdate);
                     userView.showMessage("User updated: " + isUpdated);
                 } else {
                     userView.showMessage("User not found.");//
@@ -120,9 +149,16 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 // ANSI escape codes for colors
                   // Reset color
 
-// Admin-specific logic for "Retrieve All Users"
-// Retrieve All Users
-                List<UserDTO> users = UserDAO.getAllUsers();//
+                // Admin-specific logic for "Retrieve All Users"
+                // Retrieve All Users
+
+                // command design pattern
+                userManager = new UserManager();
+                invoker.setCommand(new RetrieveAllUsersCmd(userManager));
+                invoker.execute();
+                //List<UserDTO> users = UserDAO.getAllUsers();
+                List<UserDTO> users = userManager.getUsers();
+                userView.showMessage("All users:");
                 userView.showMessage("All users:");
 
 // Print a header for the table with blue color//
@@ -174,12 +210,20 @@ userView.displayTableRow(
             case 8:
                userController.deleteEvent();
                 break;
+                
             case 9:
+                userController.addBook();
+                break;
+                
+            case 10:
+                userController.deleteBook();
+                break;
+            case 11:
                 // Volunteer-specific logic for "Logout"
                 userView.showMessage("Logging out...");
                 return true;
 
-            case 10://
+            case 12://
                 userView.showMessage("Exiting...");
                 DbConnectionSingleton.getInstance().close(null, null);//
                 System.exit(0);

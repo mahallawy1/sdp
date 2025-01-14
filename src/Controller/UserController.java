@@ -2,6 +2,11 @@ package Controller;
 
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.Cmd.*;
+import MODEL.Patterns.Command.Invoker;
+import MODEL.Patterns.Command.Manager.DonationManager;
+import MODEL.Patterns.Command.Manager.EventManager;
+import MODEL.Patterns.Command.Manager.UserManager;
 import View.UserView;
 import MODEL.DAO.*;
 import MODEL.DAO.DonationRecordDAO;
@@ -48,6 +53,11 @@ import java.util.Scanner;
 import java.sql.SQLException;
 
 import static Controller.testLibrary.*;
+import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.AvailableBookCollection;
+import MODEL.Patterns.Iterator.BookIterator;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
+import MODEL.Patterns.State.BookContext;
 import java.time.LocalDateTime;
 
 // Controller/UserController.java
@@ -55,10 +65,14 @@ public class UserController {
     
     private UserDAO userDAO;
     private UserView userView;
+    private Invoker invoker;
+
 
     public UserController(UserDAO userDAO, UserView userView) {
         this.userDAO = userDAO;
         this.userView = userView;
+        this.invoker = new Invoker();
+
     }
 
     public void setUserView(UserView userView) {
@@ -94,17 +108,32 @@ public class UserController {
         int loginChoice = userView.getChoice();
         UserDTO loggedInUser = null;
 
+        // command design pattern
+        UserManager userManager;
         switch (loginChoice) {
             case 1:
                 // Login by Email and Password
                 String email = userView.getInputWithValidation("Enter email: " , "email");
                 String password = userView.getInputWithValidation("Enter password: " , "password");
-                loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
+
+                // command design pattern
+                loggedInUser = new UserDTO(email, password);
+                userManager = new UserManager(loggedInUser);
+                invoker.setCommand(new LoginByPasswordCmd(userManager));
+                invoker.execute();
+                loggedInUser = userManager.getUser();
+                //loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
                 break;
             case 2:
                 // Login by Mobile Phone
                 String mobilePhone = userView.getInputWithValidation("Enter mobile phone: " , "phone");
-                loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
+                // command design pattern
+                loggedInUser = new UserDTO(mobilePhone);
+                userManager = new UserManager(loggedInUser);
+                invoker.setCommand(new LoginByMobilePhoneCmd(userManager));
+                invoker.execute();
+                loggedInUser = userManager.getUser();
+                //loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
                 break;
 
             default:
@@ -162,7 +191,13 @@ public void processDonation(UserDTO loggedInUser) {
 
     try (Connection conn = DbConnectionSingleton.getInstance().getConnection()) {
         DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn);
-        int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
+
+        // commmand design pattern
+        DonationManager donationManager = new DonationManager(donationRecord, donationRecordDAO, donationTypes);
+        invoker.setCommand(new AddDonationCmd(donationManager));
+        invoker.execute();
+        int donationId = donationManager.getDonationId();
+        //int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
 
         if (donationId != -1) {
             userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
@@ -253,17 +288,120 @@ public void processDonation(UserDTO loggedInUser) {
 
     }
     //////////////////////////delete event/////////////////
-    public void deleteEvent() {
+    public void deleteEvent() throws SQLException {
         int eventId = userView.getEventIdForDeletion();
 
+
         try {
-            EventDAO.removeEvent(eventId);
-            userView.showMessage("Event with ID " + eventId + " removed successfully.");
+            //EventDAO.removeEvent(eventId);
+            // Command design patten
+            EventManager eventManager = new EventManager(eventId);
+            invoker.setCommand(new DeleteEventCmd(eventManager));
+            invoker.execute();
+            if(eventManager.isSuccessful())
+                userView.showMessage("Event with ID " + eventId + " removed successfully.");
+            else
+                userView.showMessage("Error removing event with ID "+ eventId +". Maybe id was wrong.");
         } catch (SQLException e) {
             userView.showMessage("Error removing event: " + e.getMessage());
         }
     }
-    
+
+    public void addBook(){
+       try{    
+        BookDAO bookDAO = new BookDAO();
+        String description = userView.getInputWithValidation("Enter book description:", "text");
+        String title = userView.getInputWithValidation("Enter book title" , "text");
+        String cover = userView.getInputWithValidation("Enter book cover URL:", "text");
+        String publishYear = userView.getInputWithValidation("Enter publish year:", "text");
+        String quantity = userView.getInputWithValidation("Enter quantity:", "text");
+        String status = "available";
+        BookDTO bookDTO = new BookDTO(0,description,title,cover,false,Integer.parseInt(publishYear),Integer.parseInt(quantity),status);
+       
+        bookDAO.addBook(bookDTO);
+        System.out.println("Book added Successfully");
+       }
+       catch(Exception e){
+           System.out.println("Error adding book" + e);
+       }
+    }
+    public void deleteBook(){
+       try{
+        String id = userView.getInputWithValidation("Enter the ID of the book to delete:","text");
+        BookDAO bookDAO = new BookDAO();
+        bookDAO.deleteBook(Integer.parseInt(id));
+        System.out.println("test");
+       }
+       catch(Exception e){
+           System.out.println("Error deleting book " + e);
+       }
+    }
+    public void displayAvailableBooks() {
+        try {
+            
+            BookDAO bookDAO = new BookDAO();
+
+            AvailableBookCollection availableBooks = bookDAO.getAllBooks();
+
+            BookIterator iterator = availableBooks.createIterator();
+
+            while (iterator.hasNext()) {
+                BookDTO book = iterator.next();
+                System.out.println("ID: " + book.getId());
+                System.out.println("Title: " + book.getTitle());
+                System.out.println("Description: " + book.getDescription());
+                System.out.println("Publish Year: " + book.getPublishYear());
+                System.out.println("Quantity: " + book.getQuantity());
+                System.out.println("Status: " + book.getStatus());
+                System.out.println("-----------------------------------");
+            }
+        } catch (Exception e) {
+            System.out.println("Error displaying books: " + e.getMessage());
+        }
+        }    
+        public void borrowBook(UserDTO loggedInUser) {
+            displayAvailableBooks();
+
+            BorrowedBookCollection borrowedBooks = new BorrowedBookCollection();
+
+            while (true) {
+                String bookId = userView.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
+
+                if (bookId.equalsIgnoreCase("done")) {
+                    System.out.println("You have finished entering books.");
+                    break;
+                }
+
+                try {
+                    BookDAO bookDAO = new BookDAO();
+                    BookDTO bookDTO = bookDAO.getBookById(Integer.parseInt(bookId));
+
+                    if (bookDTO != null && !bookDTO.getDeleted()) {
+                        borrowedBooks.addBook(bookDTO);
+
+                        System.out.println("Book '" + bookDTO.getTitle() + "' has been added to your borrowed list.");
+                    } else {
+                        System.out.println("This book is either deleted or unavailable.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid book ID. Please enter a valid numeric ID.");
+                } catch (Exception e) {
+                    System.out.println("Error adding the book: " + e.getMessage());
+                }
+            }
+
+
+                BookContext bookContext = new BookContext(borrowedBooks);
+
+                bookContext.requestBooks();
+                bookContext.reserveBooks();
+                bookContext.checkoutBooks(loggedInUser.getId());
+                bookContext.markOverdueBooks();
+
+                System.out.println("All selected books have been successfully borrowed.");
+           
+            }
+        
     /////////////////////////////////////////////////////
     ///////////////////////////////////////
     ///delete ust 
@@ -271,8 +409,18 @@ public void processDonation(UserDTO loggedInUser) {
         int deleteUserId = userView.getUsrIdForDeletion();
 
         try {
-            UserDAO.deleteUser(deleteUserId);
-            userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+            // command design pattern
+            UserManager userManager = new UserManager();
+            userManager.setUser(new UserDTO(deleteUserId));
+            invoker.setCommand(new DeleteUserCmd(userManager));
+            invoker.execute();
+            boolean isDeleted = userManager.isSuccessful();
+            //UserDAO.deleteUser(deleteUserId);
+            if(isDeleted)
+                userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+            else
+                userView.showMessage("Error removing usr with ID " + deleteUserId + ". Maybe id is wrong." );
+
         } catch (SQLException e) {
             userView.showMessage("Error removing usr: " + e.getMessage());
         }
@@ -316,11 +464,13 @@ public void processDonation(UserDTO loggedInUser) {
             newUser.setRoleId(roleId);
             newUser.setStatus(status);
 
+            // command design pattern
+            UserManager userManager = new UserManager(newUser);
+            invoker.setCommand(new AddUserCmd(userManager));
+            invoker.execute();
+            //boolean isAdded = userDAO.addUser(newUser);
 
-
-            boolean isAdded = userDAO.addUser(newUser);
-
-            if (isAdded) {
+            if (userManager.isSuccessful()) {
                 userView.showMessage("Signup successful!");
                 userView.showMainMenu(newUser);  // Show the main menu after successful signup
             } else {
