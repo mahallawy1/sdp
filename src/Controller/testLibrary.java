@@ -2,6 +2,7 @@ package Controller;
 
 import MODEL.DAO.UserDAO;
 import MODEL.Patterns.Observer.*;
+import MODEL.Patterns.facade.NotificationFacade;
 import View.UserView;
 
 // Main/Library.java
@@ -31,5 +32,9 @@ public class testLibrary {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+       // NotificationFacade notificationFacade = new NotificationFacade();
+        // notificationFacade.sendThankYouEmail("recipient@example.com", 50.0);
+
     }
 }
