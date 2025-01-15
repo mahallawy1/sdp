@@ -13,7 +13,7 @@ public class BookDAO {
     public AvailableBookCollection getAllBooks() throws SQLException {
         //List<BookDTO> books = new ArrayList<>();
         AvailableBookCollection books = new AvailableBookCollection();
-        String query = "SELECT * FROM books WHERE deleted = false";
+        String query = "SELECT * FROM book WHERE deleted = false";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -29,7 +29,7 @@ public class BookDAO {
 
     // Method to get a book by its ID
     public BookDTO getBookById(int id) throws SQLException {
-        String query = "SELECT * FROM books WHERE id = ? AND deleted = false";
+        String query = "SELECT * FROM book WHERE id = ? AND deleted = false";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -46,7 +46,7 @@ public class BookDAO {
 
     // Method to add a new book and generate keys
     public void addBook(BookDTO book) throws SQLException {
-        String query = "INSERT INTO books (description, title, cover, deleted, publish_year, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO book (description, title, cover, deleted, publish_year, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -74,7 +74,7 @@ public class BookDAO {
 
     // Method to update an existing book
     public void updateBook(BookDTO book) throws SQLException {
-        String query = "UPDATE books SET description = ?, title = ?, cover = ?, deleted = ?, publish_year = ?, quantity = ?, status = ? WHERE id = ?";
+        String query = "UPDATE book SET description = ?, title = ?, cover = ?, deleted = ?, publish_year = ?, quantity = ?, status = ? WHERE id = ?";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -94,10 +94,16 @@ public class BookDAO {
 
     // Method to delete a book (soft delete by setting `deleted` to true)
     public void deleteBook(int id) throws SQLException {
-        String query = "UPDATE books SET deleted = true WHERE id = ?";
+        String query = "UPDATE book SET deleted = true WHERE id = ?";
 
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
+            // Check if the record exists
+            String checkQuery = "SELECT 1 FROM book WHERE id = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+            checkStmt.setInt(1, id);
+            ResultSet rs = checkStmt.executeQuery();
+            if (!rs.next())  throw new SQLException("No record found with id: " + id);
 
             stmt.setInt(1, id);
             stmt.executeUpdate();

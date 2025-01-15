@@ -22,6 +22,10 @@ public class BookDTO {
     // Default constructor
     public BookDTO() {}
 
+    public BookDTO(int id) {
+        this.id = id;
+    }
+
     // Constructor with all variables
     public BookDTO(int id, String description, String title, String cover, Boolean deleted, Integer publishYear, Integer quantity, String status) {
         this.id = id;

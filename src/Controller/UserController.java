@@ -4,6 +4,7 @@ import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.Command.Cmd.*;
 import MODEL.Patterns.Command.Invoker;
+import MODEL.Patterns.Command.Manager.BookManager;
 import MODEL.Patterns.Command.Manager.DonationManager;
 import MODEL.Patterns.Command.Manager.EventManager;
 import MODEL.Patterns.Command.Manager.UserManager;
@@ -309,7 +310,7 @@ public void processDonation(UserDTO loggedInUser) {
 
     public void addBook(){
        try{    
-        BookDAO bookDAO = new BookDAO();
+        //BookDAO bookDAO = new BookDAO();
         String description = userView.getInputWithValidation("Enter book description:", "text");
         String title = userView.getInputWithValidation("Enter book title" , "text");
         String cover = userView.getInputWithValidation("Enter book cover URL:", "text");
@@ -317,9 +318,15 @@ public void processDonation(UserDTO loggedInUser) {
         String quantity = userView.getInputWithValidation("Enter quantity:", "text");
         String status = "available";
         BookDTO bookDTO = new BookDTO(0,description,title,cover,false,Integer.parseInt(publishYear),Integer.parseInt(quantity),status);
-       
-        bookDAO.addBook(bookDTO);
-        System.out.println("Book added Successfully");
+
+        // Command design patten
+        //bookDAO.addBook(bookDTO);
+        BookManager bookManager = new BookManager(bookDTO);
+        invoker.setCommand(new AddBookCmd(bookManager));
+        invoker.execute();
+        if(bookManager.isSuccessful())
+            System.out.println("Book added Successfully");
+
        }
        catch(Exception e){
            System.out.println("Error adding book" + e);
@@ -328,9 +335,17 @@ public void processDonation(UserDTO loggedInUser) {
     public void deleteBook(){
        try{
         String id = userView.getInputWithValidation("Enter the ID of the book to delete:","text");
-        BookDAO bookDAO = new BookDAO();
-        bookDAO.deleteBook(Integer.parseInt(id));
-        System.out.println("test");
+
+
+        // Command design patten
+        //BookDAO bookDAO = new BookDAO();
+        //bookDAO.deleteBook(Integer.parseInt(id));
+        BookManager bookManager = new BookManager(new BookDTO(Integer.parseInt(id)));
+        invoker.setCommand(new DeleteBookCmd(bookManager));
+        invoker.execute();
+        if(bookManager.isSuccessful())
+            System.out.println("Book deleted successfully");
+        //System.out.println("test");
        }
        catch(Exception e){
            System.out.println("Error deleting book " + e);
@@ -338,12 +353,15 @@ public void processDonation(UserDTO loggedInUser) {
     }
     public void displayAvailableBooks() {
         try {
-            
-            BookDAO bookDAO = new BookDAO();
 
-            AvailableBookCollection availableBooks = bookDAO.getAllBooks();
+            // command design patter
+            //BookDAO bookDAO = new BookDAO();
+            //AvailableBookCollection availableBooks = bookDAO.getAllBooks();
+            BookManager bookManager = new BookManager();
+            invoker.setCommand(new RetrieveAllBooksCmd(bookManager));
+            invoker.execute();
 
-            BookIterator iterator = availableBooks.createIterator();
+            BookIterator iterator = (bookManager.getBooks()).createIterator();
 
             while (iterator.hasNext()) {
                 BookDTO book = iterator.next();
