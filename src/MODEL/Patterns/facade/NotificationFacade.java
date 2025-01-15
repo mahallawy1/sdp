@@ -1,5 +1,7 @@
 package MODEL.Patterns.facade;
 
+import java.util.List;
+
 public class NotificationFacade {
     private final EmailService emailService;
 
@@ -13,12 +15,16 @@ public class NotificationFacade {
         this.emailService = new EmailService();
     }
 
-    public void sendThankYouEmail(String recipientEmail, double donationAmount) {
+    // Method to send thank-you email to a list of recipients
+    public void sendThankYouEmails(List<String> recipientEmails, double donationAmount) {
         String subject = "Thank You for Your Donation!";
         String body = "Dear user,\n\nThank you for donating $" + donationAmount + " to our bookstore!" +
                 " Your support means the world to us.\n\nBest regards,\nBookstore Team";
 
-        // Using the email service to send the email
-        emailService.sendEmail(recipientEmail, subject, body);
+        // Loop through the list of recipient emails and send the email
+        for (String recipientEmail : recipientEmails) {
+            emailService.sendEmail(recipientEmail, subject, body);
+            System.out.println("Thank you email sent to: " + recipientEmail);
+        }
     }
 }
