@@ -2,6 +2,8 @@
 package View;
 
 import Controller.UserController;
+import MODEL.DAO.SkillsDAO;
+import MODEL.DTO.Event.SkillDTO;
 import MODEL.DTO.User.UserDTO;
 
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import MODEL.Patterns.RoleHandlerStrategy.VolunteerRoleHandlerStrategy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import utils.InputValidator;
 
@@ -192,17 +195,34 @@ public class UserView {
         return scanner.nextLine();
     }
 
-    public int getEventTypeId(int userRoleId) {
-        int eventTypeId;
-        if (userRoleId == 2) {  // Volunteer
-            eventTypeId = 0; // Default to "seminar" for volunteer
-        } else {
-            System.out.println("Enter Event Type ID:");
-            eventTypeId = Integer.parseInt(scanner.nextLine());
+
+
+    public int getEventTypeId() {
+        Scanner scanner = new Scanner(System.in);
+        int eventTypeId = -1; // Default to an invalid value
+
+        // Prompt the user for input
+        System.out.println("Choose Event Type:");
+        System.out.println("1 - Workshop");
+        System.out.println("2 - Seminar");
+
+        while (true) {
+            try {
+                System.out.print("Enter your choice: ");
+                eventTypeId = Integer.parseInt(scanner.nextLine());
+
+                if (eventTypeId == 0 || eventTypeId == 1) {
+                    break; // Valid choice
+                } else {
+                    System.out.println("Invalid choice. Please enter 0 for Seminar or 1 for Workshop.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number (0 or 1).");
+            }
         }
+
         return eventTypeId;
     }
-
     public String getEventDescription() {
         System.out.println("Enter Event Description:");
         return scanner.nextLine();
@@ -248,27 +268,51 @@ public class UserView {
             }
         }
         return endTime;
-    }
-
-    public ArrayList<Integer> getSkills() {
-        ArrayList<Integer> list = new ArrayList<>();
+    }    public static ArrayList<Integer> displayAndChooseSkills() {
+        ArrayList<Integer> selectedSkillIds = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter skill ids (type 'done' to finish):");
-        while (scanner.hasNext()) {
-            if (scanner.hasNextInt()) {
-                list.add(scanner.nextInt()); // Add integer to ArrayList
-            } else {
-                String input = scanner.next();
-                if (input.equalsIgnoreCase("done")) {
-                    break; // Exit loop if user types "done"
-                } else {
-                    System.out.println("Invalid input. Please enter an integer or type 'done'.");
+        try {
+            // Fetch all skills from the database
+            List<SkillDTO> skills = SkillsDAO.getAllSkills();
+
+            if (skills.isEmpty()) {
+                System.out.println("No skills available.");
+                return selectedSkillIds; // Return empty list
+            }
+
+            // Display the list of skills
+            System.out.println("Skills List:");
+            for (SkillDTO skill : skills) {
+                System.out.println(skill.getId() + " - " + skill.getName());
+            }
+
+            // Prompt user to select skills by ID
+            System.out.println("\nEnter the IDs of the skills you want to choose (comma-separated):");
+            String input = scanner.nextLine();
+            String[] skillIds = input.split(",");
+
+            // Process the selected IDs
+            for (String id : skillIds) {
+                try {
+                    int skillId = Integer.parseInt(id.trim());
+                    SkillDTO skill = SkillsDAO.getSkillById(skillId);
+                    if (skill != null) {
+                        selectedSkillIds.add(skillId);
+                    } else {
+                        System.out.println("Skill with ID " + skillId + " not found.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input: " + id.trim() + " is not a valid number.");
                 }
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error while fetching skills from the database.");
         }
 
-        return list;
+        return selectedSkillIds;
     }
 
     public int getEventIdForDeletion() {

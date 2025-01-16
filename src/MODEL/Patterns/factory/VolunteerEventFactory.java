@@ -30,17 +30,17 @@ public class VolunteerEventFactory implements EventFactory{
     }
 
     public EventDTO createEvent(UserDTO volunteer, String eventName,int eventTypeId, String description, LocalDate eventDate, LocalTime from, LocalTime to,ArrayList<Integer> skills) {
-       {// if volunteer is creating the event
-        if((volunteer.getRoleId())==2){
+       // if volunteer is creating the event
+        if(volunteer.getRoleId()==2){
             // if event is seminar
-                
+               
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
                 // Set ID                
                 
                 // Set Name
                 event.setName(eventName);
-                // Set Event Type ID to seminar always      
-                eventTypeId = 0;
+                // Set Event Type ID      
+                
                 event.setEventTypeId(eventTypeId);
                 // Set Description                
                 event.setDescription(description);
@@ -50,11 +50,11 @@ public class VolunteerEventFactory implements EventFactory{
                 event.setTimeFrom(from);
                 // Set Time               
                 event.setTimeTo(to);
-                // Set Capacity = admin event takes a 25 capacity room               
+                // Set Capacity = volunteer event takes a 25 capacity room               
                 event.setCapacity(25);
                 // Output the event details
                 
-                // skills with id 0 is required for seminar 
+               
                 
                 int event_id = 0;
                  userView.showMessage("Calling for Admin approval");//
@@ -86,16 +86,16 @@ public class VolunteerEventFactory implements EventFactory{
                 }
            
                 return event;
-                }else{
-                     return null;
-                 }
+                }
         }
+        else{
 
         
         return null;
         
     }
-        
+        return null;
     }
+    
     
 }

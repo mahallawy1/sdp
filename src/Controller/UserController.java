@@ -55,11 +55,15 @@ import java.sql.SQLException;
 
 import static Controller.testLibrary.*;
 import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Adabter.EventJoiningAdapter;
+import MODEL.Patterns.Adabter.TicketGenerator;
+import MODEL.Patterns.Command.Manager.VolunteringManager;
 import MODEL.Patterns.Iterator.AvailableBookCollection;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 // Controller/UserController.java
 public class UserController {
@@ -256,8 +260,44 @@ public void processDonation(UserDTO loggedInUser) {
     }
 /////////////////////////////////////////////////////
     ///event
-    
+     public static void setSkills() {
+        // Predefined random skills for library events
+        String[] randomSkills = {
+            "Book Cataloging",
+            "Research Assistance",
+            "Event Organization",
+            "Storytelling",
+            "Digital Library Management",
+            "Data Analysis",
+            "Customer Service",
+            "Public Speaking",
+            "Archiving",
+            "Multimedia Management"
+        };
+
+        Random random = new Random();
+
+        try {
+            // Generate random skills and add them to the database
+            for (int i = 1; i <= 10; i++) { // Add 10 random skills
+                String skillName = randomSkills[random.nextInt(randomSkills.length)];
+                SkillDTO skill = new SkillDTO(i, skillName); // Use i as a unique ID
+                if (SkillsDAO.addSkill(skill)) {
+                    System.out.println("Skill added: " + skillName);
+                } else {
+                    System.out.println("Failed to add skill: " + skillName);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error while adding skills to the database.");
+        }
+    }
     public void createEvent(UserDTO loggedInUser) {
+       // setSkills();
+       try{
+       //EventTypeDAO eventTypeDAO = new EventTypeDAO();
+       //eventTypeDAO.initializeEventTypes();
         EventFactory ev;
 
         if (loggedInUser.getRoleId() == 2) {
@@ -273,21 +313,25 @@ public void processDonation(UserDTO loggedInUser) {
         }
 
         String eventName = userView.getEventName();
-        int eventTypeId = userView.getEventTypeId(loggedInUser.getRoleId());
+        int eventTypeId = userView.getEventTypeId();
         String description = userView.getEventDescription();
 
         LocalDate eventDate = userView.getEventDate();
 
         LocalTime startTime = userView.getStartTime();
         LocalTime endTime = userView.getEndTime();
-        ArrayList <Integer> skills = userView.getSkills();
+        ArrayList <Integer> skills = userView.displayAndChooseSkills();
         EventDTO newEvent = ev.createEvent(loggedInUser, eventName, eventTypeId, description, eventDate, startTime, endTime,skills);
         
         userView.showMessage("Event created: " + newEvent.getName());
         userView.showMessage("Description: " + newEvent.getDescription());
         eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);
-
+       }
+       catch(Exception e){
+           userView.showMessage("Error creating event : " + e);
+       }
     }
+    
     //////////////////////////delete event/////////////////
     public void deleteEvent() throws SQLException {
         int eventId = userView.getEventIdForDeletion();
@@ -307,7 +351,48 @@ public void processDonation(UserDTO loggedInUser) {
             userView.showMessage("Error removing event: " + e.getMessage());
         }
     }
+    public void joinEvent(UserDTO loggedInUser){
+        try{
+                int eventId = Integer.parseInt(userView.getInput("Enter the ID of the event you wish to join: "));
+                int volunteerHours = Integer.parseInt(userView.getInput("Enter how many hours you are willing to volunteer for: "));
 
+                String status = "pending";
+
+                EventDTO event = EventDAO.getEventById(eventId);
+                if (event == null) {
+                    userView.showMessage("Event not found. Please check the ID.");
+                    return;
+                }
+
+                // Check if the event is full  and it still need fixes
+                if (EventDAO.isEventFull(eventId)) {
+                    userView.showMessage("Sorry, this event is already full.");
+                    return;
+                }
+
+                //  volunteering record
+                VolunteeringDTO newVolunteering = new VolunteeringDTO(eventId, loggedInUser.getId());
+                //VolunteeringDAO.addVolunteering(newVolunteering);
+
+                //  volunteering details
+                VolunteeringDetailsDTO details = new VolunteeringDetailsDTO(eventId, loggedInUser.getId(), volunteerHours, status);
+                //VolunteeringDetailsDAO.addVolunteeringDetails(details);
+
+                // command design pattern
+                VolunteringManager volunteringManager = new VolunteringManager(newVolunteering, details);
+                invoker.setCommand(new JoinEvent2VolunteerCmd(volunteringManager));
+                invoker.execute();
+                if (volunteringManager.isSuccessful()) {
+                    // Generate  ticketss
+                    TicketGenerator eventTicket = new EventJoiningAdapter(details, event);
+                    eventTicket.saveTicketToFile("G:/Spring24/this summer/last fall/sdp/tickets/event_ticket_" + loggedInUser.getId() + ".txt");
+                    userView.showMessage("You have successfully joined the event. Your ticket has been saved.");
+                } else
+                    userView.showMessage("Error joining event.");
+        }catch(Exception e){
+            userView.showMessage("Error joining event " +e);
+        }
+    }
     public void addBook(){
        try{    
         //BookDAO bookDAO = new BookDAO();

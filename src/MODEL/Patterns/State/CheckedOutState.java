@@ -37,7 +37,7 @@ public class CheckedOutState implements BookState {
         BookIterator iterator = borrowedBooks.createIterator();
         while (iterator.hasNext()) {
             BookDTO bookDTO = iterator.next();
-            if ("checked out".equals(bookDTO.getStatus())) {
+            if ("checkedout".equals(bookDTO.getStatus())) {
                 try {
                     bookDTO.setStatus("returned");
                     bookDAO.updateBook(bookDTO);
