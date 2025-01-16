@@ -1,0 +1,6 @@
+Event Joining Ticket
+Event Name: Virtual Reality
+Event Date: 2005-05-05
+User ID: 11
+Volunteer Hours: 25
+Status: pending

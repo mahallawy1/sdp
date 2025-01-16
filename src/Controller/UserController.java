@@ -62,6 +62,8 @@ import MODEL.Patterns.Iterator.AvailableBookCollection;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
+import MODEL.Patterns.StateAndTemplate.EventJoiningTemplateContext;
+import MODEL.Patterns.StateAndTemplate.SeminarEventJoiningContext;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -352,46 +354,54 @@ public void processDonation(UserDTO loggedInUser) {
         }
     }
     public void joinEvent(UserDTO loggedInUser){
-        try{
-                int eventId = Integer.parseInt(userView.getInput("Enter the ID of the event you wish to join: "));
-                int volunteerHours = Integer.parseInt(userView.getInput("Enter how many hours you are willing to volunteer for: "));
-
-                String status = "pending";
-
-                EventDTO event = EventDAO.getEventById(eventId);
-                if (event == null) {
-                    userView.showMessage("Event not found. Please check the ID.");
-                    return;
-                }
-
-                // Check if the event is full  and it still need fixes
-                if (EventDAO.isEventFull(eventId)) {
-                    userView.showMessage("Sorry, this event is already full.");
-                    return;
-                }
-
-                //  volunteering record
-                VolunteeringDTO newVolunteering = new VolunteeringDTO(eventId, loggedInUser.getId());
-                //VolunteeringDAO.addVolunteering(newVolunteering);
-
-                //  volunteering details
-                VolunteeringDetailsDTO details = new VolunteeringDetailsDTO(eventId, loggedInUser.getId(), volunteerHours, status);
-                //VolunteeringDetailsDAO.addVolunteeringDetails(details);
-
-                // command design pattern
-                VolunteringManager volunteringManager = new VolunteringManager(newVolunteering, details);
-                invoker.setCommand(new JoinEvent2VolunteerCmd(volunteringManager));
-                invoker.execute();
-                if (volunteringManager.isSuccessful()) {
-                    // Generate  ticketss
-                    TicketGenerator eventTicket = new EventJoiningAdapter(details, event);
-                    eventTicket.saveTicketToFile("G:/Spring24/this summer/last fall/sdp/tickets/event_ticket_" + loggedInUser.getId() + ".txt");
-                    userView.showMessage("You have successfully joined the event. Your ticket has been saved.");
-                } else
-                    userView.showMessage("Error joining event.");
-        }catch(Exception e){
-            userView.showMessage("Error joining event " +e);
-        }
+// try{
+//                int eventId = Integer.parseInt(userView.getInput("Enter the ID of the event you wish to join: "));
+//                int volunteerHours = Integer.parseInt(userView.getInput("Enter how many hours you are willing to volunteer for: "));
+//
+//                String status = "pending";
+//
+//                EventDTO event = EventDAO.getEventById(eventId);
+//                if (event == null) {
+//                    userView.showMessage("Event not found. Please check the ID.");
+//                    return;
+//                }
+//
+//                // Check if the event is full  and it still need fixes
+//                if (EventDAO.isEventFull(eventId)) {
+//                    userView.showMessage("Sorry, this event is already full.");
+//                    return;
+//                }
+//
+//                //  volunteering record
+//                VolunteeringDTO newVolunteering = new VolunteeringDTO(eventId, loggedInUser.getId());
+//                //VolunteeringDAO.addVolunteering(newVolunteering);
+//
+//                //  volunteering details
+//                VolunteeringDetailsDTO details = new VolunteeringDetailsDTO(eventId, loggedInUser.getId(), volunteerHours, status);
+//                //VolunteeringDetailsDAO.addVolunteeringDetails(details);
+//
+//                // command design pattern
+//                VolunteringManager volunteringManager = new VolunteringManager(newVolunteering, details);
+//                invoker.setCommand(new JoinEvent2VolunteerCmd(volunteringManager));
+//                invoker.execute();
+//                if (volunteringManager.isSuccessful()) {
+//                    // Generate  ticketss
+//                    TicketGenerator eventTicket = new EventJoiningAdapter(details, event);
+//                    eventTicket.saveTicketToFile("G:/Spring24/this summer/last fall/sdp/tickets/event_ticket_" + loggedInUser.getId() + ".txt");
+//                    userView.showMessage("You have successfully joined the event. Your ticket has been saved.");
+//                } else
+//                    userView.showMessage("Error joining event.");
+//        }catch(Exception e){
+//            userView.showMessage("Error joining event " +e);
+//        }
+       
+    try{ 
+      EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser,userView);
+       eventContext.joinEvent();
+    }
+    catch(Exception e){
+        System.out.println("error joining event : " + e);
+    }
     }
     public void addBook(){
        try{    

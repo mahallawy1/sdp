@@ -21,7 +21,9 @@ public class VolunteringManager {
         this.newVolunteering = newVolunteering;
         this.details = details;
     }
-
+    public VolunteeringDetailsDTO getVolunteeringDetails(){
+        return this.details;
+    }
     public void joinEvent2Volunteer() throws SQLException {
         try {
             if (VolunteeringDAO.addVolunteering(newVolunteering) &&
