@@ -6,19 +6,20 @@ package MODEL.Patterns.paymentstrategy;
 
 import MODEL.DTO.Donation.PaymentDTO;
 import View.UserView;
+import View.UtilityHandler;
 
 /**
  *
  * @author belal
  */
 public class FawryPayment implements PaymentStategy {
-    private UserView userView;
-    public FawryPayment(UserView userView) {
-        this.userView = userView;
+    private UtilityHandler UI;
+    public FawryPayment() {
+        this.UI = new UtilityHandler();
     }
      @Override
     public void pay(PaymentDTO payment) {
-        userView.showMessage("Pay by Fawry");//
+        this.UI.showMessage("Pay by Fawry");//
        
     }
 }

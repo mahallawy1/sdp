@@ -1,5 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `sdp_database` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `sdp_database`;
+-- utf8mb4_0900_ai_ci   -- utf8mb4_general_ci
 -- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
 --
 -- Host: localhost    Database: sdp_database
@@ -102,6 +103,7 @@ CREATE TABLE `book` (
   `deleted` tinyint(1) DEFAULT NULL,
   `publish_year` int DEFAULT NULL,
   `quantity` int DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;

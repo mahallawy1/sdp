@@ -14,33 +14,34 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import View.UserView;
+
 
 /**
  *
  * @author hussien
  */
-import View.UserView;
+
+import View.UtilityHandler;
 
 public class VolunteerEventFactory implements EventFactory{
 
-    private UserView userView;
-    public VolunteerEventFactory(UserView userView) {
-        this.userView = userView;
+    private UtilityHandler UI;
+    public VolunteerEventFactory() {
+        this.UI = new UtilityHandler();
     }
 
     public EventDTO createEvent(UserDTO volunteer, String eventName,int eventTypeId, String description, LocalDate eventDate, LocalTime from, LocalTime to,ArrayList<Integer> skills) {
-       {// if volunteer is creating the event
-        if((volunteer.getRoleId())==2){
+       // if volunteer is creating the event
+        if(volunteer.getRoleId()==2){
             // if event is seminar
-                
+               
                 EventDTO event = new EventDTO() {}; // Create a new EventDTO object
                 // Set ID                
                 
                 // Set Name
                 event.setName(eventName);
-                // Set Event Type ID to seminar always      
-                eventTypeId = 0;
+                // Set Event Type ID      
+                
                 event.setEventTypeId(eventTypeId);
                 // Set Description                
                 event.setDescription(description);
@@ -50,22 +51,22 @@ public class VolunteerEventFactory implements EventFactory{
                 event.setTimeFrom(from);
                 // Set Time               
                 event.setTimeTo(to);
-                // Set Capacity = admin event takes a 25 capacity room               
+                // Set Capacity = volunteer event takes a 25 capacity room               
                 event.setCapacity(25);
                 // Output the event details
                 
-                // skills with id 0 is required for seminar 
+               
                 
                 int event_id = 0;
-                 userView.showMessage("Calling for Admin approval");//
+                 this.UI.showMessage("Calling for Admin approval");//
                  if(UserDAO.callForEventApproval()){
                 try {
                 
                  event_id = EventDAO.addEvent(event);
-                 userView.showMessage("Event added successfully with ID: " + event.getId());//
+                 this.UI.showMessage("Event added successfully with ID: " + event.getId());//
                     
                  } catch (SQLException e) {
-                         userView.showMessage("Error adding event: " + e.getMessage());//
+                         this.UI.showMessage("Error adding event: " + e.getMessage());//
 
                  }
                
@@ -77,25 +78,25 @@ public class VolunteerEventFactory implements EventFactory{
                         try{
                             int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);
                         //
-                            userView.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
+                            this.UI.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
                         }
                              catch(SQLException e){
-                               userView.showMessage("Error adding required skills: " + e.getMessage());//
+                               this.UI.showMessage("Error adding required skills: " + e.getMessage());//
 
                 }
                 }
            
                 return event;
-                }else{
-                     return null;
-                 }
+                }
         }
+        else{
 
         
         return null;
         
     }
-        
+        return null;
     }
+    
     
 }

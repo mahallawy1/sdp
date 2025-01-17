@@ -114,3 +114,10 @@ INSERT INTO `user` (`id`, `password`, `email`, `firstname`, `address_id`, `mobil
 (8, 'guestpass2', 'guest2@example.com', 'Hank', 7, '5566778899', 4, 1),
 (9, 'adminpass3', 'admin3@example.com', 'Ivy', 8, '9988776655', 1, 1),
 (10, 'volpass3', 'volunteer3@example.com', 'Jack', 9, '1234560000', 2, 1);
+
+-- Role Table
+INSERT INTO `role` (`id`, `type`) VALUES
+('1', 'Admin'),
+('2', 'Volunteer'),
+('3', 'Member'),
+('4', 'Guest');
