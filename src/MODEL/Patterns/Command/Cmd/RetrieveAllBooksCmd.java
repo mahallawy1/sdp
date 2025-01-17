@@ -1,18 +1,19 @@
-package MODEL.Patterns.Command.Cmd;
+package MODEL.Patterns.Command;
 
+import MODEL.Patterns.Command.ICmd;
 import MODEL.Patterns.Command.ICommand;
 import MODEL.Patterns.Command.Manager.BookManager;
 
 import java.sql.SQLException;
 
-public class RetrieveAllBooksCmd implements ICommand {public BookManager bookManager;
+public class RetrieveAllBooksCmd implements ICmd {public BookManager bookManager;
 
     public RetrieveAllBooksCmd(BookManager bookManager) {
         this.bookManager = bookManager;
     }
 
     @Override
-    public void execute() throws SQLException {
-        bookManager.retrieveAllBooks();
+    public Object execute() throws SQLException {
+        return bookManager.retrieveAllBooks();
     }
 }

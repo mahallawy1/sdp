@@ -2,44 +2,27 @@ package Controller;
 
 import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.*;
 import MODEL.Patterns.Command.Cmd.*;
-import MODEL.Patterns.Command.Invoker;
 import MODEL.Patterns.Command.Manager.BookManager;
 import MODEL.Patterns.Command.Manager.DonationManager;
 import MODEL.Patterns.Command.Manager.EventManager;
 import MODEL.Patterns.Command.Manager.UserManager;
+import MODEL.Patterns.Iterator.AvailableBookCollection;
+import MODEL.Patterns.facade.NotificationFacade;
 import View.UserView;
 import MODEL.DAO.*;
-import MODEL.DAO.DonationRecordDAO;
-import MODEL.DAO.EventDAO;
-import MODEL.Patterns.Observer.DonationObserver;
-import MODEL.Patterns.Observer.DonationSubject;
-import MODEL.Patterns.Observer.EventObserver;
-import MODEL.Patterns.Observer.EventSubject;
 import MODEL.Patterns.decorator.*;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
-import MODEL.DAO.RoleDAO;
 import MODEL.DAO.SkillsDAO;
-import MODEL.DAO.*;
-import MODEL.DTO.User.*;
-import MODEL.DTO.User.RoleDTO;
-import MODEL.DTO.User.UserDTO;
 
 import MODEL.DTO.Event.*;
 import MODEL.DTO.Donation.*;
 
 import MODEL.DTO.Event.EventDTO;
-import MODEL.Patterns.LoginStrategy.EmailPasswordLoginStrategy;
-import MODEL.Patterns.LoginStrategy.LoginService;
-import MODEL.Patterns.LoginStrategy.MobilePhoneLoginStrategy;
 import MODEL.Patterns.factory.AdminEventFactory;
 import MODEL.Patterns.factory.EventFactory;
 import MODEL.Patterns.factory.VolunteerEventFactory;
-import MODEL.Patterns.paymentstrategy.*;
-import MODEL.Patterns.paymentstrategy.PaymentMethode;
-import MODEL.Patterns.paymentstrategy.PaymentStategy;
-import MODEL.Patterns.paymentstrategy.FawryPayment;
-import MODEL.Patterns.paymentstrategy.CreditCardPayment;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -48,17 +31,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
-
-import java.sql.SQLException;
 
 import static Controller.testLibrary.*;
 import MODEL.DTO.Book.BookDTO;
-import MODEL.Patterns.Adabter.EventJoiningAdapter;
-import MODEL.Patterns.Adabter.TicketGenerator;
-import MODEL.Patterns.Command.Manager.VolunteringManager;
-import MODEL.Patterns.Iterator.AvailableBookCollection;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
@@ -142,22 +118,18 @@ public class UserController {
                 String password = inputHandler.getInputWithValidation("Enter password: " , "password");
 
                 // command design pattern
-                loggedInUser = new UserDTO(email, password);
-                userManager = new UserManager(loggedInUser);
-                invoker.setCommand(new LoginByPasswordCmd(userManager));
-                invoker.execute();
-                loggedInUser = userManager.getUser();
+                userManager = new UserManager();
+                invoker.setCmd(new LoginByPasswordCmd(userManager, email, password));
+                loggedInUser = (UserDTO) invoker.executeCmd();
                 //loggedInUser = userDAO.getUserByEmailAndPassword(email, password);
                 break;
             case 2:
                 // Login by Mobile Phone
                 String mobilePhone = inputHandler.getInputWithValidation("Enter mobile phone: " , "phone");
                 // command design pattern
-                loggedInUser = new UserDTO(mobilePhone);
-                userManager = new UserManager(loggedInUser);
-                invoker.setCommand(new LoginByMobilePhoneCmd(userManager));
-                invoker.execute();
-                loggedInUser = userManager.getUser();
+                userManager = new UserManager();
+                invoker.setCmd(new LoginByMobilePhoneCmd(userManager, mobilePhone));
+                loggedInUser = (UserDTO) invoker.executeCmd();
                 //loggedInUser = userDAO.getUserByMobilePhone(mobilePhone);
                 break;
 
@@ -215,14 +187,11 @@ public void processDonation(UserDTO loggedInUser) {
     donationRecord.setStatus(true);
 
     try (Connection conn = DbConnectionSingleton.getInstance().getConnection()) {
-        
-        DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn);
 
         // commmand design pattern
-        DonationManager donationManager = new DonationManager(donationRecord, donationRecordDAO, donationTypes);
-        invoker.setCommand(new AddDonationCmd(donationManager));
-        invoker.execute();
-        int donationId = donationManager.getDonationId();
+        DonationManager donationManager = new DonationManager();
+        invoker.setCmd(new AddDonationCmd(donationManager, donationRecord, donationTypes));
+        int donationId = (int) invoker.executeCmd();
 
         if (donationId != -1) {
             
@@ -261,6 +230,8 @@ public void processDonation(UserDTO loggedInUser) {
               
             UI.showMessage("Payment processed successfully with Payment ID: " + paymentId);
             donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
+            NotificationFacade notificationFacade = new NotificationFacade();
+            notificationFacade.sendThankYouEmail(loggedInUser.getEmail(), cumulativeAmount);
         } else {
             UI.showMessage("Failed to create donation record.");
              
@@ -371,10 +342,9 @@ public void processDonation(UserDTO loggedInUser) {
         try {
             //EventDAO.removeEvent(eventId);
             // Command design patten
-            EventManager eventManager = new EventManager(eventId);
-            invoker.setCommand(new DeleteEventCmd(eventManager));
-            invoker.execute();
-            if(eventManager.isSuccessful())
+            EventManager eventManager = new EventManager();
+            invoker.setCmd(new DeleteEventCmd(eventManager, eventId));
+            if((boolean) invoker.executeCmd())
                 UI.showMessage("Event with ID " + eventId + " removed successfully.");
             else
                 UI.showMessage("Error removing event with ID "+ eventId +". Maybe id was wrong.");
@@ -445,10 +415,10 @@ public void processDonation(UserDTO loggedInUser) {
 
         // Command design patten
         //bookDAO.addBook(bookDTO);
-        BookManager bookManager = new BookManager(bookDTO);
-        invoker.setCommand(new AddBookCmd(bookManager));
-        invoker.execute();
-        if(bookManager.isSuccessful())
+        BookManager bookManager = new BookManager();
+        invoker.setCmd(new AddBookCmd(bookManager, bookDTO));
+
+        if((Boolean )invoker.executeCmd())
             System.out.println("Book added Successfully");
 
        }
@@ -464,10 +434,10 @@ public void processDonation(UserDTO loggedInUser) {
         // Command design patten
         //BookDAO bookDAO = new BookDAO();
         //bookDAO.deleteBook(Integer.parseInt(id));
-        BookManager bookManager = new BookManager(new BookDTO(Integer.parseInt(id)));
-        invoker.setCommand(new DeleteBookCmd(bookManager));
-        invoker.execute();
-        if(bookManager.isSuccessful())
+        BookManager bookManager = new BookManager();
+        invoker.setCmd(new DeleteBookCmd(bookManager, Integer.parseInt(id)));
+
+        if((boolean)invoker.executeCmd())
             System.out.println("Book deleted successfully");
         //System.out.println("test");
        }
@@ -482,10 +452,8 @@ public void processDonation(UserDTO loggedInUser) {
             //BookDAO bookDAO = new BookDAO();
             //AvailableBookCollection availableBooks = bookDAO.getAllBooks();
             BookManager bookManager = new BookManager();
-            invoker.setCommand(new RetrieveAllBooksCmd(bookManager));
-            invoker.execute();
-
-            BookIterator iterator = (bookManager.getBooks()).createIterator();
+            invoker.setCmd(new RetrieveAllBooksCmd(bookManager));
+            BookIterator iterator = ((AvailableBookCollection)invoker.executeCmd()).createIterator();
 
             while (iterator.hasNext()) {
                 BookDTO book = iterator.next();
@@ -555,10 +523,8 @@ public void processDonation(UserDTO loggedInUser) {
         try {
             // command design pattern
             UserManager userManager = new UserManager();
-            userManager.setUser(new UserDTO(deleteUserId));
-            invoker.setCommand(new DeleteUserCmd(userManager));
-            invoker.execute();
-            boolean isDeleted = userManager.isSuccessful();
+            invoker.setCmd(new DeleteUserCmd(userManager, deleteUserId));
+            boolean isDeleted = (boolean) invoker.executeCmd();
             //UserDAO.deleteUser(deleteUserId);
             if(isDeleted)
                 UI.showMessage("user with ID " + deleteUserId + " removed successfully.");
@@ -609,12 +575,11 @@ public void processDonation(UserDTO loggedInUser) {
             newUser.setStatus(status);
 
             // command design pattern
-            UserManager userManager = new UserManager(newUser);
-            invoker.setCommand(new AddUserCmd(userManager));
-            invoker.execute();
+            UserManager userManager = new UserManager();
+            invoker.setCmd(new AddUserCmd(userManager, newUser));
             //boolean isAdded = userDAO.addUser(newUser);
 
-            if (userManager.isSuccessful()) {
+            if ((boolean)invoker.executeCmd()) {
                 UI.showMessage("Signup successful!");
                 userView.showMainMenu(newUser);  // Show the main menu after successful signup
             } else {

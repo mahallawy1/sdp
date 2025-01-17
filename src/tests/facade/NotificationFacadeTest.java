@@ -27,9 +27,10 @@ class NotificationFacadeTest {
         // Prepare test data
         List<String> recipients = Arrays.asList("user1@example.com", "user2@example.com", "user3@example.com");
         double donationAmount = 50.00;
+        String donorName = "Alex";
 
         // Call the method to be tested
-        notificationFacade.sendThankYouEmails(recipients, donationAmount);
+        notificationFacade.sendEmailToAdminAboutDonation(recipients, donationAmount, donorName);
 
         // You can no longer directly capture the arguments passed to sendEmail,
         // so you'd need to rely on indirect checks like ensuring emails are sent successfully

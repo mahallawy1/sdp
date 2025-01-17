@@ -1,19 +1,22 @@
-package MODEL.Patterns.Command.Cmd;
+package MODEL.Patterns.Command;
 
+import MODEL.Patterns.Command.ICmd;
 import MODEL.Patterns.Command.ICommand;
 import MODEL.Patterns.Command.Manager.BookManager;
 
 import java.sql.SQLException;
 
-public class DeleteBookCmd implements ICommand {
+public class DeleteBookCmd implements ICmd {
     public BookManager bookManager;
+    public int id;
 
-    public DeleteBookCmd(BookManager bookManager) {
+    public DeleteBookCmd(BookManager bookManager, int id) {
         this.bookManager = bookManager;
+        this.id = id;
     }
 
     @Override
-    public void execute() throws SQLException {
-        bookManager.deleteBook();
+    public Object execute() throws SQLException {
+        return bookManager.deleteBook(id);
     }
 }

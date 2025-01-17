@@ -16,16 +16,14 @@ public class NotificationFacade {
     }
 
     // Method to send thank-you email to a list of recipients
-    public void sendThankYouEmails(List<String> recipientEmails, double donationAmount) {
+    public void sendThankYouEmail(String recipientEmail, double donationAmount) {
         String subject = "Thank You for Your Donation!";
         String body = "Dear user,\n\nThank you for donating $" + donationAmount + " to our bookstore!" +
                 " Your support means the world to us.\n\nBest regards,\nBookstore Team";
 
-        // Loop through the list of recipient emails and send the email
-        for (String recipientEmail : recipientEmails) {
-            emailService.sendEmail(recipientEmail, subject, body);
-            System.out.println("Thank you email sent to: " + recipientEmail);
-        }
+        emailService.sendEmail(recipientEmail, subject, body);
+        System.out.println("Thank you email sent to: " + recipientEmail);
+
     }
 
     public void sendEmailToAdminAboutDonation(List<String> recipientEmails, double donationAmount, String donorName) {

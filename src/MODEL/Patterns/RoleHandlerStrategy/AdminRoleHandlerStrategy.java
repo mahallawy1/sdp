@@ -2,13 +2,15 @@ package MODEL.Patterns.RoleHandlerStrategy;
 import Controller.UserController;
 import MODEL.DAO.AddressDAO;
 import MODEL.DAO.RoleDAO;
-import MODEL.DAO.UserDAO;
 import MODEL.DTO.User.AddressDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.Cmd.AddUserCmd;
 import MODEL.Patterns.Command.Cmd.*;
 import MODEL.Patterns.Command.Invoker;
 import MODEL.Patterns.Command.Manager.UserManager;
+import MODEL.Patterns.Command.Cmd.RetrieveAllUsersCmd;
+import MODEL.Patterns.Command.Cmd.RetrieveUserCmd;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
 import View.InputHandler;
 
@@ -71,10 +73,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 newUser.setStatus(status);
 
                 // command design pattern
-                userManager = new UserManager(newUser);
-                invoker.setCommand(new AddUserCmd(userManager));
-                invoker.execute();
-                boolean isAdded = userManager.isSuccessful();
+                userManager = new UserManager();
+                invoker.setCmd(new AddUserCmd(userManager, newUser));
+                boolean isAdded = (boolean) invoker.executeCmd();
                 //boolean isAdded = UserDAO.addUser(loggedInUser);//
                 ui.showMessage("User added: " + isAdded);
                 break;
@@ -88,10 +89,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
 
                 // command design pattern
                 retrievedUser = new UserDTO(userId);
-                userManager = new UserManager(retrievedUser);
-                invoker.setCommand(new RetrieveUserCmd(userManager));
-                invoker.execute();
-                retrievedUser = userManager.getUser();
+                userManager = new UserManager();
+                invoker.setCmd(new RetrieveUserCmd(userManager, userId));
+                retrievedUser = (UserDTO) invoker.executeCmd();
 
                 if (retrievedUser != null) {
                     // Fetch Address and Role
@@ -115,10 +115,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 userId = Integer.parseInt(userIdInput);
 
                 // command design pattern
-                userManager = new UserManager(new UserDTO(userId));
-                invoker.setCommand(new RetrieveUserCmd(userManager));
-                invoker.execute();
-                UserDTO userToUpdate = userManager.getUser();
+                userManager = new UserManager();
+                invoker.setCmd(new RetrieveUserCmd(userManager, userId));
+                UserDTO userToUpdate = (UserDTO) invoker.executeCmd();
                 //UserDTO userToUpdate = UserDAO.getUserById(userId);
 
                 if (userToUpdate != null) {
@@ -137,10 +136,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                      userToUpdate.setStatus(Integer.parseInt(statusInput));
 
                     // command design pattern
-                    userManager.setUser(userToUpdate);
-                    invoker.setCommand(new UpdateUserCmd(userManager));
-                    invoker.execute();
-                    boolean isUpdated = userManager.isSuccessful();
+                    invoker.setCmd(new UpdateUserCmd(userManager, userToUpdate));
+                    boolean isUpdated = (boolean) invoker.executeCmd();
+
 //                    boolean isUpdated = UserDAO.updateUser(userToUpdate);
                     ui.showMessage("User updated: " + isUpdated);
                 } else {
@@ -156,10 +154,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
 
                 // command design pattern
                 userManager = new UserManager();
-                invoker.setCommand(new RetrieveAllUsersCmd(userManager));
-                invoker.execute();
+                invoker.setCmd(new RetrieveAllUsersCmd(userManager));
                 //List<UserDTO> users = UserDAO.getAllUsers();
-                List<UserDTO> users = userManager.getUsers();
+                List<UserDTO> users = (List<UserDTO>) invoker.executeCmd();
                 ui.showMessage("All users:");
                 ui.showMessage("All users:");
 
