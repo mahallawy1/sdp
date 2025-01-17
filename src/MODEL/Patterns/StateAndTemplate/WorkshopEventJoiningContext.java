@@ -13,8 +13,8 @@ import View.UserView;
  */
 public class WorkshopEventJoiningContext extends EventJoiningTemplateContext{
 
-    public WorkshopEventJoiningContext(UserDTO loggedInUser, UserView userView) {
-        super(loggedInUser, userView);
+    public WorkshopEventJoiningContext(UserDTO loggedInUser) {
+        super(loggedInUser);
     }
 
     @Override

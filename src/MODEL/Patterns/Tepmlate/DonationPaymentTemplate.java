@@ -13,16 +13,17 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import MODEL.DAO.PaymentDAO;
 import View.UserView;
+import View.UtilityHandler;
 
 /**
  *
  * @author belal
  */
 public abstract class DonationPaymentTemplate {
-    private UserView userView;
+    private UtilityHandler UI;
     protected Connection connection;  
-    public DonationPaymentTemplate(UserView userView, Connection connection) {
-        this.userView = userView;
+    public DonationPaymentTemplate(Connection connection) {
+        UI = new UtilityHandler();
         this.connection = connection;
     }
      public final void processPayment(DonationRecordDTO donationRecord, PaymentDTO payment) throws SQLException {
@@ -72,10 +73,10 @@ public abstract class DonationPaymentTemplate {
     PaymentDAO paymentDAO = new PaymentDAO(connection);
 
    
-    paymentDAO.confirmPayment(payment.getId());
+   // paymentDAO.confirmPayment(payment.getId());
 
     
-    userView.showMessage("Payment with ID " + payment.getId() + " has been confirmed successfully.");
+    UI.showMessage("Payment with ID " + payment.getId() + " has been confirmed successfully.");
 }
     // Varying function
     public abstract void executePayment(PaymentDTO payment);

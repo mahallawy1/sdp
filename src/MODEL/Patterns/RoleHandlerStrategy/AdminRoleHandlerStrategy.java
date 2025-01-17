@@ -10,7 +10,9 @@ import MODEL.Patterns.Command.Cmd.*;
 import MODEL.Patterns.Command.Invoker;
 import MODEL.Patterns.Command.Manager.UserManager;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
-import View.UserView;
+import View.InputHandler;
+
+import View.UtilityHandler;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +30,7 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
 
     }
     @Override
-    public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) throws SQLException {
+   public boolean processChoice(int choice, UserDTO loggedInUser, UtilityHandler ui,InputHandler inputHandler) throws SQLException {
         String EmailIpnut = null;
         String PasswordInput= null;
         String firstNameIpnut = null;
@@ -42,13 +44,13 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
         switch (choice) {
             case 1:
                 // Signup logic
-                 EmailIpnut = userView.getInputWithValidation("Enter email: ", "email");
-                 PasswordInput= userView.getInputWithValidation("Enter password: ", "password");
-                 firstNameIpnut = userView.getInputWithValidation("Enter first name: ", "text");
-                 mobilePhoneInput = userView.getInputWithValidation("Enter mobile phone: ", "phone");
-                 addressIdInput = userView.getInputWithValidation("Enter address ID: ", "addressid");
-                 roleIdInput = userView.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
-                 statusInput = userView.getInputWithValidation("enter the status: ", "status");
+                 EmailIpnut = inputHandler.getInputWithValidation("Enter email: ", "email");
+                 PasswordInput= inputHandler.getInputWithValidation("Enter password: ", "password");
+                 firstNameIpnut = inputHandler.getInputWithValidation("Enter first name: ", "text");
+                 mobilePhoneInput = inputHandler.getInputWithValidation("Enter mobile phone: ", "phone");
+                 addressIdInput = inputHandler.getInputWithValidation("Enter address ID: ", "addressid");
+                 roleIdInput = inputHandler.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
+                 statusInput = inputHandler.getInputWithValidation("enter the status: ", "status");
 
                 UserDTO newUser = new UserDTO();
 
@@ -74,13 +76,13 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 invoker.execute();
                 boolean isAdded = userManager.isSuccessful();
                 //boolean isAdded = UserDAO.addUser(loggedInUser);//
-                userView.showMessage("User added: " + isAdded);
+                ui.showMessage("User added: " + isAdded);
                 break;
 
             case 2:
                 // Admin-specific logic for "Retrieve User by ID"
                 // Retrieve User by ID
-                String userIdInput = userView.getInputWithValidation("enter userId : ", "userId");
+                String userIdInput = inputHandler.getInputWithValidation("enter userId : ", "userId");
                 userId = Integer.parseInt(userIdInput);
                 UserDTO retrievedUser;// = UserDAO.getUserById(userId);
 
@@ -96,20 +98,20 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                     AddressDTO address = AddressDAO.getAddressById(retrievedUser.getAddressId());
                     RoleDTO role = RoleDAO.getRoleById(retrievedUser.getRoleId());
 //
-                    userView.showMessage("User ID: " + retrievedUser.getId());
-                    userView.showMessage("Name: " + retrievedUser.getFirstname());
-                    userView.showMessage("Email: " + retrievedUser.getEmail());
-                    userView.showMessage("Mobile Phone: " + retrievedUser.getMobilePhone());
-                    userView.showMessage("Status: " + retrievedUser.getStatus());
-                    userView.showMessage("Role: " + (role != null ? role.getName() : "Role not found"));
-                    userView.showMessage("Address: " + (address != null ? address.getName() : "Address not found"));
+                    ui.showMessage("User ID: " + retrievedUser.getId());
+                    ui.showMessage("Name: " + retrievedUser.getFirstname());
+                    ui.showMessage("Email: " + retrievedUser.getEmail());
+                    ui.showMessage("Mobile Phone: " + retrievedUser.getMobilePhone());
+                    ui.showMessage("Status: " + retrievedUser.getStatus());
+                    ui.showMessage("Role: " + (role != null ? role.getName() : "Role not found"));
+                    ui.showMessage("Address: " + (address != null ? address.getName() : "Address not found"));
                 } else {
-                    userView.showMessage("User not found.");
+                    ui.showMessage("User not found.");
                 }
                 break;
             case 3:
                 // Update User
-                 userIdInput = userView.getInputWithValidation("enter userId: ", "userId");
+                 userIdInput = inputHandler.getInputWithValidation("enter userId: ", "userId");
                 userId = Integer.parseInt(userIdInput);
 
                 // command design pattern
@@ -122,16 +124,16 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 if (userToUpdate != null) {
 
 
-                     firstNameIpnut= userView.getInputWithValidation("Enter name : ", "text");
+                     firstNameIpnut= inputHandler.getInputWithValidation("Enter name : ", "text");
                      userToUpdate.setFirstname(firstNameIpnut);
-                     PasswordInput= userView.getInputWithValidation("Enter password: ", "password");
+                     PasswordInput= inputHandler.getInputWithValidation("Enter password: ", "password");
                      userToUpdate.setPassword(PasswordInput);
-                     EmailIpnut = userView.getInputWithValidation("Enter email: ", "email");
+                     EmailIpnut = inputHandler.getInputWithValidation("Enter email: ", "email");
                      userToUpdate.setEmail(EmailIpnut);
-                     mobilePhoneInput = userView.getInputWithValidation("Enter Mobile number: ", "phone");
+                     mobilePhoneInput = inputHandler.getInputWithValidation("Enter Mobile number: ", "phone");
                      userToUpdate.setMobilePhone(mobilePhoneInput);
 
-                     statusInput = userView.getInputWithValidation("Enter status : ", "status");
+                     statusInput = inputHandler.getInputWithValidation("Enter status : ", "status");
                      userToUpdate.setStatus(Integer.parseInt(statusInput));
 
                     // command design pattern
@@ -140,9 +142,9 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                     invoker.execute();
                     boolean isUpdated = userManager.isSuccessful();
 //                    boolean isUpdated = UserDAO.updateUser(userToUpdate);
-                    userView.showMessage("User updated: " + isUpdated);
+                    ui.showMessage("User updated: " + isUpdated);
                 } else {
-                    userView.showMessage("User not found.");//
+                    ui.showMessage("User not found.");//
                 }
                 break;
             case 4:
@@ -158,17 +160,17 @@ public class AdminRoleHandlerStrategy implements RoleHandlerStrategy {
                 invoker.execute();
                 //List<UserDTO> users = UserDAO.getAllUsers();
                 List<UserDTO> users = userManager.getUsers();
-                userView.showMessage("All users:");
-                userView.showMessage("All users:");
+                ui.showMessage("All users:");
+                ui.showMessage("All users:");
 
 // Print a header for the table with blue color//
                 String format = "%-10s %-20s %-30s %-15s %-15s %-20s %-50s%n";
-userView.displayTableHeader(format, "User ID", "Name", "Email", "Mobile Phone", "Status", "Role", "Address");
+ui.displayTableHeader(format, "User ID", "Name", "Email", "Mobile Phone", "Status", "Role", "Address");
                 
                
 
 // Print a separator line//
-                userView.showMessage("-------------------------------------------------------------------------------------------------------------------------------------------------");
+                ui.showMessage("-------------------------------------------------------------------------------------------------------------------------------------------------");
 
                 for (UserDTO user : users) {
                     // Fetch Address and Role for each user
@@ -177,7 +179,7 @@ userView.displayTableHeader(format, "User ID", "Name", "Email", "Mobile Phone", 
 //
                     // Print each user's details in a formatted way
                      format = "%-10d %-20s %-30s %-15s %-15s %-20s %-50s%n";
-userView.displayTableRow(
+ui.displayTableRow(
     format,
     user.getId(),
     user.getFirstname(),
@@ -191,7 +193,7 @@ userView.displayTableRow(
                    
                 }
 //
-                userView.showMessage("**********************************************************");
+                ui.showMessage("**********************************************************");
 
                 break;
             case 5:
@@ -220,11 +222,11 @@ userView.displayTableRow(
                 break;
             case 11:
                 // Volunteer-specific logic for "Logout"
-                userView.showMessage("Logging out...");
+                ui.showMessage("Logging out...");
                 return true;
 
             case 12://
-                userView.showMessage("Exiting...");
+                ui.showMessage("Exiting...");
                 DbConnectionSingleton.getInstance().close(null, null);//
                 System.exit(0);
                 break;

@@ -31,7 +31,7 @@ public class addVolunteeringRecordState implements EventJoiningState{
             context.setState(new generateTicketState());
             
         } catch (SQLException e) {
-            context.userView.showMessage("Error processing your volunteering record.");
+            context.UI.showMessage("Error processing your volunteering record.");
             return;
         }
           

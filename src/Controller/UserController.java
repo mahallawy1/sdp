@@ -64,6 +64,11 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
 import MODEL.Patterns.StateAndTemplate.EventJoiningTemplateContext;
 import MODEL.Patterns.StateAndTemplate.SeminarEventJoiningContext;
+import View.DonationView;
+import View.EventView;
+import View.InputHandler;
+import View.NotificationView;
+import View.UtilityHandler;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -72,12 +77,22 @@ public class UserController {
     
     private UserDAO userDAO;
     private UserView userView;
+    private UtilityHandler UI;
+    private InputHandler inputHandler;
+    private NotificationView notificationView;
+    private EventView eventView;
+    private DonationView donationView;
     private Invoker invoker;
 
 
-    public UserController(UserDAO userDAO, UserView userView) {
+    public UserController(UserDAO userDAO, UserView userView,UtilityHandler utilityHandler,InputHandler inputHandler, NotificationView notificationView, EventView eventView,DonationView donationView ) {
         this.userDAO = userDAO;
         this.userView = userView;
+        this.UI = utilityHandler;
+        this.inputHandler = inputHandler;
+        this.notificationView = notificationView;
+        this.eventView = eventView;
+        this.donationView = donationView;
         this.invoker = new Invoker();
 
     }
@@ -88,7 +103,7 @@ public class UserController {
 
     public void handleUserMenu() throws SQLException {
         userView.showLoginMenu();
-        int choice = userView.getChoice();
+        int choice = inputHandler.getChoice();
 
         switch (choice) {
             case 1:
@@ -108,11 +123,11 @@ public class UserController {
 
 
     private void loginUser() throws SQLException {
-        userView.showMessage("Choose login method:");
-        userView.showMessage("1. Login by Email and Password");
-        userView.showMessage("2. Login by Mobile Phone");
+        UI.showMessage("Choose login method:");
+        UI.showMessage("1. Login by Email and Password");
+        UI.showMessage("2. Login by Mobile Phone");
 
-        int loginChoice = userView.getChoice();
+        int loginChoice = inputHandler.getChoice();
         UserDTO loggedInUser = null;
 
         // command design pattern
@@ -120,8 +135,8 @@ public class UserController {
         switch (loginChoice) {
             case 1:
                 // Login by Email and Password
-                String email = userView.getInputWithValidation("Enter email: " , "email");
-                String password = userView.getInputWithValidation("Enter password: " , "password");
+                String email = inputHandler.getInputWithValidation("Enter email: " , "email");
+                String password = inputHandler.getInputWithValidation("Enter password: " , "password");
 
                 // command design pattern
                 loggedInUser = new UserDTO(email, password);
@@ -133,7 +148,7 @@ public class UserController {
                 break;
             case 2:
                 // Login by Mobile Phone
-                String mobilePhone = userView.getInputWithValidation("Enter mobile phone: " , "phone");
+                String mobilePhone = inputHandler.getInputWithValidation("Enter mobile phone: " , "phone");
                 // command design pattern
                 loggedInUser = new UserDTO(mobilePhone);
                 userManager = new UserManager(loggedInUser);
@@ -144,21 +159,21 @@ public class UserController {
                 break;
 
             default:
-                userView.showMessage("Invalid login choice.");
+                UI.showMessage("Invalid login choice.");
                 return; // Exit the method on invalid choice
         }
 
         if (loggedInUser != null) {
-            userView.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
+            UI.showMessage("Login successful! Welcome, " + " "+ loggedInUser.getFirstname());
             // Show notifications
-            if(loggedInUser.getRoleId()==1)  userView.showNotification(donationObsrv);
-            if(loggedInUser.getRoleId()==2) userView.showNotification(eventObsrv4Volunteer);
-            if(loggedInUser.getRoleId()==3) userView.showNotification(eventObsrv);
+            if(loggedInUser.getRoleId()==1)  notificationView.showNotification(donationObsrv);
+            if(loggedInUser.getRoleId()==2) notificationView.showNotification(eventObsrv4Volunteer);
+            if(loggedInUser.getRoleId()==3) notificationView.showNotification(eventObsrv);
             userView.showMainMenu(loggedInUser); // Show menu after successful login
 
 
         } else {
-            userView.showMessage("Login failed. Please check your credentials.");
+           UI.showMessage("Login failed. Please check your credentials.");
         }
     }
 /////////////////////////////////////////////
@@ -168,24 +183,24 @@ public void processDonation(UserDTO loggedInUser) {
     List<DonationRecordTypeDTO> donationTypes = new ArrayList<>();
     donationTypes.add(new DonationRecordTypeDTO(0, 0, "Support Us Donation", 50));
 
-    if (userView.confirm("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ")) {
-        if (userView.confirm("Add Charity Donation? (y/n): ")) {
-            double charityAmount = userView.getDonationAmount("Enter amount for Charity Donation: ");
+    if (donationView.confirm("You have added a 50 Dollar Donation by default. Do you want to add more donations? (y/n): ")) {
+        if (donationView.confirm("Add Charity Donation? (y/n): ")) {
+            double charityAmount = donationView.getDonationAmount("Enter amount for Charity Donation: ");
             donation = new CharityDonation(donation, charityAmount);
             donationTypes.add(new DonationRecordTypeDTO(0, 0, "Charity Donation", (int) charityAmount));
         }
-        if (userView.confirm("Add Gaza Donation? (y/n): ")) {
-            double gazaAmount = userView.getDonationAmount("Enter amount for Gaza Donation: ");
+        if (donationView.confirm("Add Gaza Donation? (y/n): ")) {
+            double gazaAmount = donationView.getDonationAmount("Enter amount for Gaza Donation: ");
             donation = new GazaDonation(donation, gazaAmount);
             donationTypes.add(new DonationRecordTypeDTO(0, 0, "Gaza Donation", (int) gazaAmount));
         }
-        if (userView.confirm("Add Sudan Donation? (y/n): ")) {
-            double sudanAmount = userView.getDonationAmount("Enter amount for Sudan Donation: ");
+        if (donationView.confirm("Add Sudan Donation? (y/n): ")) {
+            double sudanAmount = donationView.getDonationAmount("Enter amount for Sudan Donation: ");
             donation = new SudanDonation(donation, sudanAmount);
             donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", (int) sudanAmount));
         }
     } else {
-        userView.showMessage("Processing default 50 Dollar donation...");
+       UI.showMessage("Processing default 50 Dollar donation...");
     }
 
     double cumulativeAmount = donation.getAmount();
@@ -207,15 +222,15 @@ public void processDonation(UserDTO loggedInUser) {
         //int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
 
         if (donationId != -1) {
-            userView.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
+            UI.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
 
-            int paymentChoice = userView.getPaymentChoice();
+            int paymentChoice = donationView.getPaymentChoice();
 
             PaymentStategy paymentStrategy = null;
             if (paymentChoice == 1) {
-                paymentStrategy = new FawryPayment(userView);
+                paymentStrategy = new FawryPayment();
             } else if (paymentChoice == 2) {
-                paymentStrategy = new CreditCardPayment( userView);
+                paymentStrategy = new CreditCardPayment();
             }
 
             if (paymentStrategy != null) {
@@ -228,36 +243,36 @@ public void processDonation(UserDTO loggedInUser) {
                 int paymentId = paymentDAO.createPayment(payment, paymentStrategy);
                 paymentDAO.linkDonationToPayment(donationId, paymentId);
 
-                userView.showMessage("Payment processed successfully with Payment ID: " + paymentId);
+                UI.showMessage("Payment processed successfully with Payment ID: " + paymentId);
                 donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
             } else {
-                userView.showMessage("Invalid payment method selected.");
+                UI.showMessage("Invalid payment method selected.");
             }
         } else {
-            userView.showMessage("Failed to create donation record.");
+            UI.showMessage("Failed to create donation record.");
         }
     } catch (Exception e) {
-        userView.showMessage("An error occurred: " + e.getMessage());
+        UI.showMessage("An error occurred: " + e.getMessage());
     }
 }
 
 
     private void processPayment(UserDTO user, double amount) {
-        int paymentChoice = userView.getPaymentChoice();
+        int paymentChoice = donationView.getPaymentChoice();
         PaymentStategy paymentStrategy = switch (paymentChoice) {
-            case 1 -> new FawryPayment(userView );
-            case 2 -> new CreditCardPayment(userView);
+            case 1 -> new FawryPayment( );
+            case 2 -> new CreditCardPayment();
             default -> null;
         };
 
         if (paymentStrategy != null) {
             PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
             paymentService.executePayment(new PaymentDTO());
-            userView.showMessage("Payment processed successfully.");
+            UI.showMessage("Payment processed successfully.");
             // Notify observers if needed
 
         } else {
-            userView.showMessage("Invalid payment choice. No payment processed.");
+            UI.showMessage("Invalid payment choice. No payment processed.");
         }
     }
 /////////////////////////////////////////////////////
@@ -304,39 +319,39 @@ public void processDonation(UserDTO loggedInUser) {
 
         if (loggedInUser.getRoleId() == 2) {
             // Volunteer
-            ev = new VolunteerEventFactory(userView); 
+            ev = new VolunteerEventFactory(); 
         } else if (loggedInUser.getRoleId() == 1) { 
             // Admin
-            ev = new AdminEventFactory(userView);
+            ev = new AdminEventFactory();
 
         } else {
-            userView.showMessage("Invalid role, cannot create event.");
+            UI.showMessage("Invalid role, cannot create event.");
             return;
         }
 
-        String eventName = userView.getEventName();
-        int eventTypeId = userView.getEventTypeId();
-        String description = userView.getEventDescription();
+        String eventName = eventView.getEventName();
+        int eventTypeId = eventView.getEventTypeId();
+        String description = eventView.getEventDescription();
 
-        LocalDate eventDate = userView.getEventDate();
+        LocalDate eventDate = eventView.getEventDate();
 
-        LocalTime startTime = userView.getStartTime();
-        LocalTime endTime = userView.getEndTime();
-        ArrayList <Integer> skills = userView.displayAndChooseSkills();
+        LocalTime startTime = eventView.getStartTime();
+        LocalTime endTime = eventView.getEndTime();
+        ArrayList <Integer> skills = eventView.displayAndChooseSkills();
         EventDTO newEvent = ev.createEvent(loggedInUser, eventName, eventTypeId, description, eventDate, startTime, endTime,skills);
         
-        userView.showMessage("Event created: " + newEvent.getName());
-        userView.showMessage("Description: " + newEvent.getDescription());
+        UI.showMessage("Event created: " + newEvent.getName());
+        UI.showMessage("Description: " + newEvent.getDescription());
         eventSubj.setNotification(eventName, eventDate, startTime, endTime, description);
        }
        catch(Exception e){
-           userView.showMessage("Error creating event : " + e);
+           UI.showMessage("Error creating event : " + e);
        }
     }
     
     //////////////////////////delete event/////////////////
     public void deleteEvent() throws SQLException {
-        int eventId = userView.getEventIdForDeletion();
+        int eventId = eventView.getEventIdForDeletion();
 
 
         try {
@@ -346,11 +361,11 @@ public void processDonation(UserDTO loggedInUser) {
             invoker.setCommand(new DeleteEventCmd(eventManager));
             invoker.execute();
             if(eventManager.isSuccessful())
-                userView.showMessage("Event with ID " + eventId + " removed successfully.");
+                UI.showMessage("Event with ID " + eventId + " removed successfully.");
             else
-                userView.showMessage("Error removing event with ID "+ eventId +". Maybe id was wrong.");
+                UI.showMessage("Error removing event with ID "+ eventId +". Maybe id was wrong.");
         } catch (SQLException e) {
-            userView.showMessage("Error removing event: " + e.getMessage());
+            UI.showMessage("Error removing event: " + e.getMessage());
         }
     }
     public void joinEvent(UserDTO loggedInUser){
@@ -396,7 +411,7 @@ public void processDonation(UserDTO loggedInUser) {
 //        }
        
     try{ 
-      EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser,userView);
+      EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser);
        eventContext.joinEvent();
     }
     catch(Exception e){
@@ -406,11 +421,11 @@ public void processDonation(UserDTO loggedInUser) {
     public void addBook(){
        try{    
         //BookDAO bookDAO = new BookDAO();
-        String description = userView.getInputWithValidation("Enter book description:", "text");
-        String title = userView.getInputWithValidation("Enter book title" , "text");
-        String cover = userView.getInputWithValidation("Enter book cover URL:", "text");
-        String publishYear = userView.getInputWithValidation("Enter publish year:", "text");
-        String quantity = userView.getInputWithValidation("Enter quantity:", "text");
+        String description = inputHandler.getInputWithValidation("Enter book description:", "text");
+        String title = inputHandler.getInputWithValidation("Enter book title" , "text");
+        String cover = inputHandler.getInputWithValidation("Enter book cover URL:", "text");
+        String publishYear = inputHandler.getInputWithValidation("Enter publish year:", "text");
+        String quantity = inputHandler.getInputWithValidation("Enter quantity:", "text");
         String status = "available";
         BookDTO bookDTO = new BookDTO(0,description,title,cover,false,Integer.parseInt(publishYear),Integer.parseInt(quantity),status);
 
@@ -429,7 +444,7 @@ public void processDonation(UserDTO loggedInUser) {
     }
     public void deleteBook(){
        try{
-        String id = userView.getInputWithValidation("Enter the ID of the book to delete:","text");
+        String id = inputHandler.getInputWithValidation("Enter the ID of the book to delete:","text");
 
 
         // Command design patten
@@ -478,7 +493,7 @@ public void processDonation(UserDTO loggedInUser) {
             BorrowedBookCollection borrowedBooks = new BorrowedBookCollection();
 
             while (true) {
-                String bookId = userView.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
+                String bookId = inputHandler.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
 
                 if (bookId.equalsIgnoreCase("done")) {
                     System.out.println("You have finished entering books.");
@@ -530,12 +545,12 @@ public void processDonation(UserDTO loggedInUser) {
             boolean isDeleted = userManager.isSuccessful();
             //UserDAO.deleteUser(deleteUserId);
             if(isDeleted)
-                userView.showMessage("user with ID " + deleteUserId + " removed successfully.");
+                UI.showMessage("user with ID " + deleteUserId + " removed successfully.");
             else
-                userView.showMessage("Error removing usr with ID " + deleteUserId + ". Maybe id is wrong." );
+                UI.showMessage("Error removing usr with ID " + deleteUserId + ". Maybe id is wrong." );
 
         } catch (SQLException e) {
-            userView.showMessage("Error removing usr: " + e.getMessage());
+            UI.showMessage("Error removing usr: " + e.getMessage());
         }
     }
     /* System.out.print("Enter user ID to delete: ");
@@ -547,14 +562,14 @@ public void processDonation(UserDTO loggedInUser) {
     ///////////////////////////////////////////
     private void signupUser() {
         // Signup logic
-        String signupEmail = userView.getInputWithValidation("Enter email: ", "email");
-        String signupPassword = userView.getInputWithValidation("Enter password: ", "password");
-        String firstName = userView.getInputWithValidation("Enter first name: ", "text");
-        String mobilePhone = userView.getInputWithValidation("Enter mobile phone: ", "phone");
-        String addressIdInput = userView.getInputWithValidation("Enter address ID: ", "addressid");
-        String roleIdInput = userView.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
+        String signupEmail = inputHandler.getInputWithValidation("Enter email: ", "email");
+        String signupPassword = inputHandler.getInputWithValidation("Enter password: ", "password");
+        String firstName = inputHandler.getInputWithValidation("Enter first name: ", "text");
+        String mobilePhone = inputHandler.getInputWithValidation("Enter mobile phone: ", "phone");
+        String addressIdInput = inputHandler.getInputWithValidation("Enter address ID: ", "addressid");
+        String roleIdInput = inputHandler.getInputWithValidation("Are you An volunteer or a member chose 1 or 2 respectively: ", "role");
         // what is the status i don't know !!
-        String statusInput = userView.getInputWithValidation("enter the status: ", "status");
+        String statusInput = inputHandler.getInputWithValidation("enter the status: ", "status");
 
         UserDTO newUser = new UserDTO();
         // Set user data
@@ -584,13 +599,13 @@ public void processDonation(UserDTO loggedInUser) {
             //boolean isAdded = userDAO.addUser(newUser);
 
             if (userManager.isSuccessful()) {
-                userView.showMessage("Signup successful!");
+                UI.showMessage("Signup successful!");
                 userView.showMainMenu(newUser);  // Show the main menu after successful signup
             } else {
-                userView.showMessage("Signup failed. Please try again.");
+                UI.showMessage("Signup failed. Please try again.");
             }
         } catch (NumberFormatException | SQLException e) {
-            userView.showMessage("Invalid input format for address ID, role ID, or status. Please ensure they are correct.");
+            UI.showMessage("Invalid input format for address ID, role ID, or status. Please ensure they are correct.");
         }
     }
 

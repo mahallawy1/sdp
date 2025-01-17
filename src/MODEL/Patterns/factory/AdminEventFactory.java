@@ -13,7 +13,8 @@ import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.Event.RequiredSkillsDTO;
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
-import View.UserView;
+
+import View.UtilityHandler;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -22,9 +23,9 @@ import java.util.ArrayList;
  * @author hussien
  */
 public class AdminEventFactory implements EventFactory{
-       private UserView userView;
-    public AdminEventFactory(UserView userView) {
-        this.userView = userView;
+       private UtilityHandler UI;
+    public AdminEventFactory() {
+        this.UI = new UtilityHandler();
     }
     
     public EventDTO createEvent(UserDTO admin, String eventName,
@@ -57,10 +58,10 @@ public class AdminEventFactory implements EventFactory{
                 int event_id = 0;
                 try {
                   event_id = EventDAO.addEvent(event);//
-                 userView.showMessage("Event added successfully with ID: " + event.getId());
+                 UI.showMessage("Event added successfully with ID: " + event.getId());
                     
                  } catch (SQLException e) {//
-                         userView.showMessage("Error adding event: " + e.getMessage());
+                         UI.showMessage("Error adding event: " + e.getMessage());
 
                  }
                 
@@ -71,9 +72,9 @@ public class AdminEventFactory implements EventFactory{
                         requiredSkill.setSkillId(skills.get(i));
                         try{
                     int requiredSkill_id  = RequiredSkillsDAO.addRequiredSkill(requiredSkill);//
-                    userView.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
+                    UI.showMessage("RequiredSkills added successfully with ID: " + requiredSkill.getId());
                      }catch(SQLException e){
-                    userView.showMessage("Error adding required skills: " + e.getMessage());//
+                    UI.showMessage("Error adding required skills: " + e.getMessage());//
 
                 }
                 }

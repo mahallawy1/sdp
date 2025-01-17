@@ -28,7 +28,7 @@ public class checkAvailabilityState implements EventJoiningState {
            
         try {
             if (EventDAO.isEventFull(context.event.getId())) {
-                context.userView.showMessage("Sorry, this event is already full.");
+                context.UI.showMessage("Sorry, this event is already full.");
                 return;
             }
             

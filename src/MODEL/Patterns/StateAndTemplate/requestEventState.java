@@ -8,6 +8,7 @@ import MODEL.DAO.EventDAO;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.Command.Manager.VolunteringManager;
+import View.InputHandler;
 import View.UserView;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -21,7 +22,8 @@ public class requestEventState implements EventJoiningState{
 
     @Override
     public void handle(EventJoiningTemplateContext context) {
-         int eventId = Integer.parseInt(context.userView.getInput("Enter the ID of the event you wish to join: "));
+       
+         int eventId = Integer.parseInt(context.inputHandler.getInput("Enter the ID of the event you wish to join: "));
         try {
             context.event = EventDAO.getEventById(eventId);
             context.setState(new checkAvailabilityState());
@@ -30,7 +32,7 @@ public class requestEventState implements EventJoiningState{
             System.out.println("Error getting event : "+ e);
         }
         if (context.event == null) {
-            context.userView.showMessage("Event not found.");
+            context.UI.showMessage("Event not found.");
             return;
         }
     }

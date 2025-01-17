@@ -9,19 +9,23 @@ import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.Adabter.EventJoiningAdapter;
 import MODEL.Patterns.Adabter.TicketGenerator;
 import MODEL.Patterns.Command.Manager.VolunteringManager;
+import View.InputHandler;
 import View.UserView;
+import View.UtilityHandler;
 import java.sql.SQLException;
 
 public abstract class EventJoiningTemplateContext {
     protected UserDTO loggedInUser;
     protected EventDTO event;
-    protected UserView userView;
+    protected UtilityHandler UI;
+    protected InputHandler inputHandler;
     protected VolunteringManager volunteeringManager;
     protected EventJoiningState currentState;
     
-    public EventJoiningTemplateContext(UserDTO loggedInUser, UserView userView) {
+    public EventJoiningTemplateContext(UserDTO loggedInUser) {
             this.loggedInUser = loggedInUser;
-            this.userView = userView;
+            this.UI = new UtilityHandler();
+            this.inputHandler = new InputHandler();
             this.currentState = new requestEventState();  // Initial state
     }
     // Template method defining the steps

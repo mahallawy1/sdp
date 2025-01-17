@@ -6,18 +6,19 @@ package MODEL.Patterns.paymentstrategy;
 
 import MODEL.DTO.Donation.PaymentDTO;
 import View.UserView;
+import View.UtilityHandler;
 /**
  *
  * @author belal
  */
 public class CreditCardPayment implements PaymentStategy {
-        private UserView userView;
-    public CreditCardPayment(UserView userView) {
-        this.userView = userView;
+        private UtilityHandler UI;
+    public CreditCardPayment() {
+        this.UI  = new UtilityHandler();
     }
     @Override
     public void pay(PaymentDTO payment) {
-        userView.showMessage("Pay by Credit Card");
+        this.UI.showMessage("Pay by Credit Card");
         
         
     }

@@ -7,7 +7,9 @@ package MODEL.Patterns.StateAndTemplate;
 import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.Command.Manager.VolunteringManager;
+import View.InputHandler;
 import View.UserView;
+import View.UtilityHandler;
 
 /**
  *
@@ -16,15 +18,16 @@ import View.UserView;
 public class handleWorkshopEventState implements EventJoiningState {
 
     // Helper method to prompt for yes/no answers
-    private boolean promptYesNo(UserView userView, String question) {
+    private boolean promptYesNo(EventJoiningTemplateContext context, String question) {
+        
         while (true) {
-            String answer = userView.getInput(question).trim().toLowerCase();
+            String answer = context.inputHandler.getInput(question).trim().toLowerCase();
             if (answer.equals("yes")) {
                 return true;
             } else if (answer.equals("no")) {
                 return false;
             } else {
-                userView.showMessage("Invalid input. Please answer with 'yes' or 'no'.");
+                context.UI.showMessage("Invalid input. Please answer with 'yes' or 'no'.");
             }
         }
     }
@@ -33,7 +36,7 @@ public class handleWorkshopEventState implements EventJoiningState {
 
     @Override
     public void handle(EventJoiningTemplateContext context) {
-          context.userView.showMessage("You are joining a workshop event. Please answer the following questions to determine your eligibility:");
+          context.UI.showMessage("You are joining a workshop event. Please answer the following questions to determine your eligibility:");
 
         // Example workshop-specific questions
         String question1 = "Do you have prior experience in the workshop topic? (yes/no)";
@@ -43,16 +46,16 @@ public class handleWorkshopEventState implements EventJoiningState {
         String question5 = "Do you have the required resources (e.g., laptop, materials)? (yes/no)";
 
         // Collect answers
-        boolean hasExperience = promptYesNo(context.userView, question1);
-        boolean availableFullTime = promptYesNo(context.userView, question2);
-        boolean agreesToAssessment = promptYesNo(context.userView, question3);
-        boolean willingToCollaborate = promptYesNo(context.userView, question4);
-        boolean hasResources  = promptYesNo(context.userView,question5);
+        boolean hasExperience = promptYesNo(context, question1);
+        boolean availableFullTime = promptYesNo(context, question2);
+        boolean agreesToAssessment = promptYesNo(context, question3);
+        boolean willingToCollaborate = promptYesNo(context, question4);
+        boolean hasResources  = promptYesNo(context,question5);
         // Decision logic
         if (hasExperience && availableFullTime && agreesToAssessment && willingToCollaborate&&hasResources) {
-           context.userView.showMessage("Congratulations! You meet the requirements to join the workshop.");
+           context.UI.showMessage("Congratulations! You meet the requirements to join the workshop.");
         } else {
-            context.userView.showMessage("Unfortunately, you do not meet the requirements for this workshop.");
+            context.UI.showMessage("Unfortunately, you do not meet the requirements for this workshop.");
         }
     }
 }

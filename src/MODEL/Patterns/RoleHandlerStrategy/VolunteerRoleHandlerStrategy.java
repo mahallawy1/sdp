@@ -16,7 +16,9 @@ import MODEL.Patterns.Command.Invoker;
 import MODEL.Patterns.Command.Manager.DonationManager;
 import MODEL.Patterns.Command.Manager.VolunteringManager;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
+import View.InputHandler;
 import View.UserView;
+import View.UtilityHandler;
 
 import java.sql.SQLException;
 
@@ -31,7 +33,7 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
     }
 
     @Override
-    public boolean processChoice(int choice, UserDTO loggedInUser, UserView userView) throws SQLException {
+    public boolean processChoice(int choice, UserDTO loggedInUser, UtilityHandler ui,InputHandler inputHandler) throws SQLException {
         switch (choice) {
             case 1:
                 // Volunteer-specific logic for "Add Donation"
@@ -54,10 +56,10 @@ public class VolunteerRoleHandlerStrategy implements RoleHandlerStrategy {
 
             case 5:
 
-                userView.showMessage("Logging out...");
+                ui.showMessage("Logging out...");
                 return true; // This will exit the menu loop
             case 6:
-                userView.showMessage("Exiting...");//
+                ui.showMessage("Exiting...");//
                 DbConnectionSingleton.getInstance().close(null, null);
                 System.exit(0);
                 break;

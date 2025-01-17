@@ -14,8 +14,8 @@ import View.UserView;
 // Seminar-specific event joining
 public class SeminarEventJoiningContext extends EventJoiningTemplateContext {
 
-    public SeminarEventJoiningContext(UserDTO loggedInUser, UserView userView) {
-        super(loggedInUser, userView);
+    public SeminarEventJoiningContext(UserDTO loggedInUser) {
+        super(loggedInUser);
         
     }
     

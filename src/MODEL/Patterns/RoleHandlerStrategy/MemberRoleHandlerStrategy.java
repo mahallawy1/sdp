@@ -2,7 +2,10 @@ package MODEL.Patterns.RoleHandlerStrategy;
 import Controller.UserController;
 import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.singleton.DbConnectionSingleton;
+import View.InputHandler;
 import View.UserView;
+import View.UtilityHandler;
+import java.sql.SQLException;
 
 public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
      private final UserController userController;
@@ -11,7 +14,7 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
         this.userController = userController;
     }
     @Override
-    public boolean processChoice(int choice, UserDTO loggedInUser , UserView userView) {
+   public boolean processChoice(int choice, UserDTO loggedInUser, UtilityHandler ui,InputHandler inputHandler) throws SQLException {
         switch (choice) {
             case 1:
                 // Member-specific logic for "Add Donation"
@@ -27,10 +30,10 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
           
             case 4:
                 // Member-specific logic for "Logout"
-                 userView.showMessage("Logging out...");
+                 ui.showMessage("Logging out...");
                 return true;
             case 5:
-                userView.showMessage("Exiting...");//
+                ui.showMessage("Exiting...");//
                 DbConnectionSingleton.getInstance().close(null, null);
                 System.exit(0);//
                 break;
