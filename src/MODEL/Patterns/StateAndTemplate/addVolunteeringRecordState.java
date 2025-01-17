@@ -26,7 +26,8 @@ public class addVolunteeringRecordState implements EventJoiningState{
     public void handle(EventJoiningTemplateContext context) {
            try {
              Invoker invoker = new Invoker();
-            invoker.setCmd(new JoinEvent2VolunteerCmd(context.volunteeringManager));
+             // hussien please see this
+            invoker.setCmd(new JoinEvent2VolunteerCmd(context.volunteeringManager, null, null));
             invoker.executeCmd();  // Use the manager to handle the record
             context.setState(new generateTicketState());
             

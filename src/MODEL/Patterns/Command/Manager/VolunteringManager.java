@@ -24,14 +24,14 @@ public class VolunteringManager {
     public VolunteeringDetailsDTO getVolunteeringDetails(){
         return this.details;
     }
-    public void joinEvent2Volunteer(VolunteeringDTO newVolunteering, VolunteeringDetailsDTO details) throws SQLException {
+    public boolean joinEvent2Volunteer(VolunteeringDTO newVolunteering, VolunteeringDetailsDTO details) throws SQLException {
         try {
             if (VolunteeringDAO.addVolunteering(newVolunteering) &&
             VolunteeringDetailsDAO.addVolunteeringDetails(details))
-                isSuccessful = true;
-            else isSuccessful = false;
+                return true;
+            else return false;
         } catch (SQLException e) {
-            isSuccessful = false;
+            return false;
         }
 
 
