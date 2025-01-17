@@ -33,7 +33,7 @@ public class checkAvailabilityState implements EventJoiningState {
             }
             
         } catch (SQLException e) {
-          System.out.println("Error checking if is event full : " + e);
+          context.UI.showMessage("Error checking if is event full : " + e);
         }
     }
     

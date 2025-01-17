@@ -93,11 +93,11 @@ public class UserController {
                 signupUser(); // Call signup method
                 break;
             case 3:
-                System.out.println("Exiting...");
+                UI.showMessage("Exiting...");
                 System.exit(0);  // Exit the application
                 break;
             default:
-                System.out.println("Invalid choice. Please try again.");
+                UI.showMessage("Invalid choice. Please try again.");
         }
     }
 
@@ -263,7 +263,7 @@ public void processDonation(UserDTO loggedInUser) {
 //    }
 /////////////////////////////////////////////////////
     ///event
-     public static void setSkills() {
+     public  void setSkills() {
         // Predefined random skills for library events
         String[] randomSkills = {
             "Book Cataloging",
@@ -286,14 +286,14 @@ public void processDonation(UserDTO loggedInUser) {
                 String skillName = randomSkills[random.nextInt(randomSkills.length)];
                 SkillDTO skill = new SkillDTO(i, skillName); // Use i as a unique ID
                 if (SkillsDAO.addSkill(skill)) {
-                    System.out.println("Skill added: " + skillName);
+                    UI.showMessage("Skill added: " + skillName);
                 } else {
-                    System.out.println("Failed to add skill: " + skillName);
+                    UI.showMessage("Failed to add skill: " + skillName);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Error while adding skills to the database.");
+            UI.showMessage("Error while adding skills to the database.");
         }
     }
     public void createEvent(UserDTO loggedInUser) {
@@ -408,13 +408,13 @@ public void processDonation(UserDTO loggedInUser) {
       EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser);
       eventContext.joinEvent();
       }else{
-          System.out.println("invalid choice");
+          UI.showMessage("invalid choice");
       }
            
       
     }
     catch(Exception e){
-        System.out.println("error joining event : " + e);
+        UI.showMessage("error joining event : " + e);
     }
     }
     public void addBook(){
@@ -434,11 +434,11 @@ public void processDonation(UserDTO loggedInUser) {
         invoker.setCmd(new AddBookCmd(bookManager, bookDTO));
 
         if((Boolean )invoker.executeCmd())
-            System.out.println("Book added Successfully");
+            UI.showMessage("Book added Successfully");
 
        }
        catch(Exception e){
-           System.out.println("Error adding book" + e);
+           UI.showMessage("Error adding book" + e);
        }
     }
     public void deleteBook(){
@@ -453,11 +453,11 @@ public void processDonation(UserDTO loggedInUser) {
         invoker.setCmd(new DeleteBookCmd(bookManager, Integer.parseInt(id)));
 
         if((boolean)invoker.executeCmd())
-            System.out.println("Book deleted successfully");
-        //System.out.println("test");
+            UI.showMessage("Book deleted successfully");
+        //UI.showMessage("test");
        }
        catch(Exception e){
-           System.out.println("Error deleting book " + e);
+           UI.showMessage("Error deleting book " + e);
        }
     }
     public void displayAvailableBooks() {
@@ -472,16 +472,16 @@ public void processDonation(UserDTO loggedInUser) {
 
             while (iterator.hasNext()) {
                 BookDTO book = iterator.next();
-                System.out.println("ID: " + book.getId());
-                System.out.println("Title: " + book.getTitle());
-                System.out.println("Description: " + book.getDescription());
-                System.out.println("Publish Year: " + book.getPublishYear());
-                System.out.println("Quantity: " + book.getQuantity());
-                System.out.println("Status: " + book.getStatus());
-                System.out.println("-----------------------------------");
+                UI.showMessage("ID: " + book.getId());
+                UI.showMessage("Title: " + book.getTitle());
+                UI.showMessage("Description: " + book.getDescription());
+                UI.showMessage("Publish Year: " + book.getPublishYear());
+                UI.showMessage("Quantity: " + book.getQuantity());
+                UI.showMessage("Status: " + book.getStatus());
+                UI.showMessage("-----------------------------------");
             }
         } catch (Exception e) {
-            System.out.println("Error displaying books: " + e.getMessage());
+            UI.showMessage("Error displaying books: " + e.getMessage());
         }
         }    
         public void borrowBook(UserDTO loggedInUser) {
@@ -493,7 +493,7 @@ public void processDonation(UserDTO loggedInUser) {
                 String bookId = inputHandler.getInputWithValidation("Please enter the book ID you wish to borrow (or 'done' to finish):", "bookId");
 
                 if (bookId.equalsIgnoreCase("done")) {
-                    System.out.println("You have finished entering books.");
+                    UI.showMessage("You have finished entering books.");
                     break;
                 }
 
@@ -504,14 +504,14 @@ public void processDonation(UserDTO loggedInUser) {
                     if (bookDTO != null && !bookDTO.getDeleted()) {
                         borrowedBooks.addBook(bookDTO);
 
-                        System.out.println("Book '" + bookDTO.getTitle() + "' has been added to your borrowed list.");
+                        UI.showMessage("Book '" + bookDTO.getTitle() + "' has been added to your borrowed list.");
                     } else {
-                        System.out.println("This book is either deleted or unavailable.");
+                        UI.showMessage("This book is either deleted or unavailable.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid book ID. Please enter a valid numeric ID.");
+                    UI.showMessage("Invalid book ID. Please enter a valid numeric ID.");
                 } catch (Exception e) {
-                    System.out.println("Error adding the book: " + e.getMessage());
+                    UI.showMessage("Error adding the book: " + e.getMessage());
                 }
             }
 
@@ -525,7 +525,7 @@ public void processDonation(UserDTO loggedInUser) {
                 bookContext.executeNextState(); // return book;
                 bookContext.executeNextState(); // book available again
 
-                System.out.println("All selected books have been successfully borrowed.");
+                UI.showMessage("All selected books have been successfully borrowed.");
            
             }
         
@@ -554,7 +554,7 @@ public void processDonation(UserDTO loggedInUser) {
                         int deleteUserId = scanner.nextInt();
                         scanner.nextLine(); // Consume newline
                         boolean userTodelete = UserDAO.deleteUser(deleteUserId);
-                     System.out.println("User deleted: " + userTodelete);
+                     UI.showMessage("User deleted: " + userTodelete);
                       //delete here */
     ///////////////////////////////////////////
     private void signupUser() {

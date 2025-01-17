@@ -27,20 +27,20 @@ public class RequestedState implements BookState {
                 if ("requested".equals(bookDTO.getStatus())) {
                     bookDTO.setStatus("reserved");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Book reserved for the user: " + bookDTO.getTitle());
+                    context.UI.showMessage("Book reserved for the user: " + bookDTO.getTitle());
                 }
             }
             // Transition to ReservedState after handling
             context.setState(new ReservedState());
         } catch (Exception e) {
-            System.out.println("Error reserving book: " + e.getMessage());
+            context.UI.showMessage("Error reserving book: " + e.getMessage());
         }
     }
 
     @Override
     public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
         // Implement logic for canceling the request and going back to AvailableState
-        System.out.println("Cancelling the request and returning to Available state.");
+        context.UI.showMessage("Cancelling the request and returning to Available state.");
         try {
             BookIterator iterator = borrowedBooks.createIterator();
             while (iterator.hasNext()) {
@@ -48,12 +48,12 @@ public class RequestedState implements BookState {
                 if ("requested".equals(bookDTO.getStatus())) {
                     bookDTO.setStatus("available");  // Marking the book as available again
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Request for book canceled: " + bookDTO.getTitle());
+                    context.UI.showMessage("Request for book canceled: " + bookDTO.getTitle());
                 }
             }
             context.setState(new AvailableState());  // Transition back to AvailableState
         } catch (Exception e) {
-            System.out.println("Error canceling request: " + e.getMessage());
+            context.UI.showMessage("Error canceling request: " + e.getMessage());
         }
     }
 }

@@ -30,14 +30,14 @@ public class CheckedOutState implements BookState {
                     // Check if the book is being returned
                     bookDTO.setStatus("overdue");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Book marked as overdue: " + bookDTO.getTitle());
+                    context.UI.showMessage("Book marked as overdue: " + bookDTO.getTitle());
 
                     // Transition to ReturnedState after returning the book
                     context.setState(new OverdueState());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error returning book: " + e.getMessage());
+            context.UI.showMessage("Error returning book: " + e.getMessage());
         }
     }
     
@@ -52,14 +52,14 @@ public class CheckedOutState implements BookState {
                     // Change the book status to "reserved" (go back to reserved state)
                     bookDTO.setStatus("reserved");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Book status changed back to reserved: " + bookDTO.getTitle());
+                    context.UI.showMessage("Book status changed back to reserved: " + bookDTO.getTitle());
 
                     // Transition to ReservedState
                     context.setState(new ReservedState());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error marking book as reserved: " + e.getMessage());
+            context.UI.showMessage("Error marking book as reserved: " + e.getMessage());
         }
     }
 

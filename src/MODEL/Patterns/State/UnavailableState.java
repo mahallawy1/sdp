@@ -24,11 +24,11 @@ public void handleNextAction(BookContext context, BorrowedBookCollection borrowe
             BookDTO bookDTO = iterator.next();
             // Handle unavailable book actions
             if ("unavailable".equals(bookDTO.getStatus())) {
-                System.out.println("book cannot be borrowed as it is unavailable : " + bookDTO.getTitle());
+                context.UI.showMessage("book cannot be borrowed as it is unavailable : " + bookDTO.getTitle());
             }
         }
     } catch (Exception e) {
-        System.out.println("Error requesting book on unavailable book: " + e.getMessage());
+        context.UI.showMessage("Error requesting book on unavailable book: " + e.getMessage());
     }
 }
 
@@ -42,11 +42,11 @@ public void handleNextAction(BookContext context, BorrowedBookCollection borrowe
                 BookDTO bookDTO = iterator.next();
                 // Ensure the book stays unavailable
                 if ("unavailable".equals(bookDTO.getStatus())) {
-                    System.out.println("Book remains unavailable: " + bookDTO.getTitle());
+                    context.UI.showMessage("Book remains unavailable: " + bookDTO.getTitle());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error handling previous action on unavailable book: " + e.getMessage());
+            context.UI.showMessage("Error handling previous action on unavailable book: " + e.getMessage());
         }
     }
 }

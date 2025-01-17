@@ -5,6 +5,7 @@ import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
 import MODEL.Patterns.Proxy.IBook;
 import MODEL.Patterns.Proxy.RealBook;
+import View.UtilityHandler;
 import java.util.Date;
 
 /*
@@ -22,12 +23,13 @@ public class BookProxy implements IBook {
     private String author;
     private double price;
     private final UserDTO currentUser; 
-    
+    private UtilityHandler UI;
     public BookProxy(String title, String author, double price, UserDTO currentUser) {
         this.title = title;
         this.author = author;
         this.price = price;
         this.currentUser = currentUser;
+        this.UI = new UtilityHandler();
     }
     
     @Override
@@ -37,7 +39,7 @@ public class BookProxy implements IBook {
             realBook = new RealBook(title, author, price);
         }
         // Logging
-        System.out.println("Access log: User " + currentUser.getFirstname() + " accessed book at " + new Date());
+        UI.showMessage("Access log: User " + currentUser.getFirstname() + " accessed book at " + new Date());
         realBook.display();
     }
     
@@ -49,7 +51,7 @@ public class BookProxy implements IBook {
         }
         
         // Logging
-        System.out.println("Update log: User " + currentUser.getFirstname() + " updated book at " + new Date());
+        UI.showMessage("Update log: User " + currentUser.getFirstname() + " updated book at " + new Date());
         
         if (realBook != null) {
             realBook.update(title, author, price);

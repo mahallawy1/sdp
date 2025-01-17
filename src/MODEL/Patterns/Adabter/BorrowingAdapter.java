@@ -8,6 +8,7 @@ import MODEL.DTO.Book.BookDTO;
 import MODEL.DTO.Book.BorrowDTO;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
+import View.UtilityHandler;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,11 +22,12 @@ import java.io.IOException;
 public class BorrowingAdapter implements TicketGenerator {
     private final BorrowDTO borrow;
     private final BorrowedBookCollection borrowedBooks;
-
+    private UtilityHandler UI;
     // Constructor initializes the required data
     public BorrowingAdapter(BorrowDTO borrow, BorrowedBookCollection borrowedBooks) {
         this.borrow = borrow;
         this.borrowedBooks = borrowedBooks;
+        this.UI  = new UtilityHandler();
     }
 
     @Override
@@ -54,7 +56,7 @@ public class BorrowingAdapter implements TicketGenerator {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(ticketContent);
         } catch (IOException e) {
-            System.err.println("Error saving ticket to file: " + e.getMessage());
+            UI.showMessage("Error saving ticket to file: " + e.getMessage());
         }
     }
 }

@@ -40,7 +40,7 @@ public class ReservedState implements BookState {
             if ("reserved".equals(bookDTO.getStatus())) {
                 // Update the book's status to "checkedout"
                 bookDTO.setStatus("checkedout");
-                System.out.println("Book checked out successfully: " + bookDTO.getTitle());
+                context.UI.showMessage("Book checked out successfully: " + bookDTO.getTitle());
                 bookDAO.updateBook(bookDTO);
 
                 BorrowDetailsDTO borrowDetails = new BorrowDetailsDTO(0, bookDTO.getId(), borrow.getId(), false);
@@ -57,7 +57,7 @@ public class ReservedState implements BookState {
                 // Update the state to CheckedOut
                 context.setState(new CheckedOutState());
     } catch (Exception e) {
-        System.out.println("Error checking out book: " + e);
+        context.UI.showMessage("Error checking out book: " + e);
     }
     }
 
@@ -72,14 +72,14 @@ public class ReservedState implements BookState {
                     // Revert the book's status to "available"
                     bookDTO.setStatus("requested");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Reservation for book canceled: " + bookDTO.getTitle());
+                    context.UI.showMessage("Reservation for book canceled: " + bookDTO.getTitle());
                 }
             }
 
             // Transition back to AvailableState after canceling reservation
             context.setState(new AvailableState());
         } catch (Exception e) {
-            System.out.println("Error canceling reservation: " + e.getMessage());
+            context.UI.showMessage("Error canceling reservation: " + e.getMessage());
         }
     }
 

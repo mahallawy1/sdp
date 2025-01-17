@@ -28,10 +28,10 @@ public class OverdueState implements BookState {
                 try {
                     bookDTO.setStatus("returned");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Overdue book returned: " + bookDTO.getTitle());
+                    context.UI.showMessage("Overdue book returned: " + bookDTO.getTitle());
                     context.setState(new ReturnedState()); 
                 } catch (Exception e) {
-                    System.out.println("Error returning overdue book: " + e);
+                    context.UI.showMessage("Error returning overdue book: " + e);
                 }
             }
         }
@@ -47,14 +47,14 @@ public class OverdueState implements BookState {
                   
                     bookDTO.setStatus("overdue");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Book is now overdue: " + bookDTO.getTitle());
+                    context.UI.showMessage("Book is now overdue: " + bookDTO.getTitle());
 
                     
                     context.setState(new OverdueState());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error marking book as overdue: " + e.getMessage());
+            context.UI.showMessage("Error marking book as overdue: " + e.getMessage());
         }
     }
 

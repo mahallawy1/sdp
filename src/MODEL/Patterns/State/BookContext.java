@@ -7,6 +7,7 @@ package MODEL.Patterns.State;
 import MODEL.DTO.Book.BookDTO;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
+import View.UtilityHandler;
 import java.util.Iterator;
 
 /**
@@ -22,12 +23,12 @@ public class BookContext {
     private BookState state;
     private BorrowedBookCollection borrowedBooks;
     private Integer userID; // Store user ID
-
+    public UtilityHandler UI;
     // Constructor updated to throw an exception if no books exist
     public BookContext(BorrowedBookCollection borrowedBooks, Integer userID) {
         this.borrowedBooks = borrowedBooks;
         this.userID = userID;
-
+        this.UI = new UtilityHandler();
         // Check if borrowedBooks is empty
         BookIterator iterator = borrowedBooks.createIterator();
         if (!iterator.hasNext()) {

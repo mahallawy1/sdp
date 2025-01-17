@@ -1,4 +1,5 @@
 package MODEL.Patterns.facade;
+import View.UtilityHandler;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
@@ -6,7 +7,7 @@ import java.util.Properties;
 public class EmailService {
     private final String senderEmail = "thirdpartydevtool@gmail.com"; // Replace with your email
     private final String senderPassword = "wmjg kqcn zgsh abei";      // Replace with your email password
-
+    private UtilityHandler UI = new UtilityHandler();
     public void sendEmail(String recipientEmail, String subject, String body) {
         // Step 1: Configure SMTP server properties
         Properties properties = new Properties();
@@ -33,7 +34,7 @@ public class EmailService {
 
             // Step 4: Send the email
             Transport.send(message);
-            System.out.println("Email sent successfully to " + recipientEmail);
+            UI.showMessage("Email sent successfully to " + recipientEmail);
 
         } catch (MessagingException e) {
             System.err.println("Error sending email: " + e.getMessage());

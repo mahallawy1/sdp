@@ -29,7 +29,7 @@ public class requestEventState implements EventJoiningState{
             context.setState(new checkAvailabilityState());
            
         } catch (SQLException e) {
-            System.out.println("Error getting event : "+ e);
+            context.UI.showMessage("Error getting event : "+ e);
         }
         if (context.event == null) {
             context.UI.showMessage("Event not found.");

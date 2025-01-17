@@ -1,10 +1,11 @@
 package MODEL.Patterns.facade;
 
+import View.UtilityHandler;
 import java.util.List;
 
 public class NotificationFacade {
     private final EmailService emailService;
-
+    private UtilityHandler UI = new UtilityHandler();
     // Constructor that accepts an EmailService instance (Dependency Injection)
     public NotificationFacade(EmailService emailService) {
         this.emailService = emailService;
@@ -22,7 +23,7 @@ public class NotificationFacade {
                 " Your support means the world to us.\n\nBest regards,\nBookstore Team";
 
         emailService.sendEmail(recipientEmail, subject, body);
-        System.out.println("Thank you email sent to: " + recipientEmail);
+        UI.showMessage("Thank you email sent to: " + recipientEmail);
 
     }
 
@@ -34,7 +35,7 @@ public class NotificationFacade {
         // Loop through the list of recipient emails and send the email
         for (String recipientEmail : recipientEmails) {
             emailService.sendEmail(recipientEmail, subject, body);
-            System.out.println("Admin with email: " + recipientEmail + " is notified about your donation");
+            UI.showMessage("Admin with email: " + recipientEmail + " is notified about your donation");
         }
     }
 }

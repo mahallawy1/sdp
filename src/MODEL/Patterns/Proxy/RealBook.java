@@ -4,6 +4,8 @@
  */
 package MODEL.Patterns.Proxy;
 
+import View.UtilityHandler;
+
 /**
  *
  * @author Eslam
@@ -13,11 +15,12 @@ public class RealBook implements IBook {
     private String title;
     private String author;
     private double price;
-    
+    private UtilityHandler UI;
     public RealBook(String title, String author, double price) {
         this.title = title;
         this.author = author;
         this.price = price;
+        this.UI  = new UtilityHandler();
         // Simulating heavy loading
         loadFromDatabase();
     }
@@ -33,7 +36,7 @@ public class RealBook implements IBook {
     
     @Override
     public void display() {
-        System.out.println("Book: " + title + " by " + author + ", Price: $" + price);
+        UI.showMessage("Book: " + title + " by " + author + ", Price: $" + price);
     }
     
     @Override

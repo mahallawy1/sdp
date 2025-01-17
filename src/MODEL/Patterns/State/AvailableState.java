@@ -27,18 +27,18 @@ public class AvailableState implements BookState {
             while (iterator.hasNext()) {
                 BookDTO book = iterator.next();
                 book.setStatus("requested");
-                System.out.println("Book requested: " + book.getTitle()); // Assuming `getTitle` is a method in `BookDTO`
+                context.UI.showMessage("Book requested: " + book.getTitle()); // Assuming `getTitle` is a method in `BookDTO`
                 bookDAO.updateBook(book);
             }
             // Transition to RequestedState
             context.setState(new RequestedState());
         } catch (Exception e) {
-            System.out.println("Error requesting books: " + e.getMessage());
+           context.UI.showMessage("Error requesting books: " + e.getMessage());
         }
     }
 
     @Override
     public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Books are already in the available state; no previous state exists.");
+        context.UI.showMessage("Books are already in the available state; no previous state exists.");
     }
 }

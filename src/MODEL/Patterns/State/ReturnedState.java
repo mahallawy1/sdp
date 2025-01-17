@@ -28,14 +28,14 @@ public void handleNextAction(BookContext context, BorrowedBookCollection borrowe
                 // In this case, let's mark the book as available
                 bookDTO.setStatus("available");
                 bookDAO.updateBook(bookDTO);
-                System.out.println("Returned book marked as available: " + bookDTO.getTitle());
+                context.UI.showMessage("Returned book marked as available: " + bookDTO.getTitle());
 
                 // Transition to AvailableState after making the book available
                 context.setState(new AvailableState());
             }
         }
     } catch (Exception e) {
-        System.out.println("Error handling action on returned book: " + e.getMessage());
+        context.UI.showMessage("Error handling action on returned book: " + e.getMessage());
     }
 }
     @Override
@@ -47,17 +47,17 @@ public void handleNextAction(BookContext context, BorrowedBookCollection borrowe
                 BookDTO bookDTO = iterator.next();
                 if ("returned".equals(bookDTO.getStatus())) {
                     // Prevent the book from being marked as overdue
-                    System.out.println("Returned books cannot be marked as overdue.");
+                    context.UI.showMessage("Returned books cannot be marked as overdue.");
 
                     // Set the status to "returned" directly
                     bookDTO.setStatus("returned");
                     bookDAO.updateBook(bookDTO);  // Update book in the database
                     context.setState(new ReturnedState()); // Transition to ReturnedState
-                    System.out.println("Returned book status confirmed: " + bookDTO.getTitle());
+                    context.UI.showMessage("Returned book status confirmed: " + bookDTO.getTitle());
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error handling previous action on returned book: " + e.getMessage());
+            context.UI.showMessage("Error handling previous action on returned book: " + e.getMessage());
         }
     }
 
