@@ -18,13 +18,8 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 public class RequestedState implements BookState {
     BookDAO bookDAO = new BookDAO();
 
-    @Override
-    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already requested.");
-    }
-
-    @Override
-    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
+     @Override
+    public void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks) {
         try {
             BookIterator iterator = borrowedBooks.createIterator();
             while (iterator.hasNext()) {
@@ -33,39 +28,32 @@ public class RequestedState implements BookState {
                     bookDTO.setStatus("reserved");
                     bookDAO.updateBook(bookDTO);
                     System.out.println("Book reserved for the user: " + bookDTO.getTitle());
-                    context.setState(new ReservedState());  // Transition to ReservedState
                 }
             }
+            // Transition to ReservedState after handling
+            context.setState(new ReservedState());
         } catch (Exception e) {
-            System.out.println("Error reserving book: " + e);
+            System.out.println("Error reserving book: " + e.getMessage());
         }
     }
 
     @Override
-    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
-        System.out.println("Wait for admin approval.");
-        context.setState(new CheckedOutState());
-    }
-
-    @Override
-    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book cannot be returned. It has not been checked out yet.");
-    }
-
-    @Override
-    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book cannot be marked overdue.");
-    }
-
-    @Override
-    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is requested, cannot be marked as unavailable.");
-        context.setState(new UnavailableState());  // Transition to UnavailableState
-    }
-
-    @Override
-    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already available.");
-        context.setState(new AvailableState());  // Transition to AvailableState
+    public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+        // Implement logic for canceling the request and going back to AvailableState
+        System.out.println("Cancelling the request and returning to Available state.");
+        try {
+            BookIterator iterator = borrowedBooks.createIterator();
+            while (iterator.hasNext()) {
+                BookDTO bookDTO = iterator.next();
+                if ("requested".equals(bookDTO.getStatus())) {
+                    bookDTO.setStatus("available");  // Marking the book as available again
+                    bookDAO.updateBook(bookDTO);
+                    System.out.println("Request for book canceled: " + bookDTO.getTitle());
+                }
+            }
+            context.setState(new AvailableState());  // Transition back to AvailableState
+        } catch (Exception e) {
+            System.out.println("Error canceling request: " + e.getMessage());
+        }
     }
 }

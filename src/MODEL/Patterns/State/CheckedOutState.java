@@ -16,77 +16,52 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 
 public class CheckedOutState implements BookState {
     BookDAO bookDAO = new BookDAO();
-
+    
+    
+    
     @Override
-    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already checked out. Cannot request.");
-    }
-
-    @Override
-    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already checked out. Cannot reserve.");
-    }
-
-    @Override
-    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
-        System.out.println("Book is already checked out.");
-    }
-
-    @Override
-    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        BookIterator iterator = borrowedBooks.createIterator();
-        while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("checkedout".equals(bookDTO.getStatus())) {
-                try {
-                    bookDTO.setStatus("returned");
-                    bookDAO.updateBook(bookDTO);
-                    System.out.println("Book returned successfully: " + bookDTO.getTitle());
-                    context.setState(new ReturnedState()); // Update state to Returned
-                } catch (Exception e) {
-                    System.out.println("Error returning book: " + e);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
-      BookIterator iterator = borrowedBooks.createIterator();
-      while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("checked out".equals(bookDTO.getStatus())) {
-                try {
+    public void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+        try {
+            // In the checked out state, the action might be to return the book or mark it overdue
+            BookIterator iterator = borrowedBooks.createIterator();
+            while (iterator.hasNext()) {
+                BookDTO bookDTO = iterator.next();
+                if ("checkedout".equals(bookDTO.getStatus())) {
+                    // Check if the book is being returned
                     bookDTO.setStatus("overdue");
                     bookDAO.updateBook(bookDTO);
-                    System.out.println("Book is now overdue: " + bookDTO.getTitle());
-                    context.setState(new OverdueState()); // Update state to Overdue
-                } catch (Exception e) {
-                    System.out.println("Error marking book as overdue: " + e);
+                    System.out.println("Book marked as overdue: " + bookDTO.getTitle());
+
+                    // Transition to ReturnedState after returning the book
+                    context.setState(new OverdueState());
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Error returning book: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+        try {
+            // The previous action could involve canceling the checkout and marking the book as reserved
+            BookIterator iterator = borrowedBooks.createIterator();
+            while (iterator.hasNext()) {
+                BookDTO bookDTO = iterator.next();
+                if ("checkedout".equals(bookDTO.getStatus())) {
+                    // Change the book status to "reserved" (go back to reserved state)
+                    bookDTO.setStatus("reserved");
+                    bookDAO.updateBook(bookDTO);
+                    System.out.println("Book status changed back to reserved: " + bookDTO.getTitle());
+
+                    // Transition to ReservedState
+                    context.setState(new ReservedState());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error marking book as reserved: " + e.getMessage());
         }
     }
 
-    @Override
-    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-      BookIterator iterator = borrowedBooks.createIterator();    
-      while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("checked out".equals(bookDTO.getStatus())) {
-                System.out.println("Book is already checked out. Cannot mark as unavailable.");
-            }
-        }
-    }
-
-    @Override
-    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-      BookIterator iterator = borrowedBooks.createIterator();
-      while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("checked out".equals(bookDTO.getStatus())) {
-                System.out.println("Book is already checked out. Cannot make it available.");
-            }
-        }
-    }
+   
 }

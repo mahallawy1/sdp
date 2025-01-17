@@ -1,8 +1,7 @@
 === Borrow Ticket ===
-Borrow ID: 0
+Borrow ID: 4
 User ID: 10
 Days: 7
 Books:
-- test5 (test5)
-- test7 (test6)
+- finalito (finalito)
 =====================

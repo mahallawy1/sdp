@@ -15,71 +15,44 @@ import java.util.Iterator;
  */
 
 
+
+
+
 public class BookContext {
     private BookState state;
-    private BorrowedBookCollection borrowedBooks; // Holds BorrowedBookCollection
+    private BorrowedBookCollection borrowedBooks;
+    private Integer userID; // Store user ID
 
-    // Constructor accepts BorrowedBookCollection
-    public BookContext(BorrowedBookCollection borrowedBooks) {
+    // Constructor updated to throw an exception if no books exist
+    public BookContext(BorrowedBookCollection borrowedBooks, Integer userID) {
         this.borrowedBooks = borrowedBooks;
-        
-        // Default state for the first book (if the collection is not empty)
+        this.userID = userID;
+
+        // Check if borrowedBooks is empty
         BookIterator iterator = borrowedBooks.createIterator();
-        if (iterator.hasNext()) {
-            BookDTO firstBook = iterator.next();
-            String initialState = firstBook.getStatus();
-            switch(initialState){
-                case "available":  this.state = new AvailableState(); 
-                                   break;
-                case "unavailable":  this.state = new UnavailableState(); 
-                                   break;
-                case "requested":  this.state = new RequestedState(); 
-                                   break;
-                case "reserved":  this.state = new ReservedState(); 
-                                   break;
-                case "checkedout":  this.state = new CheckedOutState(); 
-                                   break;
-                case "overdue":  this.state = new OverdueState(); 
-                                   break;
-                case "returned":  this.state = new ReturnedState(); 
-                                   break;
- 
-                
-            
+        if (!iterator.hasNext()) {
+            throw new IllegalArgumentException("Cannot construct BookContext with no books.");
         }
+
+        // Set initial state using the first book's status
+        BookDTO firstBook = iterator.next();
+        this.state = BookStateFactory.getState(firstBook.getStatus());
     }
+    public Integer getUserID(){
+        return userID;
     }
-    // Setter to update the state of the books
+    // Setter for updating the state
     public void setState(BookState state) {
         this.state = state;
     }
 
-    // Perform actions on the entire borrowed books collection
-    public void requestBooks() {
-        state.requestBook(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
+    // Executes the next state action
+    public void executeNextState() {
+        state.handleNextAction(this, borrowedBooks);
     }
 
-    public void reserveBooks() {
-        state.reserveBook(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
-    }
-
-    public void checkoutBooks(int user_id) {
-        state.checkoutBook(this, borrowedBooks, user_id);  // Pass the entire BorrowedBookCollection to the state method
-    }
-
-    public void returnBooks() {
-        state.returnBook(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
-    }
-
-    public void markOverdueBooks() {
-        state.markOverdue(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
-    }
-
-    public void markUnavailableBooks() {
-        state.markUnavailable(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
-    }
-
-    public void makeBooksAvailable() {
-        state.makeAvailable(this, borrowedBooks);  // Pass the entire BorrowedBookCollection to the state method
+    // Executes the previous state action
+    public void executePrevState() {
+        state.handlePreviousAction(this, borrowedBooks);
     }
 }

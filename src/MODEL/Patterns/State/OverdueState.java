@@ -17,23 +17,9 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 public class OverdueState implements BookState {
     BookDAO bookDAO = new BookDAO();
 
+   
     @Override
-    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is overdue and cannot be requested.");
-    }
-
-    @Override
-    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is overdue and cannot be reserved.");
-    }
-
-    @Override
-    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
-        System.out.println("Book is overdue and cannot be checked out.");
-    }
-
-    @Override
-    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
+    public void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks) {
         BookIterator iterator = borrowedBooks.createIterator();
 
         while (iterator.hasNext()) {
@@ -43,40 +29,33 @@ public class OverdueState implements BookState {
                     bookDTO.setStatus("returned");
                     bookDAO.updateBook(bookDTO);
                     System.out.println("Overdue book returned: " + bookDTO.getTitle());
-                    context.setState(new ReturnedState()); // Update to ReturnedState
+                    context.setState(new ReturnedState()); 
                 } catch (Exception e) {
                     System.out.println("Error returning overdue book: " + e);
                 }
             }
         }
     }
+      @Override
+    public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+        try {
+            
+            BookIterator iterator = borrowedBooks.createIterator();
+            while (iterator.hasNext()) {
+                BookDTO bookDTO = iterator.next();
+                if ("overdue".equals(bookDTO.getStatus())) {
+                  
+                    bookDTO.setStatus("overdue");
+                    bookDAO.updateBook(bookDTO);
+                    System.out.println("Book is now overdue: " + bookDTO.getTitle());
 
-    @Override
-    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already overdue.");
-    }
-
-    @Override
-    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        BookIterator iterator = borrowedBooks.createIterator();
-
-        while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("overdue".equals(bookDTO.getStatus())) {
-                System.out.println("Book is already overdue and cannot be marked as unavailable.");
+                    
+                    context.setState(new OverdueState());
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Error marking book as overdue: " + e.getMessage());
         }
     }
 
-    @Override
-    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        BookIterator iterator = borrowedBooks.createIterator();
-
-        while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            if ("overdue".equals(bookDTO.getStatus())) {
-                System.out.println("Book cannot be made available while overdue.");
-            }
-        }
-    }
 }

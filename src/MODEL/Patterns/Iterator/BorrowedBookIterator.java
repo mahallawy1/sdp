@@ -5,33 +5,28 @@
 package MODEL.Patterns.Iterator;
 
 import MODEL.DTO.Book.BookDTO;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author hussien
  */
+import java.util.Iterator;
+import java.util.Set;
+
 public class BorrowedBookIterator implements BookIterator {
-    private List<BookDTO> books = new ArrayList<>();
-    private int position = 0;
+    private Iterator<BookDTO> iterator; // Use an Iterator to traverse the Set
     
-    BorrowedBookIterator(List<BookDTO> books){
-        this.books = books;
-        
+    public BorrowedBookIterator(Set<BookDTO> books) {
+        this.iterator = books.iterator(); // Initialize the iterator for the Set
     }
-    
+
     @Override
     public boolean hasNext() {
-        return position < books.size();
+        return iterator.hasNext(); // Check if more elements are available
     }
 
     @Override
     public BookDTO next() {
-       
-       return books.get(position++);
-      
+        return iterator.next(); // Retrieve the next element
     }
-    
-    
 }

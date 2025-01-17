@@ -5,29 +5,29 @@
 package MODEL.Patterns.Iterator;
 
 import MODEL.DTO.Book.BookDTO;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  *
  * @author hussien
  */
-public class BorrowedBookCollection implements BookCollection{
+import java.util.Set;
+import java.util.HashSet;
 
-    private List<BookDTO> books ;
-    public BorrowedBookCollection(){
-        books = new ArrayList<>();
-        
+public class BorrowedBookCollection implements BookCollection {
+
+    private Set<BookDTO> books;
+
+    public BorrowedBookCollection() {
+        books = new HashSet<>();
     }
-    public void addBook(BookDTO e){
+
+    public void addBook(BookDTO e) {
         this.books.add(e);
     }
-    
-    
+
     @Override
     public BookIterator createIterator() {
         return new BorrowedBookIterator(this.books);
     }
-    
-    
 }

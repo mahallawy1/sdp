@@ -5,6 +5,7 @@
 package MODEL.Patterns.State;
 
 import MODEL.DTO.Book.BookDTO;
+import MODEL.Patterns.Iterator.BorrowedBookCollection;
 
 /**
  *
@@ -12,15 +13,8 @@ import MODEL.DTO.Book.BookDTO;
  */
 
 
-import MODEL.DTO.Book.BookDTO;
-import MODEL.Patterns.Iterator.BorrowedBookCollection;
-
 public interface BookState {
-    void requestBook(BookContext context, BorrowedBookCollection borrowedBooks);
-    void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks);
-    void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id);
-    void returnBook(BookContext context, BorrowedBookCollection borrowedBooks);
-    void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks);
-    void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks);
-    void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks);
+   
+    void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks);
+    void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks);
 }

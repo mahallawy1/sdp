@@ -20,8 +20,8 @@ import java.util.Iterator;
 public class AvailableState implements BookState {
     BookDAO bookDAO = new BookDAO();
 
-    @Override
-    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
+       @Override
+    public void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks) {
         try {
             BookIterator iterator = borrowedBooks.createIterator();
             while (iterator.hasNext()) {
@@ -30,6 +30,7 @@ public class AvailableState implements BookState {
                 System.out.println("Book requested: " + book.getTitle()); // Assuming `getTitle` is a method in `BookDTO`
                 bookDAO.updateBook(book);
             }
+            // Transition to RequestedState
             context.setState(new RequestedState());
         } catch (Exception e) {
             System.out.println("Error requesting books: " + e.getMessage());
@@ -37,45 +38,7 @@ public class AvailableState implements BookState {
     }
 
     @Override
-    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Books cannot be reserved directly. Request the books first.");
-    }
-
-    @Override
-    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
-        System.out.println("Books must be requested before checkout.");
-    }
-
-    @Override
-    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Books are already available.");
-    }
-
-    @Override
-    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Books cannot be marked overdue while available.");
-    }
-
-    @Override
-    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-       try{
-        BookIterator iterator = borrowedBooks.createIterator();
-        while (iterator.hasNext()) {
-            BookDTO book = iterator.next();
-            System.out.println("Book marked as unavailable: " + book.getTitle());
-            book.setStatus("unavailable");
-            bookDAO.updateBook(book);
-        }
-        context.setState(new UnavailableState());
-       }
-       catch(Exception e){
-        System.out.println("Error marking books as unavailable: " + e.getMessage());
-
-       }
-    }
-
-    @Override
-    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Books are already available.");
+    public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+        System.out.println("Books are already in the available state; no previous state exists.");
     }
 }

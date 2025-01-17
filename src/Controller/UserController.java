@@ -533,12 +533,14 @@ public void processDonation(UserDTO loggedInUser) {
             }
 
 
-                BookContext bookContext = new BookContext(borrowedBooks);
+                BookContext bookContext = new BookContext(borrowedBooks,loggedInUser.getId());
 
-                bookContext.requestBooks();
-                bookContext.reserveBooks();
-                bookContext.checkoutBooks(loggedInUser.getId());
-                bookContext.markOverdueBooks();
+                bookContext.executeNextState(); // request book
+                bookContext.executeNextState(); // reserve book
+                bookContext.executeNextState(); // checkout book
+                bookContext.executeNextState(); // markOverDue
+                bookContext.executeNextState(); // return book;
+                bookContext.executeNextState(); // book available again
 
                 System.out.println("All selected books have been successfully borrowed.");
            

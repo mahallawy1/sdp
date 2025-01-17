@@ -17,64 +17,49 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 public class ReturnedState implements BookState {
     private final BookDAO bookDAO = new BookDAO();
 
-    @Override
-    public void requestBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        // Iterate over the collection of books to handle their individual states
+@Override
+public void handleNextAction(BookContext context, BorrowedBookCollection borrowedBooks) {
+    try {
+        // Iterate over the borrowed books collection
         BookIterator iterator = borrowedBooks.createIterator();
         while (iterator.hasNext()) {
             BookDTO bookDTO = iterator.next();
-            System.out.println("Book is now available for request: " + bookDTO.getTitle());
-            context.setState(new RequestedState());  // Change to RequestedState for each book
+            if ("returned".equals(bookDTO.getStatus())) {
+                // In this case, let's mark the book as available
+                bookDTO.setStatus("available");
+                bookDAO.updateBook(bookDTO);
+                System.out.println("Returned book marked as available: " + bookDTO.getTitle());
+
+                // Transition to AvailableState after making the book available
+                context.setState(new AvailableState());
+            }
         }
+    } catch (Exception e) {
+        System.out.println("Error handling action on returned book: " + e.getMessage());
     }
-
+}
     @Override
-    public void reserveBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        // Iterate over the collection of books to handle their individual states
-        BookIterator iterator = borrowedBooks.createIterator();
-        while (iterator.hasNext()) {
-            BookDTO bookDTO = iterator.next();
-            System.out.println("Book is now available for reservation: " + bookDTO.getTitle());
-            context.setState(new ReservedState());  // Change to ReservedState for each book
-        }
-    }
-
-    @Override
-    public void checkoutBook(BookContext context, BorrowedBookCollection borrowedBooks, int user_id) {
-        System.out.println("Book must be requested or reserved before checkout.");
-    }
-
-    @Override
-    public void returnBook(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book is already returned.");
-    }
-
-    @Override
-    public void markOverdue(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book cannot be marked overdue after being returned.");
-    }
-
-    @Override
-    public void markUnavailable(BookContext context, BorrowedBookCollection borrowedBooks) {
-        System.out.println("Book has just been returned.");
-    }
-
-    @Override
-    public void makeAvailable(BookContext context, BorrowedBookCollection borrowedBooks) {
+    public void handlePreviousAction(BookContext context, BorrowedBookCollection borrowedBooks) {
         try {
-            // Iterate over the borrowed books collection to update the status of each book
+            // Iterate over the borrowed books collection
             BookIterator iterator = borrowedBooks.createIterator();
             while (iterator.hasNext()) {
                 BookDTO bookDTO = iterator.next();
-                // Update the status of the book to available
-                bookDTO.setStatus("available");
-                bookDAO.updateBook(bookDTO);  // Update book in the database
-                System.out.println("Book is now available: " + bookDTO.getTitle());
+                if ("returned".equals(bookDTO.getStatus())) {
+                    // Prevent the book from being marked as overdue
+                    System.out.println("Returned books cannot be marked as overdue.");
+
+                    // Set the status to "returned" directly
+                    bookDTO.setStatus("returned");
+                    bookDAO.updateBook(bookDTO);  // Update book in the database
+                    context.setState(new ReturnedState()); // Transition to ReturnedState
+                    System.out.println("Returned book status confirmed: " + bookDTO.getTitle());
+                }
             }
-            // After making all books available, change the state
-            context.setState(new AvailableState());  // Transition to AvailableState after updating
         } catch (Exception e) {
-            System.out.println("Error making books available: " + e.getMessage());
+            System.out.println("Error handling previous action on returned book: " + e.getMessage());
         }
     }
+
+
 }
