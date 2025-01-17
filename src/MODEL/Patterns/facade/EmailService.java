@@ -34,7 +34,7 @@ public class EmailService {
 
             // Step 4: Send the email
             Transport.send(message);
-            UI.showMessage("Email sent successfully to " + recipientEmail);
+            //UI.showMessage("Email sent successfully to " + recipientEmail);
 
         } catch (MessagingException e) {
             //System.err.println("Error sending email: " + e.getMessage());

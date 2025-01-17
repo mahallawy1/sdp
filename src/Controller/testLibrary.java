@@ -32,7 +32,7 @@ public class testLibrary {
         // Now create UserView, but pass the userController
         UserView userView = new UserView(userController);
 
-        // Set the UserView instance in the UserController
+        // Set the UserView instance in the User1Controller
         userController.setUserView(userView);  // Assuming you have a setter method in UserController
 
         try {
