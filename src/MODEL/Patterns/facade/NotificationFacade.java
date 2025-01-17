@@ -21,7 +21,6 @@ public class NotificationFacade {
         String subject = "Thank You for Your Donation!";
         String body = "Dear user,\n\nThank you for donating $" + donationAmount + " to our bookstore!" +
                 " Your support means the world to us.\n\nBest regards,\nBookstore Team";
-
         emailService.sendEmail(recipientEmail, subject, body);
         UI.showMessage("Thank you email sent to: " + recipientEmail);
 
