@@ -21,12 +21,12 @@ public class requestVolunteeringDetailsState implements EventJoiningState{
 
     @Override
     public void handle(EventJoiningTemplateContext context) {
-          int volunteerHours = Integer.parseInt(context.inputHandler.getInput("Enter how many hours you are willing to volunteer for: "));
-        VolunteeringDetailsDTO details = new VolunteeringDetailsDTO(context.event.getId(), context.loggedInUser.getId(), volunteerHours, "pending");
-        VolunteeringDTO volunteering = new VolunteeringDTO(context.event.getId(), context.loggedInUser.getId());
+        int volunteerHours = Integer.parseInt(context.inputHandler.getInput("Enter how many hours you are willing to volunteer for: "));
+        context.setVolunteeringDetails( new VolunteeringDetailsDTO(context.event.getId(), context.loggedInUser.getId(), volunteerHours, "pending"));
+        context.setVolunteering(new VolunteeringDTO(context.event.getId(), context.loggedInUser.getId()));
 
         // Create a new VolunteeringManager instance
-        context.volunteeringManager = new VolunteringManager(volunteering, details);
+        context.volunteeringManager = new VolunteringManager();
         
         context.setState(new addVolunteeringRecordState());
     }

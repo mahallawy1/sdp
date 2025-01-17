@@ -40,6 +40,7 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
 import MODEL.Patterns.StateAndTemplate.EventJoiningTemplateContext;
 import MODEL.Patterns.StateAndTemplate.SeminarEventJoiningContext;
+import MODEL.Patterns.StateAndTemplate.WorkshopEventJoiningContext;
 import MODEL.Patterns.Tepmlate.CreditCardPaymentTemplate;
 import MODEL.Patterns.Tepmlate.DonationPaymentTemplate;
 import MODEL.Patterns.Tepmlate.FawryPaymentTemplate;
@@ -352,7 +353,7 @@ public void processDonation(UserDTO loggedInUser) {
             UI.showMessage("Error removing event: " + e.getMessage());
         }
     }
-    public void joinEvent(UserDTO loggedInUser){
+      public void joinEvent(UserDTO loggedInUser){
 // try{
 //                int eventId = Integer.parseInt(userView.getInput("Enter the ID of the event you wish to join: "));
 //                int volunteerHours = Integer.parseInt(userView.getInput("Enter how many hours you are willing to volunteer for: "));
@@ -395,8 +396,22 @@ public void processDonation(UserDTO loggedInUser) {
 //        }
        
     try{ 
-      EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser);
+      String event_type = inputHandler.getInput("Enter which type of events you wish to join 1 - workshop , 2 - seminar : ");
+      if(Integer.parseInt(event_type) == 1 ){
+       eventView.displayWorkshopEvents();
+       
+       EventJoiningTemplateContext eventContext = new WorkshopEventJoiningContext(loggedInUser);
        eventContext.joinEvent();
+
+      }else if(Integer.parseInt(event_type)==2){
+      eventView.displaySeminarEvents();
+      EventJoiningTemplateContext eventContext = new SeminarEventJoiningContext(loggedInUser);
+      eventContext.joinEvent();
+      }else{
+          System.out.println("invalid choice");
+      }
+           
+      
     }
     catch(Exception e){
         System.out.println("error joining event : " + e);

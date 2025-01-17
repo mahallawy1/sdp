@@ -10,7 +10,9 @@ package View;
  */
 
 
+import MODEL.DAO.EventDAO;
 import MODEL.DAO.SkillsDAO;
+import MODEL.DTO.Event.EventDTO;
 import MODEL.DTO.Event.SkillDTO;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -61,6 +63,44 @@ public class EventView {
 
         return eventTypeId;
     }
+        public void displaySeminarEvents() {
+        try {
+            // Fetch all seminar events (type 2)
+            List<EventDTO> seminarEvents = EventDAO.getEventsByType(2);
+
+            if (seminarEvents.isEmpty()) {
+                System.out.println("No seminar events available.");
+            } else {
+                System.out.println("Seminar Events:");
+                for (EventDTO event : seminarEvents) {
+                    System.out.println("ID: " + event.getId() + " | Name: " + event.getName() + " | Date: " + event.getEventDate() + " | Time: " + event.getTimeFrom() + " to " + event.getTimeTo());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error while fetching seminar events from the database.");
+        }
+    }
+
+    public void displayWorkshopEvents() {
+        try {
+            // Fetch all workshop events (type 1)
+            List<EventDTO> workshopEvents = EventDAO.getEventsByType(1);
+
+            if (workshopEvents.isEmpty()) {
+                System.out.println("No workshop events available.");
+            } else {
+                System.out.println("Workshop Events:");
+                for (EventDTO event : workshopEvents) {
+                    System.out.println("ID: " + event.getId() + " | Name: " + event.getName() + " | Date: " + event.getEventDate() + " | Time: " + event.getTimeFrom() + " to " + event.getTimeTo());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error while fetching workshop events from the database.");
+        }
+    }
+
     public String getEventDescription() {
         System.out.println("Enter Event Description:");
         return scanner.nextLine();

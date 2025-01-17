@@ -21,12 +21,28 @@ public abstract class EventJoiningTemplateContext {
     protected InputHandler inputHandler;
     protected VolunteringManager volunteeringManager;
     protected EventJoiningState currentState;
+    protected VolunteeringDTO volunteering;
+    protected VolunteeringDetailsDTO volunteeringDetails;
     
     public EventJoiningTemplateContext(UserDTO loggedInUser) {
             this.loggedInUser = loggedInUser;
             this.UI = new UtilityHandler();
             this.inputHandler = new InputHandler();
             this.currentState = new requestEventState();  // Initial state
+    }
+    
+    public void setVolunteering(VolunteeringDTO volunteering){
+        this.volunteering = volunteering;
+    }
+    
+    public void setVolunteeringDetails(VolunteeringDetailsDTO volunteeringDetails){
+        this.volunteeringDetails = volunteeringDetails;
+    }
+    public VolunteeringDetailsDTO getVolunteeringDetails(){
+        return this.volunteeringDetails;
+    }
+     public VolunteeringDTO getVolunteering(){
+        return this.volunteering;
     }
     // Template method defining the steps
     public final void joinEvent() throws SQLException {

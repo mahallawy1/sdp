@@ -54,6 +54,8 @@ public class handleWorkshopEventState implements EventJoiningState {
         // Decision logic
         if (hasExperience && availableFullTime && agreesToAssessment && willingToCollaborate&&hasResources) {
            context.UI.showMessage("Congratulations! You meet the requirements to join the workshop.");
+           context.setState(new requestVolunteeringDetailsState());
+
         } else {
             context.UI.showMessage("Unfortunately, you do not meet the requirements for this workshop.");
         }

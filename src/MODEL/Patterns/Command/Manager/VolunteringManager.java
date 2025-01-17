@@ -8,29 +8,32 @@ import MODEL.DTO.Event.VolunteeringDetailsDTO;
 import java.sql.SQLException;
 
 public class VolunteringManager {
-    private VolunteeringDTO newVolunteering;
-    private VolunteeringDetailsDTO details;
 
-    private boolean isSuccessful;
+    private boolean isSuccessful = false;
 
     public boolean isSuccessful() {
         return isSuccessful;
     }
 
-    public VolunteringManager(VolunteeringDTO newVolunteering, VolunteeringDetailsDTO details) {
-        this.newVolunteering = newVolunteering;
-        this.details = details;
+    public VolunteringManager() {
+   
     }
-    public VolunteeringDetailsDTO getVolunteeringDetails(){
-        return this.details;
-    }
+ 
     public boolean joinEvent2Volunteer(VolunteeringDTO newVolunteering, VolunteeringDetailsDTO details) throws SQLException {
         try {
             if (VolunteeringDAO.addVolunteering(newVolunteering) &&
             VolunteeringDetailsDAO.addVolunteeringDetails(details))
+            {
+                isSuccessful = true;
                 return true;
-            else return false;
+            }
+            else{
+                isSuccessful = false;
+                return false;
+            }
+            
         } catch (SQLException e) {
+            isSuccessful = false;
             return false;
         }
 

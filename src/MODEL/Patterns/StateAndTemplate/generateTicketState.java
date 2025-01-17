@@ -22,7 +22,7 @@ public class generateTicketState implements EventJoiningState {
     @Override
     public void handle(EventJoiningTemplateContext context) {
          if (context.volunteeringManager.isSuccessful()) {
-            TicketGenerator eventTicket = new EventJoiningAdapter(context.volunteeringManager.getVolunteeringDetails(), context.event);
+            TicketGenerator eventTicket = new EventJoiningAdapter(context.getVolunteeringDetails(), context.event);
             eventTicket.saveTicketToFile( context.loggedInUser.getId() + ".txt");
             context.UI.showMessage("Your ticket has been saved.");
             context.setState(new requestEventState());

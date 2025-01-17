@@ -55,7 +55,32 @@ public class EventDAO {
         }
         return false;
     }
-
+public static List<EventDTO> getEventsByType(int eventTypeId) throws SQLException {
+        List<EventDTO> events = new ArrayList<>();
+        String query = "SELECT * FROM event WHERE event_type_id = ?";
+        
+        try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            
+            statement.setInt(1, eventTypeId);
+            
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    EventDTO event = new EventDTO();
+                    event.setId(resultSet.getInt("id"));
+                    event.setName(resultSet.getString("name"));
+                    event.setEventTypeId(resultSet.getInt("event_type_id"));
+                    event.setDescription(resultSet.getString("description"));
+                    event.setEventDate(resultSet.getDate("event_date").toLocalDate());
+                    event.setTimeFrom(resultSet.getTime("time_from").toLocalTime());
+                    event.setTimeTo(resultSet.getTime("time_to").toLocalTime());
+                    event.setCapacity(resultSet.getInt("capacity"));
+                    events.add(event);
+                }
+            }
+        }
+        return events;
+    }
     // Add a required skill for an event
     public boolean addRequiredSkill(int eventId, SkillDTO skill) throws SQLException {
         try (Connection conn = DbConnectionSingleton.getInstance().getConnection();
