@@ -18,7 +18,7 @@ public class CreditCardPaymentTemplate extends DonationPaymentTemplate {
     private PaymentMethode paymentMethode;
 
     public CreditCardPaymentTemplate(UserView userView ,Connection connection) {
-        super(connection);
+        super(userView,connection);
         // Create a PaymentMethode with the specific strategy for Credit Card
         this.paymentMethode = new PaymentMethode(new CreditCardPayment());
     }

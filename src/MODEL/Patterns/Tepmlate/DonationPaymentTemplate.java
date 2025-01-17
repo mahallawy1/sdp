@@ -4,80 +4,72 @@
  */
 package MODEL.Patterns.Tepmlate;
 
-import MODEL.DAO.DonationRecordDAO;
-import MODEL.DAO.UserDAO;
+import MODEL.DAO.PaymentDAO;
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.PaymentDTO;
-import MODEL.DTO.User.UserDTO;
-import java.sql.SQLException;
-import java.sql.Connection;
-import MODEL.DAO.PaymentDAO;
 import View.UserView;
 import View.UtilityHandler;
 
-/**
- *
- * @author belal
- */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 public abstract class DonationPaymentTemplate {
     private UtilityHandler UI;
-    protected Connection connection;  
-    public DonationPaymentTemplate(Connection connection) {
+    protected final Connection connection;
+
+    public DonationPaymentTemplate(UserView userView, Connection connection) {
         UI = new UtilityHandler();
         this.connection = connection;
     }
-     public final void processPayment(DonationRecordDTO donationRecord, PaymentDTO payment) throws SQLException {
-        validateDonationRecord(donationRecord);
-        validatePayment(payment);
-        
-        
-        //stratgy
-        executePayment(payment);
-        sendPaymentConfirmation(payment);
-    
-}
-     
-    protected final void validateDonationRecord(DonationRecordDTO donationRecord) {
-    if (donationRecord.getCumulativeAmount() <= 0) {
-            throw new IllegalArgumentException("Donation amount must be greater than zero.");
-        }
 
+    public final void processPayment(DonationRecordDTO donationRecord, PaymentDTO payment) throws Exception {
         
-       try {
+            validateDonationRecord(donationRecord);
+            validatePayment(payment);
+            executePayment(payment);
+            sendPaymentConfirmation(payment);
         
-        UserDTO user = UserDAO.getUserById(donationRecord.getUserId());
-        
-        if (user == null) {
-            throw new SQLException("User with ID " + donationRecord.getUserId() + " does not exist.");
+    }
+
+    protected final void validateDonationRecord(DonationRecordDTO donationRecord) throws Exception {
+        String sql = "SELECT id FROM donationrecord WHERE id = ? AND status = true";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, donationRecord.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    throw new Exception("Invalid or inactive donation record.");
+                }
+                else{
+                    UI.showMessage("Donation record is valid and active");
+            }
         }
-    } catch (SQLException e) {
-        
-        e.printStackTrace();
-        throw new RuntimeException("Error during validation", e);
-    }
-    }
-    
-    
-    
-    protected final void validatePayment(PaymentDTO payment) {
-        if (payment.getPaymentMethodId() == null || payment.getPaymentMethodId() <= 0) {
-            throw new IllegalArgumentException("Invalid payment method ID.");
         }
     }
 
-    
+    protected final void validatePayment(PaymentDTO payment) throws Exception {
+        String sql = "SELECT id FROM paymentmethod WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, payment.getPaymentMethodId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    throw new Exception("Invalid payment method.");
+                }
+            }
+        }
+    }
 
-   
+    protected final void sendPaymentConfirmation(PaymentDTO payment) throws Exception {
+//        String message = "Your payment with ID " + payment.getId() + " has been successfully processed.";
+//        String sql = "INSERT INTO payment_confirmation (payment_id, message) VALUES (?, ?)";
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setInt(1, payment.getId());
+//            stmt.setString(2, message);
+//            stmt.executeUpdate();
+//        }
+//        userView.showMessage("Payment confirmation sent successfully.");
+    }
 
-    protected final void sendPaymentConfirmation(PaymentDTO payment) throws SQLException {
-    PaymentDAO paymentDAO = new PaymentDAO(connection);
-
-   
-   // paymentDAO.confirmPayment(payment.getId());
-
-    
-    UI.showMessage("Payment with ID " + payment.getId() + " has been confirmed successfully.");
-}
-    // Varying function
+    // Abstract method for execution of payment - Implementation will vary
     public abstract void executePayment(PaymentDTO payment);
 }
