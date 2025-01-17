@@ -17,6 +17,8 @@ public class UserDTO {
     private String mobilePhone;
     private Integer roleId;
     private Integer status;
+    private RoleDTO role;
+
 
     public UserDTO() {}
 
@@ -28,7 +30,23 @@ public class UserDTO {
         this.password = password;
         this.email = email;
     }
+    
+    //----------------------------------------------------
+    public UserDTO(RoleDTO role) {
+            this.role = role;
 
+    }
+        public RoleDTO getRole() {
+        return this.role;
+    }
+    public void setRole(RoleDTO role) {
+        this.role = role;
+        if (role != null) {
+            this.roleId = role.getId();  // Sync the roleId with the role object
+        }
+    }
+  //-------------------------------------------      
+      
     public UserDTO(String mobilePhone) {
         this.mobilePhone = mobilePhone;
     }

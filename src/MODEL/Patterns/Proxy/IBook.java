@@ -4,13 +4,12 @@
  */
 package MODEL.Patterns.Proxy;
 
-import MODEL.DTO.Donation.DonationRecordDTO;
-import MODEL.DTO.User.UserDTO;
-
 /**
  *
  * @author Eslam
  */
-public interface DonationService {
-    void displayDonationDetails(UserDTO user, DonationRecordDTO donationRecord);
+public interface IBook {
+    void display();
+    void update(String title, String author, double price);
+    // Add other relevant methods
 }
