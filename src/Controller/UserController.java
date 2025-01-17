@@ -215,6 +215,7 @@ public void processDonation(UserDTO loggedInUser) {
     donationRecord.setStatus(true);
 
     try (Connection conn = DbConnectionSingleton.getInstance().getConnection()) {
+        
         DonationRecordDAO donationRecordDAO = new DonationRecordDAO(conn);
 
         // commmand design pattern
@@ -224,6 +225,8 @@ public void processDonation(UserDTO loggedInUser) {
         int donationId = donationManager.getDonationId();
 
         if (donationId != -1) {
+            
+            donationRecord.setId(donationId);
             UI.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
 
             int paymentChoice = donationView.getPaymentChoice();
@@ -246,17 +249,21 @@ public void processDonation(UserDTO loggedInUser) {
             PaymentDAO paymentDAO = new PaymentDAO(conn);
             int paymentId = paymentDAO.createPayment(payment); 
             payment.setId(paymentId);
-
-            // Link donation and payment in the database
-            paymentDAO.linkDonationToPayment(donationId, paymentId);
-
+            
+            
             // Process the payment with template
             paymentTemplate.processPayment(donationRecord, payment);
 
+            // Link donation and payment in the database
+            paymentDAO.linkDonationToPayment(donationId, paymentId);
+             
+            
+              
             UI.showMessage("Payment processed successfully with Payment ID: " + paymentId);
             donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
         } else {
             UI.showMessage("Failed to create donation record.");
+             
         }
     } catch (Exception e) {
         UI.showMessage("An error occurred: " + e.getMessage());

@@ -23,7 +23,7 @@ public abstract class DonationPaymentTemplate {
         this.connection = connection;
     }
 
-    public final void processPayment(DonationRecordDTO donationRecord, PaymentDTO payment) throws Exception {
+     public final void processPayment(DonationRecordDTO donationRecord, PaymentDTO payment) throws Exception {
         
             validateDonationRecord(donationRecord);
             validatePayment(payment);
@@ -32,8 +32,11 @@ public abstract class DonationPaymentTemplate {
         
     }
 
-    protected final void validateDonationRecord(DonationRecordDTO donationRecord) throws Exception {
-        String sql = "SELECT id FROM donationrecord WHERE id = ? AND status = true";
+    /**
+     * Validate the donation record exists and is active in the database.
+     */
+     protected final void validateDonationRecord(DonationRecordDTO donationRecord) throws Exception {
+        String sql = "SELECT id FROM donationrecord WHERE id = ? AND status = 1";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, donationRecord.getId());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -41,22 +44,27 @@ public abstract class DonationPaymentTemplate {
                     throw new Exception("Invalid or inactive donation record.");
                 }
                 else{
-                    UI.showMessage("Donation record is valid and active");
+                   UI.showMessage("Valid and active donation record");
+                }
             }
         }
-        }
-    }
+    } 
 
     protected final void validatePayment(PaymentDTO payment) throws Exception {
         String sql = "SELECT id FROM paymentmethod WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, payment.getPaymentMethodId());
             try (ResultSet rs = stmt.executeQuery()) {
-                if (!rs.next()) {
-                    throw new Exception("Invalid payment method.");
-                }
-            }
-        }
+               if (!rs.next()) {
+                   throw new Exception("Invalid payment method.");
+               }
+               else{
+                   UI.showMessage("Accept Methode for Payment");
+               }
+           }
+       
+         
+    }
     }
 
     protected final void sendPaymentConfirmation(PaymentDTO payment) throws Exception {
@@ -68,6 +76,7 @@ public abstract class DonationPaymentTemplate {
 //            stmt.executeUpdate();
 //        }
 //        userView.showMessage("Payment confirmation sent successfully.");
+          System.out.println("protected");
     }
 
     // Abstract method for execution of payment - Implementation will vary
