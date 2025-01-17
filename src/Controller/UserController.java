@@ -37,6 +37,8 @@ import static Controller.testLibrary.*;
 import MODEL.DTO.Book.BookDTO;
 import MODEL.Patterns.Iterator.BookIterator;
 import MODEL.Patterns.Iterator.BorrowedBookCollection;
+import MODEL.Patterns.Proxy.BookProxy;
+import MODEL.Patterns.Proxy.IBook;
 import MODEL.Patterns.State.BookContext;
 import MODEL.Patterns.StateAndTemplate.EventJoiningTemplateContext;
 import MODEL.Patterns.StateAndTemplate.SeminarEventJoiningContext;
@@ -460,32 +462,37 @@ public void processDonation(UserDTO loggedInUser) {
            UI.showMessage("Error deleting book " + e);
        }
     }
-    public void displayAvailableBooks() {
-        try {
+public void displayAvailableBooks(UserDTO currentUser) {
+    try {
+        BookManager bookManager = new BookManager();
+        invoker.setCmd(new RetrieveAllBooksCmd(bookManager));
+        BookIterator iterator = ((AvailableBookCollection) invoker.executeCmd()).createIterator();
 
-            // command design patter
-            //BookDAO bookDAO = new BookDAO();
-            //AvailableBookCollection availableBooks = bookDAO.getAllBooks();
-            BookManager bookManager = new BookManager();
-            invoker.setCmd(new RetrieveAllBooksCmd(bookManager));
-            BookIterator iterator = ((AvailableBookCollection)invoker.executeCmd()).createIterator();
+        while (iterator.hasNext()) {
+            BookDTO bookDTO = iterator.next();
 
-            while (iterator.hasNext()) {
-                BookDTO book = iterator.next();
-                UI.showMessage("ID: " + book.getId());
-                UI.showMessage("Title: " + book.getTitle());
-                UI.showMessage("Description: " + book.getDescription());
-                UI.showMessage("Publish Year: " + book.getPublishYear());
-                UI.showMessage("Quantity: " + book.getQuantity());
-                UI.showMessage("Status: " + book.getStatus());
-                UI.showMessage("-----------------------------------");
-            }
-        } catch (Exception e) {
-            UI.showMessage("Error displaying books: " + e.getMessage());
+            // Create a BookProxy instance for each book
+            IBook bookProxy = new BookProxy(
+                bookDTO.getTitle(),
+                bookDTO.getPublishYear(),
+                bookDTO.getDescription(),
+                bookDTO.getQuantity(),
+                bookDTO.getId(),
+                currentUser
+            );
+
+            // Display the book details using the proxy
+            bookProxy.display();
+            UI.showMessage("-----------------------------------");
         }
-        }    
+    } catch (Exception e) {
+        UI.showMessage("Error displaying books: " + e.getMessage());
+    }
+}
+
+   
         public void borrowBook(UserDTO loggedInUser) {
-            displayAvailableBooks();
+            displayAvailableBooks(loggedInUser);
 
             BorrowedBookCollection borrowedBooks = new BorrowedBookCollection();
 

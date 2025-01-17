@@ -22,7 +22,7 @@ public class MemberRoleHandlerStrategy implements RoleHandlerStrategy {
 
                 break;
             case 2:
-                userController.displayAvailableBooks();
+                userController.displayAvailableBooks(loggedInUser);
                 break;
             case 3:
                 userController.borrowBook(loggedInUser);
