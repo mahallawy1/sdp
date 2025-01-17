@@ -147,6 +147,26 @@ public class UserDAO {
         return userList;
     }
 
+    public static ArrayList<String> getAdminEmails() throws SQLException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        ArrayList<String> adminEmails = new ArrayList<>();
+        try {
+            conn = DbConnectionSingleton.getInstance().getConnection();
+            String sql = "SELECT email FROM user WHERE role_id = 1";
+            pstmt = conn.prepareStatement(sql);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                adminEmails.add(rset.getString("email"));
+            }
+        } finally {
+            DbConnectionSingleton.getInstance().close(conn, pstmt, rset);
+        }
+        return adminEmails;
+    }
+
     public UserDTO getUserByEmailAndPassword(String email, String password) throws SQLException {
         // Using try-with-resources for automatic closing of resources
         String sql = "SELECT * FROM user WHERE email = ? AND password = ?";

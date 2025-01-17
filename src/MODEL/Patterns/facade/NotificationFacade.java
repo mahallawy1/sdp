@@ -27,4 +27,16 @@ public class NotificationFacade {
             System.out.println("Thank you email sent to: " + recipientEmail);
         }
     }
+
+    public void sendEmailToAdminAboutDonation(List<String> recipientEmails, double donationAmount, String donorName) {
+        String subject = "New Donation!";
+        String body = "Dear admin,\n\nA new donation with amount $" + donationAmount + "by donor: " +
+                donorName +" was donated to our bookstore!" ;
+
+        // Loop through the list of recipient emails and send the email
+        for (String recipientEmail : recipientEmails) {
+            emailService.sendEmail(recipientEmail, subject, body);
+            System.out.println("Admin with email: " + recipientEmail + " is notified about your donation");
+        }
+    }
 }
