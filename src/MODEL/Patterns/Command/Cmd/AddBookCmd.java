@@ -1,4 +1,4 @@
-package MODEL.Patterns.Command;
+package MODEL.Patterns.Command.Cmd;
 
 import MODEL.DTO.Book.BookDTO;
 import MODEL.Patterns.Command.ICmd;

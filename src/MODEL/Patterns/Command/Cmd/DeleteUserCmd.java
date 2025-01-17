@@ -1,4 +1,4 @@
-package MODEL.Patterns.Command;
+package MODEL.Patterns.Command.Cmd;
 
 import MODEL.Patterns.Command.ICmd;
 import MODEL.Patterns.Command.ICommand;

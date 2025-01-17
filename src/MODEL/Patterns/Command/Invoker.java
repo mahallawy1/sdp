@@ -3,13 +3,14 @@ package MODEL.Patterns.Command;
 import java.sql.SQLException;
 
 public class Invoker {
-    ICommand command;
 
-    public void setCommand(ICommand command) {
-        this.command = command;
-    }
+    ICmd<?> cmd;
 
-    public void execute() throws SQLException {
-        command.execute();
+
+
+    public void setCmd(ICmd cmd) {this.cmd = cmd;}
+
+    public Object executeCmd() throws SQLException {
+        return cmd.execute();
     }
 }

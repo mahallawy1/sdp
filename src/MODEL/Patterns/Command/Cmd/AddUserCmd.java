@@ -1,6 +1,7 @@
-package MODEL.Patterns.Command;
+package MODEL.Patterns.Command.Cmd;
 
 import MODEL.DTO.User.UserDTO;
+import MODEL.Patterns.Command.ICmd;
 import MODEL.Patterns.Command.ICommand;
 import MODEL.Patterns.Command.Manager.UserManager;
 

@@ -2,6 +2,7 @@ package MODEL.DAO;
 
 import MODEL.DTO.Donation.DonationRecordDTO;
 import MODEL.DTO.Donation.DonationRecordTypeDTO;
+import MODEL.Patterns.singleton.DbConnectionSingleton;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -11,10 +12,9 @@ import java.util.List;
 
 public class DonationRecordDAO {
 
-    private final Connection connection;
 
-    public DonationRecordDAO(Connection connection) {
-        this.connection = connection;
+    public DonationRecordDAO() {
+
     }
 
     // Create donation record and return the generated donation ID
@@ -23,7 +23,8 @@ public class DonationRecordDAO {
         String donationRecordTypeSql = "INSERT INTO donationrecordtype (donation_record_id, donation_type_name, amount) VALUES (?, ?, ?)";
 
         int donationRecordId = -1; // Default invalid ID
-        try (PreparedStatement donationRecordStmt = connection.prepareStatement(donationRecordSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = DbConnectionSingleton.getInstance().getConnection();
+             PreparedStatement donationRecordStmt = connection.prepareStatement(donationRecordSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             donationRecordStmt.setInt(1, donationRecord.getUserId());
             donationRecordStmt.setDate(2, new Date(donationRecord.getDonateDate().getTime()));
             donationRecordStmt.setInt(3, donationRecord.getCumulativeAmount());

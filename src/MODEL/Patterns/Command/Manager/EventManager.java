@@ -14,23 +14,10 @@ import java.util.List;
 
 public class EventManager {
 
-    private int eventID;
-    private boolean isSuccessful;
-
     public EventManager() {}
-    public EventManager(int eventID) {
-        this.eventID = eventID;
-    }
 
-
-    public boolean isSuccessful() {
-        return isSuccessful;
-    }
-
-
-
-    public void deleteEvent() throws  SQLException {
-        isSuccessful =  EventDAO.removeEvent(eventID)? true : false;
+    public boolean deleteEvent(int id) throws  SQLException {
+        return  EventDAO.removeEvent(id);
     }
 
 }

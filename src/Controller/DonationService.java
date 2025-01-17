@@ -35,7 +35,7 @@ public class DonationService {
         donationTypes.add(new DonationRecordTypeDTO(0, 0, "Sudan Donation", 40));
 
         try (Connection connection = DbConnectionSingleton.getInstance().getConnection()) {
-            DonationRecordDAO donationRecordDAO = new DonationRecordDAO(connection);
+            DonationRecordDAO donationRecordDAO = new DonationRecordDAO();
             donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
         } catch (SQLException e) {
             e.printStackTrace();

@@ -9,32 +9,13 @@ import java.util.List;
 
 public class DonationManager {
 
-    private DonationRecordDTO donation;
-    private DonationRecordDAO dao;
-    private List<DonationRecordTypeDTO> donationTypes;
-    private int donationId;
+    public DonationManager(){
 
-    public DonationManager(DonationRecordDTO donation, DonationRecordDAO dao, List<DonationRecordTypeDTO> donationTypes) {
-        this.donation = donation;
-        this.dao = dao;
-        this.donationTypes = donationTypes;
     }
 
-    public DonationManager(DonationRecordDTO donation) {
-        this.donation = donation;
-    }
-
-
-    public void setDonation(DonationRecordDTO donation) {
-        this.donation = donation;
-    }
-
-    public int getDonationId() {
-        return donationId;
-    }
-
-    public void addDonation() throws SQLException {
-        donationId = dao.createDonationRecord(donation, donationTypes);
+    public int addDonation(DonationRecordDTO donation, List<DonationRecordTypeDTO> donationTypes) throws SQLException {
+        DonationRecordDAO dao = new DonationRecordDAO();
+        return dao.createDonationRecord(donation, donationTypes);
     }
 
 }

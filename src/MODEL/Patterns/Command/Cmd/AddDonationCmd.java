@@ -1,7 +1,8 @@
-package MODEL.Patterns.Command;
+package MODEL.Patterns.Command.Cmd;
 
         import MODEL.DTO.Donation.DonationRecordDTO;
         import MODEL.DTO.Donation.DonationRecordTypeDTO;
+        import MODEL.Patterns.Command.ICmd;
         import MODEL.Patterns.Command.ICommand;
         import MODEL.Patterns.Command.Manager.DonationManager;
         import MODEL.Patterns.Command.Manager.UserManager;
