@@ -25,6 +25,7 @@ public class ProxyPatternTest {
         bookForAdmin = new BookProxy("Design Patterns", 1994, "A book on design patterns by Gang of Four", 100, 2, adminUser);
         bookForUser = new BookProxy("Java Programming", 1995, "A comprehensive guide by James Gosling", 50, 3, normalUser);
     }
+    //j
 
     public void testAdminAccess() {
         System.out.println("Testing Admin Access...");
