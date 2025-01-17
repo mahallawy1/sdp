@@ -10,6 +10,6 @@ package MODEL.Patterns.Proxy;
  */
 public interface IBook {
     void display();
-    void update(String title, String author, double price);
-    // Add other relevant methods
+    void update(String title, Integer publishYear,String description,Integer quantity);
+    // Add other relevant methods
 }

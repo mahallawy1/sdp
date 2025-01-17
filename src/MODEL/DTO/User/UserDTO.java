@@ -45,6 +45,18 @@ public class UserDTO {
             this.roleId = role.getId();  // Sync the roleId with the role object
         }
     }
+    public UserDTO(int id, String password, String email, String firstname, Integer addressId, 
+                   String mobilePhone, Integer roleId, Integer status, RoleDTO role) {
+        this.id = id;
+        this.password = password;
+        this.email = email;
+        this.firstname = firstname;
+        this.addressId = addressId;
+        this.mobilePhone = mobilePhone;
+        this.roleId = roleId;
+        this.status = status;
+        this.role = role;
+    }
   //-------------------------------------------      
       
     public UserDTO(String mobilePhone) {

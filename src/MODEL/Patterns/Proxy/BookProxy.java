@@ -1,17 +1,11 @@
 package MODEL.Patterns.Proxy;
 
-
 import MODEL.DTO.User.RoleDTO;
 import MODEL.DTO.User.UserDTO;
-import MODEL.Patterns.Proxy.IBook;
-import MODEL.Patterns.Proxy.RealBook;
-import View.UtilityHandler;
+import java.sql.SQLException;
 import java.util.Date;
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,62 +14,70 @@ import java.util.Date;
 public class BookProxy implements IBook {
     private RealBook realBook;
     private String title;
-    private String author;
-    private double price;
-    private final UserDTO currentUser; 
-    private UtilityHandler UI;
-    public BookProxy(String title, String author, double price, UserDTO currentUser) {
+    private Integer publishYear;
+    private String description;
+    private Integer quantity;
+    private Integer bookID;
+    private final UserDTO currentUser;
+
+    public BookProxy(String title,Integer publishYear, String description, Integer quantity,Integer bookID,  UserDTO currentUser) {
         this.title = title;
-        this.author = author;
-        this.price = price;
+        this.publishYear = publishYear;
+        this.description = description;
+        this.quantity = quantity;
+        this.bookID = bookID;
         this.currentUser = currentUser;
-        this.UI = new UtilityHandler();
     }
-    
+
     @Override
     public void display() {
         // Lazy loading
         if (realBook == null) {
-            realBook = new RealBook(title, author, price);
+            try {
+                realBook = new RealBook(title, publishYear, description, quantity,bookID);
+            } catch (SQLException ex) {
+                Logger.getLogger(BookProxy.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         // Logging
-        UI.showMessage("Access log: User " + currentUser.getFirstname() + " accessed book at " + new Date());
+        System.out.println("Access log: User " + currentUser.getFirstname() + " accessed book at " + new Date());
         realBook.display();
     }
-    
     @Override
-    public void update(String title, String author, double price) {
+    public void update(String title, Integer publishYear, String description, Integer quantity) {
         // Access control
         if (!hasEditPermission()) {
             throw new SecurityException("User doesn't have permission to edit books");
         }
         
         // Logging
-        UI.showMessage("Update log: User " + currentUser.getFirstname() + " updated book at " + new Date());
+        System.out.println("Update log: User " + currentUser.getFirstname() + " updated book at " + new Date());
         
         if (realBook != null) {
-            realBook.update(title, author, price);
+            realBook.update(title, publishYear, description, quantity);
         }
         
         this.title = title;
-        this.author = author;
-        this.price = price;
+        this.publishYear = publishYear;
+        this.description = description;
+        this.quantity = quantity;
+       
     }
-    
-private boolean hasEditPermission() {
-    if (currentUser == null) {
-        return false;
+
+    private boolean hasEditPermission() {
+        if (currentUser == null) {
+            return false;
+        }
+
+        RoleDTO userRole = currentUser.getRole();
+
+        if (userRole == null) {
+            return false;
+        }
+
+        String roleName = userRole.getName().toUpperCase();
+        return roleName.equals("ADMIN") || 
+               roleName.equals("EDITOR") || 
+               roleName.equals("LIBRARIAN");
     }
-    
-    RoleDTO userRole = currentUser.getRole();
-    
-    if (userRole == null) {
-        return false;
-    }
-    
-    String roleName = userRole.getName().toUpperCase();
-    return roleName.equals("ADMIN") || 
-           roleName.equals("EDITOR") || 
-           roleName.equals("LIBRARIAN");
-}
 }

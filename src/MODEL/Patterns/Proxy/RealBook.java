@@ -1,48 +1,54 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package MODEL.Patterns.Proxy;
 
-import View.UtilityHandler;
+import MODEL.DAO.BookDAO;
+import MODEL.DTO.Book.BookDTO;
+import java.sql.SQLException;
 
-/**
- *
- * @author Eslam
- */
 // Real Book class
 public class RealBook implements IBook {
     private String title;
-    private String author;
-    private double price;
-    private UtilityHandler UI;
-    public RealBook(String title, String author, double price) {
+    private Integer publishYear;
+    private String description;
+    private Integer quantity;
+    private Integer bookID;
+    private BookDAO bookDAO;
+
+    // Constructor that initializes the RealBook
+    public RealBook(String title, Integer publishYear, String description, Integer quantity, Integer bookID) throws SQLException {
         this.title = title;
-        this.author = author;
-        this.price = price;
-        this.UI  = new UtilityHandler();
+        this.publishYear = publishYear;
+        this.description = description;
+        this.quantity = quantity;
+        this.bookID = bookID;
+        bookDAO = new BookDAO();
+        
         // Simulating heavy loading
         loadFromDatabase();
     }
-    
-    private void loadFromDatabase() {
-        // Simulate loading from database
-        try {
-            Thread.sleep(1000); // Simulate delay
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+    // Method to load the book from the database using the bookID
+    private void loadFromDatabase() throws SQLException {
+        BookDTO bookDTO = this.bookDAO.getBookById(this.bookID);
+        
+        // Assuming bookDTO contains the relevant fields
+        this.title = bookDTO.getTitle();
+        this.publishYear = bookDTO.getPublishYear();
+        this.description = bookDTO.getDescription();
+        this.quantity = bookDTO.getQuantity();
     }
     
     @Override
     public void display() {
-        UI.showMessage("Book: " + title + " by " + author + ", Price: $" + price);
+        System.out.println("Book: " + title + ", Published Year: " + publishYear + ", Description: " + description + ", Quantity: " + quantity);
     }
     
     @Override
-    public void update(String title, String author, double price) {
+    public void update(String title, Integer publishYear, String description, Integer quantity) {
         this.title = title;
-        this.author = author;
-        this.price = price;
+        this.publishYear = publishYear;
+        this.description = description;
+        this.quantity = quantity;
     }
+
+   
 }
