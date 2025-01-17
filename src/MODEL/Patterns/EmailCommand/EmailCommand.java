@@ -26,7 +26,9 @@ public class EmailCommand implements Command {
     @Override
     public void execute() {
         // Now we call the sendEmailToAdminAboutDonation method
-        notificationFacade.sendEmailToAdminAboutDonation(adminEmails, donationAmount, donorName);
+        new Thread(()->{
+            notificationFacade.sendEmailToAdminAboutDonation(adminEmails, donationAmount, donorName);
+        }).start();
     }
 }
 

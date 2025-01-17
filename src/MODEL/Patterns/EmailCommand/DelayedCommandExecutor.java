@@ -33,13 +33,13 @@ public class DelayedCommandExecutor {
 
     public void executeAfterDelay(Command command) {
         long delayInSeconds = calculateDelay();
-        System.out.println("Calculated delay based on load (" + load + "): " + delayInSeconds + " seconds");
+        //System.out.println("Calculated delay based on load (" + load + "): " + delayInSeconds + " seconds");
 
         scheduler.schedule(() -> {
             try {
                 command.execute();
             } catch (Exception e) {
-                System.out.println("Error executing command: " + e.getMessage());
+                //System.out.println("Error executing command: " + e.getMessage());
             }
         }, delayInSeconds, TimeUnit.SECONDS);
     }

@@ -37,7 +37,7 @@ public class EmailService {
             UI.showMessage("Email sent successfully to " + recipientEmail);
 
         } catch (MessagingException e) {
-            System.err.println("Error sending email: " + e.getMessage());
+            //System.err.println("Error sending email: " + e.getMessage());
         }
     }
 }

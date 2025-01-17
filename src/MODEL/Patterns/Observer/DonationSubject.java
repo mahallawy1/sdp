@@ -1,6 +1,7 @@
 package MODEL.Patterns.Observer;
 
 import MODEL.DAO.UserDAO;
+import MODEL.Patterns.EmailCommand.EmailCommand;
 import MODEL.Patterns.facade.NotificationFacade;
 
 import java.sql.SQLException;
@@ -15,7 +16,8 @@ public class DonationSubject extends ASubject{
         // use notification facade to send emails to admins
         NotificationFacade notificationFacade = new NotificationFacade();
         try {
-            notificationFacade.sendEmailToAdminAboutDonation(UserDAO.getAdminEmails(), donationAmount, donorName);
+            EmailCommand emailCommand = new EmailCommand(UserDAO.getAdminEmails(),donationAmount, donorName, notificationFacade);
+            emailCommand.execute();
         }catch (SQLException e){
 
         }
