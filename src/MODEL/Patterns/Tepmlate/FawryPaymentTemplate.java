@@ -19,9 +19,9 @@ public class FawryPaymentTemplate extends DonationPaymentTemplate {
     private PaymentMethode paymentMethode;
 
      public FawryPaymentTemplate(UserView userView, Connection connection) {
-        // Pass the connection to the parent class constructor
+        
         super(userView, connection);
-        // Create a PaymentMethode with the specific strategy for Fawry
+        
         this.paymentMethode = new PaymentMethode(new FawryPayment());
     }
 

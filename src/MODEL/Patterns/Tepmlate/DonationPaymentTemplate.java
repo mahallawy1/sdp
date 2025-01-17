@@ -28,13 +28,11 @@ public abstract class DonationPaymentTemplate {
             validateDonationRecord(donationRecord);
             validatePayment(payment);
             executePayment(payment);
-            sendPaymentConfirmation(payment);
+            PaymentConfirmation(payment);
         
     }
 
-    /**
-     * Validate the donation record exists and is active in the database.
-     */
+    
      protected final void validateDonationRecord(DonationRecordDTO donationRecord) throws Exception {
         String sql = "SELECT id FROM donationrecord WHERE id = ? AND status = 1";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -46,6 +44,9 @@ public abstract class DonationPaymentTemplate {
                 else{
                    UI.showMessage("Valid and active donation record");
                 }
+                
+                
+                
             }
         }
     } 
@@ -61,24 +62,31 @@ public abstract class DonationPaymentTemplate {
                else{
                    UI.showMessage("Accept Methode for Payment");
                }
+                
            }
        
          
     }
     }
 
-    protected final void sendPaymentConfirmation(PaymentDTO payment) throws Exception {
-//        String message = "Your payment with ID " + payment.getId() + " has been successfully processed.";
-//        String sql = "INSERT INTO payment_confirmation (payment_id, message) VALUES (?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-//            stmt.setInt(1, payment.getId());
-//            stmt.setString(2, message);
-//            stmt.executeUpdate();
-//        }
-//        userView.showMessage("Payment confirmation sent successfully.");
-          System.out.println("protected");
+    protected final void PaymentConfirmation(PaymentDTO payment) throws Exception {
+
+        String sql = "SELECT id FROM payment WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+           stmt.setInt(1, payment.getId());
+           try (ResultSet rs = stmt.executeQuery()) {
+               if (!rs.next()) {
+                   throw new Exception("Payment Not Confermation .");
+               }
+               else{
+                   UI.showMessage("Payment Confermation");
+               }
+           }
+            
+
+        }
     }
 
-    // Abstract method for execution of payment - Implementation will vary
+    
     public abstract void executePayment(PaymentDTO payment);
 }
