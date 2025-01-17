@@ -64,6 +64,9 @@ import MODEL.Patterns.Iterator.BorrowedBookCollection;
 import MODEL.Patterns.State.BookContext;
 import MODEL.Patterns.StateAndTemplate.EventJoiningTemplateContext;
 import MODEL.Patterns.StateAndTemplate.SeminarEventJoiningContext;
+import MODEL.Patterns.Tepmlate.CreditCardPaymentTemplate;
+import MODEL.Patterns.Tepmlate.DonationPaymentTemplate;
+import MODEL.Patterns.Tepmlate.FawryPaymentTemplate;
 import View.DonationView;
 import View.EventView;
 import View.InputHandler;
@@ -219,35 +222,39 @@ public void processDonation(UserDTO loggedInUser) {
         invoker.setCommand(new AddDonationCmd(donationManager));
         invoker.execute();
         int donationId = donationManager.getDonationId();
-        //int donationId = donationRecordDAO.createDonationRecord(donationRecord, donationTypes);
 
         if (donationId != -1) {
             UI.showMessage("Donation successfully added with cumulative amount: " + cumulativeAmount);
 
             int paymentChoice = donationView.getPaymentChoice();
-
-            PaymentStategy paymentStrategy = null;
+            DonationPaymentTemplate paymentTemplate;
+             
             if (paymentChoice == 1) {
-                paymentStrategy = new FawryPayment();
+                paymentTemplate = new FawryPaymentTemplate(userView, conn);
             } else if (paymentChoice == 2) {
-                paymentStrategy = new CreditCardPayment();
-            }
-
-            if (paymentStrategy != null) {
-                PaymentDTO payment = new PaymentDTO();
-                payment.setPaymentMethodId(paymentChoice); // 1 = Fawry, 2 = Credit Card
-                payment.setTimestamp(LocalDateTime.now());
-                payment.setIsDeleted(false);
-
-                PaymentDAO paymentDAO = new PaymentDAO(conn);
-                int paymentId = paymentDAO.createPayment(payment, paymentStrategy);
-                paymentDAO.linkDonationToPayment(donationId, paymentId);
-
-                UI.showMessage("Payment processed successfully with Payment ID: " + paymentId);
-                donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
+                paymentTemplate = new CreditCardPaymentTemplate(userView, conn);
             } else {
                 UI.showMessage("Invalid payment method selected.");
+                return;
             }
+
+            PaymentDTO payment = new PaymentDTO();
+            payment.setPaymentMethodId(paymentChoice); // 1 = Fawry, 2 = Credit Card
+            payment.setTimestamp(LocalDateTime.now());
+            payment.setIsDeleted(false);
+
+            PaymentDAO paymentDAO = new PaymentDAO(conn);
+            int paymentId = paymentDAO.createPayment(payment); 
+            payment.setId(paymentId);
+
+            // Link donation and payment in the database
+            paymentDAO.linkDonationToPayment(donationId, paymentId);
+
+            // Process the payment with template
+            paymentTemplate.processPayment(donationRecord, payment);
+
+            UI.showMessage("Payment processed successfully with Payment ID: " + paymentId);
+            donationSubj.setNotification(loggedInUser.getFirstname(), cumulativeAmount);
         } else {
             UI.showMessage("Failed to create donation record.");
         }
@@ -257,24 +264,24 @@ public void processDonation(UserDTO loggedInUser) {
 }
 
 
-    private void processPayment(UserDTO user, double amount) {
-        int paymentChoice = donationView.getPaymentChoice();
-        PaymentStategy paymentStrategy = switch (paymentChoice) {
-            case 1 -> new FawryPayment( );
-            case 2 -> new CreditCardPayment();
-            default -> null;
-        };
-
-        if (paymentStrategy != null) {
-            PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
-            paymentService.executePayment(new PaymentDTO());
-            UI.showMessage("Payment processed successfully.");
-            // Notify observers if needed
-
-        } else {
-            UI.showMessage("Invalid payment choice. No payment processed.");
-        }
-    }
+//    private void processPayment(UserDTO user, double amount) {
+//        int paymentChoice = donationView.getPaymentChoice();
+//        PaymentStategy paymentStrategy = switch (paymentChoice) {
+//            case 1 -> new FawryPayment( );
+//            case 2 -> new CreditCardPayment();
+//            default -> null;
+//        };
+//
+//        if (paymentStrategy != null) {
+//            PaymentMethode paymentService = new PaymentMethode(paymentStrategy);
+//            paymentService.executePayment(new PaymentDTO());
+//            UI.showMessage("Payment processed successfully.");
+//            // Notify observers if needed
+//
+//        } else {
+//            UI.showMessage("Invalid payment choice. No payment processed.");
+//        }
+//    }
 /////////////////////////////////////////////////////
     ///event
      public static void setSkills() {
