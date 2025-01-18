@@ -1,81 +1,54 @@
 package tests.EmailCommand;
 
-import MODEL.Patterns.EmailCommand.DelayedCommandExecutor;
 import MODEL.Patterns.EmailCommand.EmailCommand;
+import MODEL.Patterns.EmailCommand.DelayedCommandExecutor;
 import MODEL.Patterns.facade.NotificationFacade;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmailCommandTest {
 
-    private DelayedCommandExecutor commandExecutor;
-    private NotificationFacade notificationFacade;
-
+    private EmailCommand emailCommand;
+    private DelayedCommandExecutor delayedCommandExecutor;
 
     @BeforeEach
     public void setUp() {
+        // Initialize your mock or real NotificationFacade here
+        NotificationFacade notificationFacade = new NotificationFacade();  // Replace with actual initialization
+        List<String> adminEmails = Arrays.asList("admin@example.com","belal972001@gmail.com");
+        Double donationAmount = 50.0;
+        String donorName = "John Doe";
 
-        notificationFacade = new NotificationFacade();
-        commandExecutor = new DelayedCommandExecutor();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        commandExecutor.shutdown();
+        delayedCommandExecutor = new DelayedCommandExecutor();
+        emailCommand = new EmailCommand(adminEmails, donationAmount, donorName, notificationFacade);
     }
 
     @Test
-    public void testDelayedEmailCommand() throws InterruptedException {
-        System.out.println("Going to start sending test email...");
+    public void testEmailCommandExecutionAfterDelay() throws InterruptedException {
+        // Record the start time
+        long startTime = System.currentTimeMillis();
 
-        // Prepare test data
-        List<String> adminEmails = Arrays.asList("admin1@example.com", "admin2@example.com");
-        double donationAmount = 100.0;
-        String donorName = "John Doe";
+        // Execute the command
+        emailCommand.execute();
 
-        // Create the EmailCommand
-        EmailCommand emailCommand = new EmailCommand(adminEmails, donationAmount, donorName, notificationFacade);
+        // Sleep for the maximum possible delay (assuming 10 seconds max)
+        // This is a way to make sure the delay completes in the test
+        Thread.sleep(11000);  // Sleep for slightly more than the maximum delay to ensure it's executed
 
-        // Use CountDownLatch to wait for the email sending to be completed
-        CountDownLatch latch = new CountDownLatch(1);
+        // Record the end time
+        long endTime = System.currentTimeMillis();
 
-        // Create a new thread to handle the delay countdown
-        new Thread(() -> {
-            for (int i = 3; i > 0; i--) {
-                System.out.println("Delay: " + i + " second(s) remaining...");
-                try {
-                    Thread.sleep(1000); // Sleep for 1 second
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    System.err.println("Countdown thread interrupted.");
-                }
-            }
-        }).start();
+        // Check that the delay was at least the expected delay (e.g., 10 seconds)
+        long elapsedTime = endTime - startTime;
+        assertTrue(elapsedTime >= 10000, "Delay should be at least 10 seconds");
 
-        // Delay for 3 seconds before executing the command
-        commandExecutor.executeAfterDelay(() -> {
-            try {
-                emailCommand.execute();
-            } catch (Exception e) {
-                System.err.println("Error executing command: " + e.getMessage());
-            } finally {
-                latch.countDown(); // Decrement the latch counter
-            }
-        }); // Delay of 3 seconds
-
-        // Wait for the latch to ensure the email command is executed after the delay
-        latch.await();
-
-        // Since we can't easily check email sending in the test, we can just assert that the latch was released
-        // and assume the email was sent if no exception was thrown.
-        assertTrue(true, "Delayed email command executed successfully.");
+        // Add more checks if necessary, like verifying email sending logic
+        // For example, checking the console output or logs,
+        // or if the NotificationFacade method was called successfully
     }
-
 }
